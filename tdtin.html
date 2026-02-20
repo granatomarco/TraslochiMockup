@@ -63,6 +63,7 @@
         .status-nuovo { background: #d1ecf1; color: #0c5460; }
         .status-completato { background: #d4edda; color: #155724; }
         .status-errore { background: #f8d7da; color: #721c24; }
+        .status-inlavorazione { background: #fff3cd; color: #856404; }
         .status-info { background: #e2e8f0; color: #334155; font-size: 11px; padding: 3px 6px; }
 
         .footer { background: #2c3e50; color: white; padding: 15px 40px; position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; font-size: 13px; z-index: 100; }
@@ -144,6 +145,7 @@
                     <select>
                         <option value="">Mostra Tutti gli Stati</option>
                         <option value="da-elaborare">In Attesa di Inserimento a Sistema</option>
+                        <option value="in-elaborazione">In Elaborazione</option>
                         <option value="elaborato">Inserita a Sistema con Successo</option>
                         <option value="errore">Richiede Controllo Manuale Dati</option>
                     </select>
@@ -158,7 +160,7 @@
         <div class="results-section">
             <div class="results-header">
                 <h2 class="results-title"><span class="material-icons">assignment</span> Elenco Pratiche</h2>
-                <span class="results-count">3 pratiche individuate</span>
+                <span class="results-count">4 pratiche individuate</span>
             </div>
             <div class="action-bar">
                 <button class="btn btn-light"><span class="material-icons">play_circle_filled</span> Riprendi Lavorazione Tutte (In Attesa)</button>
@@ -213,6 +215,15 @@
                                 </button>
                             </td>
                         </tr>
+                        <tr>
+                            <td>1468131</td>
+                            <td>52688999</td>
+                            <td>BPER BANCA</td>
+                            <td>21/02/2026</td>
+                            <td><span class="status-badge status-inlavorazione">In Elaborazione</span></td>
+                            <td>Operazioni di acquisizione in corso da parte del sistema</td>
+                            <td>-</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -231,12 +242,12 @@
                 <button class="close-btn" onclick="closeModal('modal-migliorie')"><span class="material-icons">close</span></button>
             </div>
             <div class="modal-body">
-                <p style="margin-bottom: 25px; font-size: 14px; color: #495057; line-height: 1.6;">Il cruscotto Traslochi IN (TDTIN) è stato riprogettato per risolvere i blocchi documentati nell'applicativo precedente (AEA/Video). Di seguito le principali innovazioni introdotte per l'ottimizzazione del processo.</p>
+                <p style="margin-bottom: 25px; font-size: 14px; color: #495057; line-height: 1.6;">Il cruscotto Traslochi IN (TDTIN) è stato riprogettato per risolvere i blocchi documentati nell'applicativo precedente (AEA/Video). Di seguito l'elenco completo delle innovazioni integrate.</p>
                 
                 <div class="miglioria-box">
                     <div class="miglioria-title"><span class="status-badge status-info">Architettura</span> 1. Superamento della Navigazione Paginata (Max 9 Righe)</div>
                     <div class="miglioria-text">
-                        <strong>Prima:</strong> Nel vecchio portale, la consultazione delle "Richieste da valutare" era forzatamente paginata con un limite massimo di 9 record per schermata. Questo obbligava l'operatore a una continua e dispendiosa navigazione sequenziale.<br>
+                        <strong>Prima:</strong> Nel vecchio portale, la consultazione delle "Richieste da valutare" era forzatamente paginata con un limite massimo di 9 record per schermata, obbligando a una continua navigazione sequenziale.<br>
                         <strong>Oggi:</strong> La nuova interfaccia aggrega tutti i record in un'unica visuale fluida (Single Page), eliminando i vincoli di paginazione e integrando un motore di ricerca nativo.
                     </div>
                 </div>
@@ -244,7 +255,7 @@
                 <div class="miglioria-box">
                     <div class="miglioria-title"><span class="status-badge status-info">Operatività</span> 2. Avvio Lavorazione Flessibile e Granulare</div>
                     <div class="miglioria-text">
-                        <strong>Prima:</strong> La ripresa della lavorazione delle pratiche sospese o in attesa procedeva in modo indiscriminato (es. riavvio massivo dal record 1 al limite), senza offrire il controllo sulle urgenze.<br>
+                        <strong>Prima:</strong> La ripresa della lavorazione delle pratiche sospese procedeva in modo indiscriminato (es. riavvio massivo dal record 1 al limite), senza offrire il controllo sulle urgenze.<br>
                         <strong>Oggi:</strong> L'operatore mantiene il totale controllo decisionale. Può avviare simultaneamente tutte le pratiche dal bottone di testata o scegliere di far ripartire <strong>una singola pratica specifica</strong> attraverso l'apposito comando "Avvia Singola Pratica" posto sulla riga.
                     </div>
                 </div>
@@ -269,7 +280,7 @@
                     <div class="miglioria-title"><span class="status-badge status-info">Tracciatura</span> 5. Visibilità in Tempo Reale dello Stato Applicativo</div>
                     <div class="miglioria-text">
                         <strong>Prima:</strong> Verificare l'avanzamento reale di un "Trasloco in Ingresso" richiedeva incrociare i dati tra i log di sistema e i vecchi applicativi (AEA e Video).<br>
-                        <strong>Oggi:</strong> Gli stati elaborativi ("Elaborata", "Da Elaborare", "Richiede Controllo") sono aggiornati in background dall'infrastruttura e visibili in chiaro nel cruscotto.
+                        <strong>Oggi:</strong> Tutti gli stati elaborativi ("Elaborata", "In Elaborazione", "Da Elaborare", "Anomalia") sono aggiornati in background dall'infrastruttura e visibili in chiaro e in tempo reale nel cruscotto.
                     </div>
                 </div>
 

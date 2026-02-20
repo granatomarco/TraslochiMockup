@@ -32,7 +32,6 @@
 
         .search-section { background: white; padding: 30px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 25px; }
         h2.search-title { font-size: 16px; font-weight: 600; color: #2c3e50; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
-        /* Griglia aggiornata a 3 colonne: genera 2 righe perfette per i 6 campi */
         .search-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px; }
         .form-group { display: flex; flex-direction: column; }
         .form-group label { font-size: 13px; font-weight: 500; color: #2c3e50; margin-bottom: 8px; }
@@ -70,6 +69,7 @@
         .status-badge { padding: 5px 10px; border-radius: 3px; font-size: 12px; font-weight: 500; display: inline-block; }
         .status-errore { background: #f8d7da; color: #721c24; }
         .status-completato { background: #d4edda; color: #155724; }
+        .status-inlavorazione { background: #fff3cd; color: #856404; }
         .status-info { background: #e2e8f0; color: #334155; font-size: 11px; padding: 3px 6px; }
 
         .footer { background: #2c3e50; color: white; padding: 15px 40px; position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; font-size: 13px; z-index: 100; }
@@ -111,6 +111,7 @@
             .page-header { flex-direction: column; align-items: flex-start; gap: 15px;}
             .container { padding: 20px; }
             .search-grid, .detail-grid { grid-template-columns: 1fr; }
+            .action-bar { flex-direction: column; }
             table { font-size: 12px; }
             th, td { padding: 10px 8px; }
         }
@@ -175,6 +176,7 @@
                         <option value="">Mostra Tutti</option>
                         <option value="Trasferibile">Titolo Trasferibile</option>
                         <option value="Non Trasferibile">Titolo Non Trasferibile</option>
+                        <option value="In Elaborazione">In Elaborazione (Verifica in corso)</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -201,7 +203,7 @@
         <div class="results-section">
             <div class="results-header">
                 <h2 class="results-title"><span class="material-icons">list_alt</span> Elenco Titoli Censiti</h2>
-                <span class="results-count" id="table-count">6 record trovati</span>
+                <span class="results-count" id="table-count">7 record trovati</span>
             </div>
             <div class="table-wrapper">
                 <table id="isin-table">
@@ -251,6 +253,12 @@
                             <td style="font-weight: 500; color: #64748b;">1006</td>
                             <td>FR0000120271</td><td>TOTALENERGIES SE</td><td>EUR</td><td>01/03/2024</td>
                             <td><span class="status-badge status-completato">Trasferibile</span></td>
+                            <td><button class="btn btn-alert" style="padding: 5px 10px; font-size: 12px;" onclick="removeRow(this)"><span class="material-icons" style="font-size: 16px;">delete</span> Rimuovi</button></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500; color: #64748b;">1007</td>
+                            <td>NL00150002Q7</td><td>STELLANTIS NV</td><td>EUR</td><td>20/02/2026</td>
+                            <td><span class="status-badge status-inlavorazione">In Elaborazione</span></td>
                             <td><button class="btn btn-alert" style="padding: 5px 10px; font-size: 12px;" onclick="removeRow(this)"><span class="material-icons" style="font-size: 16px;">delete</span> Rimuovi</button></td>
                         </tr>
                     </tbody>
@@ -372,7 +380,7 @@
                     <div class="miglioria-title"><span class="status-badge status-info">Dati</span> 4. Arricchimento dei Dati (ID, Divisa, Timestamp)</div>
                     <div class="miglioria-text">
                         <strong>Prima:</strong> La vista a tabella era sprovvista di parametri fondamentali e si limitava a ISIN e Descrizione.<br>
-                        <strong>Oggi:</strong> È stato inserito un ID univoco di registrazione, il tracciamento esplicito della Valuta (Divisa) e l'apposizione automatica della Data di Inserimento, per un'identificazione inequivocabile dello strumento.
+                        <strong>Oggi:</strong> È stato inserito un ID univoco di registrazione, il tracciamento esplicito della Valuta (Divisa) e l'apposizione automatica della Data di Inserimento, per un'identificazione inequivocabile dello strumento. Inoltre è stato introdotto lo stato di controllo "In Elaborazione".
                     </div>
                 </div>
 
@@ -401,7 +409,7 @@
 
     <script>
         // --- INIZIALIZZAZIONE CONTATORE ID ---
-        let nextRecordId = 1007;
+        let nextRecordId = 1008;
 
         // --- GESTIONE MODALI ---
         function openModal(modalId) { 
@@ -520,7 +528,7 @@
 
             isins.forEach(isin => {
                 const tr = document.createElement('tr');
-                const assignedId = nextRecordId++; // Genera nuovo ID univoco
+                const assignedId = nextRecordId++; 
                 
                 tr.innerHTML = `
                     <td style="font-weight: 500; color: #64748b;">${assignedId}</td>
