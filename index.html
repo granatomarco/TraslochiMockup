@@ -65,6 +65,7 @@
         .btn-light:hover { background: #a3b9d4; }
         .btn-alert { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;}
         .btn-alert:hover { background: #f1b0b7; }
+        .btn-disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; border: 1px solid #cbd5e1; }
         
         .status-badge { padding: 5px 10px; border-radius: 3px; font-size: 12px; font-weight: 500; display: inline-block; }
         .status-errore { background: #f8d7da; color: #721c24; }
@@ -259,7 +260,11 @@
                             <td style="font-weight: 500; color: #64748b;">1007</td>
                             <td>NL00150002Q7</td><td>STELLANTIS NV</td><td>EUR</td><td>20/02/2026</td>
                             <td><span class="status-badge status-inlavorazione">In Elaborazione</span></td>
-                            <td><button class="btn btn-alert" style="padding: 5px 10px; font-size: 12px;" onclick="removeRow(this)"><span class="material-icons" style="font-size: 16px;">delete</span> Rimuovi</button></td>
+                            <td>
+                                <button class="btn btn-disabled" style="padding: 5px 10px; font-size: 12px;" disabled title="Impossibile rimuovere un titolo in corso di elaborazione">
+                                    <span class="material-icons" style="font-size: 16px;">lock</span> Bloccato
+                                </button>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -393,10 +398,10 @@
                 </div>
 
                 <div class="miglioria-box">
-                    <div class="miglioria-title"><span class="status-badge status-info">Sicurezza</span> 6. Rimozione Dati Sicura e Puntuale</div>
+                    <div class="miglioria-title"><span class="status-badge status-info">Sicurezza</span> 6. Rimozione Dati Sicura e Logica di Blocco</div>
                     <div class="miglioria-text">
                         <strong>Prima:</strong> L'interfaccia utilizzava checkbox per la selezione multipla e la cancellazione in blocco, esponendo il sistema a forti rischi di eliminazione accidentale dei record (Human Error).<br>
-                        <strong>Oggi:</strong> I comandi massivi di rimozione sono disabilitati. È stata istituita la colonna <em>Gestione</em> in cui ogni singola riga dispone di un'azione dedicata per l'eliminazione, costringendo a una scelta consapevole e mirata.
+                        <strong>Oggi:</strong> I comandi massivi di rimozione sono disabilitati. È stata istituita la colonna <em>Gestione</em> in cui ogni singola riga dispone di un'azione dedicata per l'eliminazione. Inoltre, una logica di sicurezza <strong>blocca e disabilita il pulsante di rimozione se il titolo è "In Elaborazione"</strong>, preservando la coerenza del database durante le elaborazioni RPA in background.
                     </div>
                 </div>
 
