@@ -97,7 +97,7 @@
             .nav-container { flex-direction: column; gap: 15px; padding: 20px; min-height: auto;}
             .page-header { flex-direction: column; align-items: flex-start; gap: 15px;}
             .container { padding: 20px; }
-            .search-grid, .detail-grid { grid-template-columns: 1fr; }
+            .detail-grid { grid-template-columns: 1fr; }
             table { font-size: 12px; }
             th, td { padding: 10px 8px; }
         }
@@ -118,7 +118,7 @@
                 </div>
             </div>
             <div class="nav-menu">
-                <span class="nav-link" onclick="window.location.href='index.html'">Trasferibilità</span>
+                <span class="nav-link" onclick="window.location.href='trasferibilita.html'">Trasferibilità</span>
                 <span class="nav-link" onclick="window.location.href='tdtin.html'">Traslochi IN (TDTIN)</span>
                 <span class="nav-link active">Traslochi OUT (TDTOUT)</span>
             </div>
@@ -146,7 +146,7 @@
             <div class="search-grid">
                 <div class="form-group">
                     <label>Codice Identificativo</label>
-                    <input type="text" placeholder="Es. OUT-2024-991">
+                    <input type="text" placeholder="Es. OUT-2026-991">
                 </div>
                 <div class="form-group">
                     <label>Stato di Avanzamento</label>
@@ -183,7 +183,7 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>OUT-2024-991</td>
+                            <td>OUT-2026-991</td>
                             <td>Mario Rossi</td>
                             <td>03058 / 01604</td>
                             <td><span class="status-badge status-inlavorazione">In Elaborazione</span></td>
@@ -191,7 +191,7 @@
                             <td>-</td>
                         </tr>
                         <tr>
-                            <td>OUT-2024-992</td>
+                            <td>OUT-2026-992</td>
                             <td>Luigi Bianchi</td>
                             <td>03058 / 01604</td>
                             <td><span class="status-badge status-attesa">In Attesa di Caricamento Modulo Firmato</span></td>
@@ -203,7 +203,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>OUT-2024-993</td>
+                            <td>OUT-2026-993</td>
                             <td>Anna Verdi</td>
                             <td>Dati Mancanti</td>
                             <td><span class="status-badge status-errore">Dati Bancari Mancanti o Errati</span></td>
@@ -215,7 +215,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>OUT-2024-994</td>
+                            <td>OUT-2026-994</td>
                             <td>Carlo Neri</td>
                             <td>03015 / 01602</td>
                             <td><span class="status-badge status-inlavorazione">In Elaborazione</span></td>
@@ -265,7 +265,7 @@
                 <p style="font-size: 14px; margin-bottom: 15px;">Le seguenti comunicazioni richiedono un controllo incrociato con gli enti esterni. Verifica la correttezza delle coordinate bancarie ed evadi la notifica cliccando l'apposito pulsante.</p>
                 <div class="detail-grid">
                     <div class="detail-item detail-item-full" style="border-left: 4px solid #f39c12;">
-                        <div class="detail-label">Codice Pratica: OUT-2024-995 | Nominativo Cliente: Mario Rossi</div>
+                        <div class="detail-label">Codice Pratica: OUT-2026-995 | Nominativo Cliente: Mario Rossi</div>
                         <div class="detail-value" style="margin-bottom: 10px;">Coordinate Banca Uscente da verificare: ABI 03058 CAB 01604</div>
                         <button class="btn btn-light" style="font-size: 12px; padding: 6px 12px;" onclick="closeModal('modal-sicav')">
                             <span class="material-icons" style="font-size: 16px;">done_all</span> Conferma Ricezione e Chiudi Notifica
@@ -288,7 +288,7 @@
                 <div class="miglioria-box">
                     <div class="miglioria-title"><span class="status-badge status-info">Automazione</span> 1. Dematerializzazione delle Richieste per i Moduli Firmati</div>
                     <div class="miglioria-text">
-                        <strong>Prima:</strong> All'interno dello "Step 1", per richiedere una copia del modulo di trasferimento firmato, il sistema generava un'email automatica indirizzata a <em>BO_Traslocotitoli@mediobancapremier.com</em>, imponendo un'attesa fuori applicativo.<br>
+                        <strong>Prima:</strong> All'interno dello "Step 1", per richiedere una copia del modulo di trasferimento firmato, il sistema generava un'email automatica indirizzata a <em>BO_Traslocotitoli@...</em>, imponendo un'attesa fuori applicativo.<br>
                         <strong>Oggi:</strong> Il ricorso all'invio dell'email è stato totalmente soppresso. Il gestionale segnala la necessità impostando lo stato in "Attesa Modulo Firmato". L'operatore carica il file PDF tramite il comando In-Line, sbloccando immediatamente il flusso di lavorazione.
                     </div>
                 </div>
@@ -312,8 +312,8 @@
                 <div class="miglioria-box">
                     <div class="miglioria-title"><span class="status-badge status-info">Ricerca</span> 4. Filtri di Ricerca Dedicati e Reattivi</div>
                     <div class="miglioria-text">
-                        <strong>Prima:</strong> Le pratiche venivano elaborate in blocco, senza interfacce agili per rintracciare un'operazione specifica in tempi rapidi.<br>
-                        <strong>Oggi:</strong> È stato inserito un blocco filtri intelligente in testa alla pagina. L'operatore ricerca le pratiche in uscita per Codice Identificativo o le filtra per Stato in tempo reale.
+                        <strong>Prima:</strong> Le pratiche venivano elaborate in blocco o visibili solo in modo aggregato da report estratti, senza interfacce agili per rintracciare un'operazione specifica in tempi rapidi.<br>
+                        <strong>Oggi:</strong> È stato inserito un blocco filtri intelligente in testa alla pagina. L'operatore ricerca le pratiche in uscita per Codice Identificativo o le filtra per Stato (incluso il nuovo stato visuale "In Elaborazione") in tempo reale.
                     </div>
                 </div>
 
@@ -321,7 +321,7 @@
                     <div class="miglioria-title"><span class="status-badge status-info">Tracciatura</span> 5. Monitoraggio Centralizzato e DB Aggiornato</div>
                     <div class="miglioria-text">
                         <strong>Prima:</strong> Lo stato avanzamento di TDTOUT risiedeva unicamente in tabelle di backend invisibili all'utente finale (tabella "TraslochiOUT_Pratiche").<br>
-                        <strong>Oggi:</strong> Il frontend interroga dinamicamente il DB "Settings" e le tabelle di servizio, fornendo una rappresentazione grafica, intellegibile e real-time dell'andamento di tutte le pratiche (incluso il nuovo stato visuale "In Elaborazione").
+                        <strong>Oggi:</strong> Il frontend interroga dinamicamente il DB "Settings" e le tabelle di servizio, fornendo una rappresentazione grafica, intellegibile e real-time dell'andamento di tutte le pratiche.
                     </div>
                 </div>
 

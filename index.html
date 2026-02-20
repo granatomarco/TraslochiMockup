@@ -161,7 +161,7 @@
             <div class="search-grid">
                 <div class="form-group">
                     <label>ID Registrazione</label>
-                    <input type="text" id="filter-id" placeholder="Es. 1001">
+                    <input type="text" id="filter-id" placeholder="Es. 83921">
                 </div>
                 <div class="form-group">
                     <label>Codice ISIN</label>
@@ -221,43 +221,43 @@
                     </thead>
                     <tbody id="table-body">
                         <tr>
-                            <td style="font-weight: 500; color: #64748b;">1001</td>
-                            <td>BMG162341090</td><td>BROOKFIELD BUSINESS PARTNERS LP</td><td>USD</td><td>17/11/2023</td>
+                            <td style="font-weight: 500; color: #64748b;">48291</td>
+                            <td>BMG162341090</td><td>BROOKFIELD BUSINESS PARTNERS LP</td><td>USD</td><td>12/12/2025</td>
                             <td><span class="status-badge status-errore">Non Trasferibile</span></td>
                             <td><button class="btn btn-alert" style="padding: 5px 10px; font-size: 12px;" onclick="removeRow(this)"><span class="material-icons" style="font-size: 16px;">delete</span> Rimuovi</button></td>
                         </tr>
                         <tr>
-                            <td style="font-weight: 500; color: #64748b;">1002</td>
-                            <td>IT0005218380</td><td>TITOLO DI STATO ITALIANO TEST</td><td>EUR</td><td>20/11/2023</td>
+                            <td style="font-weight: 500; color: #64748b;">19382</td>
+                            <td>IT0005218380</td><td>TITOLO DI STATO ITALIANO TEST</td><td>EUR</td><td>18/12/2025</td>
                             <td><span class="status-badge status-completato">Trasferibile</span></td>
                             <td><button class="btn btn-alert" style="padding: 5px 10px; font-size: 12px;" onclick="removeRow(this)"><span class="material-icons" style="font-size: 16px;">delete</span> Rimuovi</button></td>
                         </tr>
                         <tr>
-                            <td style="font-weight: 500; color: #64748b;">1003</td>
-                            <td>US0378331005</td><td>APPLE INC.</td><td>USD</td><td>15/01/2024</td>
+                            <td style="font-weight: 500; color: #64748b;">91024</td>
+                            <td>US0378331005</td><td>APPLE INC.</td><td>USD</td><td>10/01/2026</td>
                             <td><span class="status-badge status-completato">Trasferibile</span></td>
                             <td><button class="btn btn-alert" style="padding: 5px 10px; font-size: 12px;" onclick="removeRow(this)"><span class="material-icons" style="font-size: 16px;">delete</span> Rimuovi</button></td>
                         </tr>
                         <tr>
-                            <td style="font-weight: 500; color: #64748b;">1004</td>
-                            <td>GB0031348658</td><td>BARCLAYS PLC</td><td>GBP</td><td>10/02/2024</td>
+                            <td style="font-weight: 500; color: #64748b;">57219</td>
+                            <td>GB0031348658</td><td>BARCLAYS PLC</td><td>GBP</td><td>25/01/2026</td>
                             <td><span class="status-badge status-completato">Trasferibile</span></td>
                             <td><button class="btn btn-alert" style="padding: 5px 10px; font-size: 12px;" onclick="removeRow(this)"><span class="material-icons" style="font-size: 16px;">delete</span> Rimuovi</button></td>
                         </tr>
                         <tr>
-                            <td style="font-weight: 500; color: #64748b;">1005</td>
-                            <td>CH0012032048</td><td>ROCHE HOLDING AG</td><td>CHF</td><td>22/02/2024</td>
+                            <td style="font-weight: 500; color: #64748b;">82910</td>
+                            <td>CH0012032048</td><td>ROCHE HOLDING AG</td><td>CHF</td><td>05/02/2026</td>
                             <td><span class="status-badge status-errore">Non Trasferibile</span></td>
                             <td><button class="btn btn-alert" style="padding: 5px 10px; font-size: 12px;" onclick="removeRow(this)"><span class="material-icons" style="font-size: 16px;">delete</span> Rimuovi</button></td>
                         </tr>
                         <tr>
-                            <td style="font-weight: 500; color: #64748b;">1006</td>
-                            <td>FR0000120271</td><td>TOTALENERGIES SE</td><td>EUR</td><td>01/03/2024</td>
+                            <td style="font-weight: 500; color: #64748b;">38102</td>
+                            <td>FR0000120271</td><td>TOTALENERGIES SE</td><td>EUR</td><td>15/02/2026</td>
                             <td><span class="status-badge status-completato">Trasferibile</span></td>
                             <td><button class="btn btn-alert" style="padding: 5px 10px; font-size: 12px;" onclick="removeRow(this)"><span class="material-icons" style="font-size: 16px;">delete</span> Rimuovi</button></td>
                         </tr>
                         <tr>
-                            <td style="font-weight: 500; color: #64748b;">1007</td>
+                            <td style="font-weight: 500; color: #64748b;">65921</td>
                             <td>NL00150002Q7</td><td>STELLANTIS NV</td><td>EUR</td><td>20/02/2026</td>
                             <td><span class="status-badge status-inlavorazione">In Elaborazione</span></td>
                             <td>
@@ -385,7 +385,7 @@
                     <div class="miglioria-title"><span class="status-badge status-info">Dati</span> 4. Arricchimento dei Dati (ID, Divisa, Timestamp)</div>
                     <div class="miglioria-text">
                         <strong>Prima:</strong> La vista a tabella era sprovvista di parametri fondamentali e si limitava a ISIN e Descrizione.<br>
-                        <strong>Oggi:</strong> È stato inserito un ID univoco di registrazione, il tracciamento esplicito della Valuta (Divisa) e l'apposizione automatica della Data di Inserimento, per un'identificazione inequivocabile dello strumento. Inoltre è stato introdotto lo stato di controllo "In Elaborazione".
+                        <strong>Oggi:</strong> È stato inserito un ID univoco di registrazione generato automaticamente, il tracciamento esplicito della Valuta (Divisa) e l'apposizione automatica della Data di Inserimento, per un'identificazione inequivocabile dello strumento. Inoltre è stato introdotto lo stato di controllo "In Elaborazione".
                     </div>
                 </div>
 
@@ -413,9 +413,6 @@
     </div>
 
     <script>
-        // --- INIZIALIZZAZIONE CONTATORE ID ---
-        let nextRecordId = 1008;
-
         // --- GESTIONE MODALI ---
         function openModal(modalId) { 
             document.getElementById(modalId).classList.add('active'); 
@@ -533,7 +530,9 @@
 
             isins.forEach(isin => {
                 const tr = document.createElement('tr');
-                const assignedId = nextRecordId++; 
+                
+                // Generazione di un ID numerico casuale a 5 cifre
+                const assignedId = Math.floor(Math.random() * 90000) + 10000; 
                 
                 tr.innerHTML = `
                     <td style="font-weight: 500; color: #64748b;">${assignedId}</td>
