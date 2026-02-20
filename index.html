@@ -32,7 +32,8 @@
 
         .search-section { background: white; padding: 30px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 25px; }
         h2.search-title { font-size: 16px; font-weight: 600; color: #2c3e50; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
-        .search-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; margin-bottom: 20px; }
+        /* Griglia aggiornata a 3 colonne: genera 2 righe perfette per i 6 campi */
+        .search-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px; }
         .form-group { display: flex; flex-direction: column; }
         .form-group label { font-size: 13px; font-weight: 500; color: #2c3e50; margin-bottom: 8px; }
         .form-group input, .form-group select, .form-group textarea { padding: 10px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; background: white; transition: border-color 0.3s; font-family: inherit; }
@@ -104,7 +105,7 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        @media (max-width: 1200px) { .search-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 1200px) { .search-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 768px) {
             .nav-container { flex-direction: column; gap: 15px; padding: 20px; min-height: auto;}
             .page-header { flex-direction: column; align-items: flex-start; gap: 15px;}
@@ -157,6 +158,10 @@
             <h2 class="search-title"><span class="material-icons">search</span> Ricerca Titolo nel Database</h2>
             <div class="search-grid">
                 <div class="form-group">
+                    <label>ID Registrazione</label>
+                    <input type="text" id="filter-id" placeholder="Es. 1001">
+                </div>
+                <div class="form-group">
                     <label>Codice ISIN</label>
                     <input type="text" id="filter-isin" placeholder="Es. BMG162341090">
                 </div>
@@ -202,41 +207,48 @@
                 <table id="isin-table">
                     <thead>
                         <tr>
-                            <th class="sortable" onclick="sortTable(0, 'string')">Codice ISIN <span class="material-icons sort-icon">arrow_downward</span></th>
-                            <th class="sortable" onclick="sortTable(1, 'string')">Descrizione Titolo <span class="material-icons sort-icon">arrow_downward</span></th>
-                            <th class="sortable" onclick="sortTable(2, 'string')">Divisa <span class="material-icons sort-icon">arrow_downward</span></th>
-                            <th class="sortable" onclick="sortTable(3, 'date')">Data Inserimento <span class="material-icons sort-icon">arrow_downward</span></th>
-                            <th class="sortable" onclick="sortTable(4, 'string')">Stato Attuale <span class="material-icons sort-icon">arrow_downward</span></th>
+                            <th class="sortable" onclick="sortTable(0, 'number')">ID <span class="material-icons sort-icon">arrow_downward</span></th>
+                            <th class="sortable" onclick="sortTable(1, 'string')">Codice ISIN <span class="material-icons sort-icon">arrow_downward</span></th>
+                            <th class="sortable" onclick="sortTable(2, 'string')">Descrizione Titolo <span class="material-icons sort-icon">arrow_downward</span></th>
+                            <th class="sortable" onclick="sortTable(3, 'string')">Divisa <span class="material-icons sort-icon">arrow_downward</span></th>
+                            <th class="sortable" onclick="sortTable(4, 'date')">Data Inserimento <span class="material-icons sort-icon">arrow_downward</span></th>
+                            <th class="sortable" onclick="sortTable(5, 'string')">Stato Attuale <span class="material-icons sort-icon">arrow_downward</span></th>
                             <th>Gestione</th>
                         </tr>
                     </thead>
                     <tbody id="table-body">
                         <tr>
+                            <td style="font-weight: 500; color: #64748b;">1001</td>
                             <td>BMG162341090</td><td>BROOKFIELD BUSINESS PARTNERS LP</td><td>USD</td><td>17/11/2023</td>
                             <td><span class="status-badge status-errore">Non Trasferibile</span></td>
                             <td><button class="btn btn-alert" style="padding: 5px 10px; font-size: 12px;" onclick="removeRow(this)"><span class="material-icons" style="font-size: 16px;">delete</span> Rimuovi</button></td>
                         </tr>
                         <tr>
+                            <td style="font-weight: 500; color: #64748b;">1002</td>
                             <td>IT0005218380</td><td>TITOLO DI STATO ITALIANO TEST</td><td>EUR</td><td>20/11/2023</td>
                             <td><span class="status-badge status-completato">Trasferibile</span></td>
                             <td><button class="btn btn-alert" style="padding: 5px 10px; font-size: 12px;" onclick="removeRow(this)"><span class="material-icons" style="font-size: 16px;">delete</span> Rimuovi</button></td>
                         </tr>
                         <tr>
+                            <td style="font-weight: 500; color: #64748b;">1003</td>
                             <td>US0378331005</td><td>APPLE INC.</td><td>USD</td><td>15/01/2024</td>
                             <td><span class="status-badge status-completato">Trasferibile</span></td>
                             <td><button class="btn btn-alert" style="padding: 5px 10px; font-size: 12px;" onclick="removeRow(this)"><span class="material-icons" style="font-size: 16px;">delete</span> Rimuovi</button></td>
                         </tr>
                         <tr>
+                            <td style="font-weight: 500; color: #64748b;">1004</td>
                             <td>GB0031348658</td><td>BARCLAYS PLC</td><td>GBP</td><td>10/02/2024</td>
                             <td><span class="status-badge status-completato">Trasferibile</span></td>
                             <td><button class="btn btn-alert" style="padding: 5px 10px; font-size: 12px;" onclick="removeRow(this)"><span class="material-icons" style="font-size: 16px;">delete</span> Rimuovi</button></td>
                         </tr>
                         <tr>
+                            <td style="font-weight: 500; color: #64748b;">1005</td>
                             <td>CH0012032048</td><td>ROCHE HOLDING AG</td><td>CHF</td><td>22/02/2024</td>
                             <td><span class="status-badge status-errore">Non Trasferibile</span></td>
                             <td><button class="btn btn-alert" style="padding: 5px 10px; font-size: 12px;" onclick="removeRow(this)"><span class="material-icons" style="font-size: 16px;">delete</span> Rimuovi</button></td>
                         </tr>
                         <tr>
+                            <td style="font-weight: 500; color: #64748b;">1006</td>
                             <td>FR0000120271</td><td>TOTALENERGIES SE</td><td>EUR</td><td>01/03/2024</td>
                             <td><span class="status-badge status-completato">Trasferibile</span></td>
                             <td><button class="btn btn-alert" style="padding: 5px 10px; font-size: 12px;" onclick="removeRow(this)"><span class="material-icons" style="font-size: 16px;">delete</span> Rimuovi</button></td>
@@ -245,6 +257,11 @@
                 </table>
             </div>
         </div>
+    </div>
+
+    <div class="footer">
+        <span>&copy; 2026 Mediobanca Premier - Back Office Operativo</span>
+        <span>Versione 2.0.0 (To-Be) | Utente: BO_Admin</span>
     </div>
 
     <div id="modal-isin" class="modal">
@@ -352,10 +369,10 @@
                 </div>
 
                 <div class="miglioria-box">
-                    <div class="miglioria-title"><span class="status-badge status-info">Dati</span> 4. Arricchimento dei Dati (Divisa e Timestamp)</div>
+                    <div class="miglioria-title"><span class="status-badge status-info">Dati</span> 4. Arricchimento dei Dati (ID, Divisa, Timestamp)</div>
                     <div class="miglioria-text">
                         <strong>Prima:</strong> La vista a tabella era sprovvista di parametri fondamentali e si limitava a ISIN e Descrizione.<br>
-                        <strong>Oggi:</strong> È stato inserito il tracciamento esplicito della Valuta (Divisa) e l'apposizione automatica della Data di Inserimento, migliorando l'identificazione dello strumento finanziario.
+                        <strong>Oggi:</strong> È stato inserito un ID univoco di registrazione, il tracciamento esplicito della Valuta (Divisa) e l'apposizione automatica della Data di Inserimento, per un'identificazione inequivocabile dello strumento.
                     </div>
                 </div>
 
@@ -383,6 +400,9 @@
     </div>
 
     <script>
+        // --- INIZIALIZZAZIONE CONTATORE ID ---
+        let nextRecordId = 1007;
+
         // --- GESTIONE MODALI ---
         function openModal(modalId) { 
             document.getElementById(modalId).classList.add('active'); 
@@ -407,6 +427,7 @@
 
         // --- FILTRI TABELLA ---
         function applyFilters() {
+            const fId = document.getElementById('filter-id').value.toLowerCase();
             const fIsin = document.getElementById('filter-isin').value.toLowerCase();
             const fDesc = document.getElementById('filter-desc').value.toLowerCase();
             const fStatus = document.getElementById('filter-status').value;
@@ -422,13 +443,15 @@
             const rows = document.querySelectorAll('#table-body tr');
             rows.forEach(row => {
                 const cells = row.querySelectorAll('td');
-                const tIsin = cells[0].innerText.toLowerCase();
-                const tDesc = cells[1].innerText.toLowerCase();
-                const tDivisa = cells[2].innerText;
-                const tDate = cells[3].innerText;
-                const tStatus = cells[4].innerText;
+                const tId = cells[0].innerText.toLowerCase();
+                const tIsin = cells[1].innerText.toLowerCase();
+                const tDesc = cells[2].innerText.toLowerCase();
+                const tDivisa = cells[3].innerText;
+                const tDate = cells[4].innerText;
+                const tStatus = cells[5].innerText;
 
                 let match = true;
+                if (fId && !tId.includes(fId)) match = false;
                 if (fIsin && !tIsin.includes(fIsin)) match = false;
                 if (fDesc && !tDesc.includes(fDesc)) match = false;
                 if (fStatus && tStatus !== fStatus) match = false;
@@ -441,6 +464,7 @@
         }
 
         function clearFilters() {
+            document.getElementById('filter-id').value = '';
             document.getElementById('filter-isin').value = '';
             document.getElementById('filter-desc').value = '';
             document.getElementById('filter-status').value = '';
@@ -496,7 +520,10 @@
 
             isins.forEach(isin => {
                 const tr = document.createElement('tr');
+                const assignedId = nextRecordId++; // Genera nuovo ID univoco
+                
                 tr.innerHTML = `
+                    <td style="font-weight: 500; color: #64748b;">${assignedId}</td>
                     <td>${isin.toUpperCase()}</td>
                     <td>${desc}</td>
                     <td>${divisa}</td>
@@ -512,7 +539,7 @@
         }
 
         // --- ORDINAMENTO TABELLA ---
-        let sortDirections = [true, true, true, true, true]; 
+        let sortDirections = [true, true, true, true, true, true]; 
         
         function sortTable(colIndex, type) {
             const table = document.getElementById("isin-table");
@@ -527,6 +554,10 @@
             rows.sort((a, b) => {
                 let cellA = a.cells[colIndex].innerText.trim();
                 let cellB = b.cells[colIndex].innerText.trim();
+
+                if (type === 'number') {
+                    return isAsc ? cellA - cellB : cellB - cellA;
+                }
 
                 if(type === 'date') {
                     cellA = cellA.split('/').reverse().join('-');
