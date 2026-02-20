@@ -118,7 +118,7 @@
                 </div>
             </div>
             <div class="nav-menu">
-                <span class="nav-link" onclick="window.location.href='trasferibilita.html'">Trasferibilità</span>
+                <span class="nav-link" onclick="window.location.href='index.html'">Trasferibilità</span>
                 <span class="nav-link" onclick="window.location.href='tdtin.html'">Traslochi IN (TDTIN)</span>
                 <span class="nav-link active">Traslochi OUT (TDTOUT)</span>
             </div>
@@ -146,22 +146,21 @@
             <div class="search-grid">
                 <div class="form-group">
                     <label>Codice Identificativo</label>
-                    <input type="text" placeholder="Es. OUT-2026-991">
+                    <input type="text" id="filter-id" placeholder="Es. OUT-2026-991" oninput="applyFilters()">
                 </div>
                 <div class="form-group">
                     <label>Stato di Avanzamento</label>
-                    <select>
+                    <select id="filter-status" onchange="applyFilters()">
                         <option value="">Mostra Tutti gli Stati</option>
-                        <option value="in-elaborazione">In Elaborazione (Verifica in corso)</option>
-                        <option value="attesa">In Attesa di Caricamento Modulo Firmato</option>
-                        <option value="errore">Dati Bancari Mancanti o Errati</option>
+                        <option value="In Elaborazione">In Elaborazione</option>
+                        <option value="In Attesa di Caricamento Modulo Firmato">In Attesa di Caricamento Modulo Firmato</option>
+                        <option value="Dati Bancari Mancanti o Errati">Dati Bancari Mancanti o Errati</option>
                     </select>
                 </div>
             </div>
             <div class="search-actions">
-                <button class="btn btn-secondary"><span class="material-icons">clear</span> Azzera Filtri</button>
-                <button class="btn btn-primary"><span class="material-icons">search</span> Mostra Risultati</button>
-            </div>
+                <button class="btn btn-secondary" onclick="clearFilters()"><span class="material-icons">clear</span> Azzera Filtri</button>
+                </div>
         </div>
 
         <div class="results-section">
@@ -310,10 +309,10 @@
                 </div>
 
                 <div class="miglioria-box">
-                    <div class="miglioria-title"><span class="status-badge status-info">Ricerca</span> 4. Filtri di Ricerca Dedicati e Reattivi</div>
+                    <div class="miglioria-title"><span class="status-badge status-info">Ricerca</span> 4. Filtri di Ricerca Dedicati e Live Search</div>
                     <div class="miglioria-text">
                         <strong>Prima:</strong> Le pratiche venivano elaborate in blocco o visibili solo in modo aggregato da report estratti, senza interfacce agili per rintracciare un'operazione specifica in tempi rapidi.<br>
-                        <strong>Oggi:</strong> È stato inserito un blocco filtri intelligente in testa alla pagina. L'operatore ricerca le pratiche in uscita per Codice Identificativo o le filtra per Stato (incluso il nuovo stato visuale "In Elaborazione") in tempo reale.
+                        <strong>Oggi:</strong> È stato inserito un blocco filtri intelligente in testa alla pagina. L'operatore ricerca le pratiche in uscita per Codice Identificativo o le filtra per Stato (incluso il nuovo stato visuale "In Elaborazione") ed i risultati si aggiornano istantaneamente in tempo reale.
                     </div>
                 </div>
 
@@ -336,6 +335,35 @@
         function openModal(modalId) { document.getElementById(modalId).classList.add('active'); }
         function closeModal(modalId) { document.getElementById(modalId).classList.remove('active'); }
         window.onclick = function(event) { if (event.target.classList.contains('modal')) event.target.classList.remove('active'); }
+
+        // --- FILTRI LIVE SEARCH ---
+        function applyFilters() {
+            const fId = document.getElementById('filter-id').value.toLowerCase();
+            const fStatus = document.getElementById('filter-status').value.toLowerCase();
+
+            const rows = document.querySelectorAll('.table-wrapper tbody tr');
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const tId = row.cells[0].innerText.toLowerCase();
+                const tStatus = row.cells[3].innerText.toLowerCase(); // Indice colonna Stato per TDTOUT
+
+                let match = true;
+                if (fId && !tId.includes(fId)) match = false;
+                if (fStatus && !tStatus.includes(fStatus)) match = false;
+
+                row.style.display = match ? '' : 'none';
+                if (match) visibleCount++;
+            });
+
+            document.querySelector('.results-count').innerText = `Mostrando ${visibleCount} pratiche attive`;
+        }
+
+        function clearFilters() {
+            document.getElementById('filter-id').value = '';
+            document.getElementById('filter-status').value = '';
+            applyFilters();
+        }
     </script>
 </body>
 </html>

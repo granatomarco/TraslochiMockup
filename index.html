@@ -161,28 +161,28 @@
             <div class="search-grid">
                 <div class="form-group">
                     <label>ID Registrazione</label>
-                    <input type="text" id="filter-id" placeholder="Es. 83921">
+                    <input type="text" id="filter-id" placeholder="Es. 48291" oninput="applyFilters()">
                 </div>
                 <div class="form-group">
                     <label>Codice ISIN</label>
-                    <input type="text" id="filter-isin" placeholder="Es. BMG162341090">
+                    <input type="text" id="filter-isin" placeholder="Es. BMG162341090" oninput="applyFilters()">
                 </div>
                 <div class="form-group">
                     <label>Descrizione Titolo</label>
-                    <input type="text" id="filter-desc" placeholder="Es. BROOKFIELD...">
+                    <input type="text" id="filter-desc" placeholder="Es. BROOKFIELD..." oninput="applyFilters()">
                 </div>
                 <div class="form-group">
                     <label>Esito Verifica Trasferibilità</label>
-                    <select id="filter-status">
+                    <select id="filter-status" onchange="applyFilters()">
                         <option value="">Mostra Tutti</option>
                         <option value="Trasferibile">Titolo Trasferibile</option>
                         <option value="Non Trasferibile">Titolo Non Trasferibile</option>
-                        <option value="In Elaborazione">In Elaborazione (Verifica in corso)</option>
+                        <option value="In Elaborazione">In Elaborazione</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Divisa</label>
-                    <select id="filter-divisa">
+                    <select id="filter-divisa" onchange="applyFilters()">
                         <option value="">Tutte le Valute</option>
                         <option value="EUR">EUR</option>
                         <option value="USD">USD</option>
@@ -192,13 +192,12 @@
                 </div>
                 <div class="form-group">
                     <label>Inserito dal (Data)</label>
-                    <input type="date" id="filter-date">
+                    <input type="date" id="filter-date" onchange="applyFilters()">
                 </div>
             </div>
             <div class="search-actions">
                 <button class="btn btn-secondary" onclick="clearFilters()"><span class="material-icons">clear</span> Azzera Filtri</button>
-                <button class="btn btn-primary" onclick="applyFilters()"><span class="material-icons">search</span> Cerca Titolo</button>
-            </div>
+                </div>
         </div>
 
         <div class="results-section">
@@ -385,15 +384,15 @@
                     <div class="miglioria-title"><span class="status-badge status-info">Dati</span> 4. Arricchimento dei Dati (ID, Divisa, Timestamp)</div>
                     <div class="miglioria-text">
                         <strong>Prima:</strong> La vista a tabella era sprovvista di parametri fondamentali e si limitava a ISIN e Descrizione.<br>
-                        <strong>Oggi:</strong> È stato inserito un ID univoco di registrazione generato automaticamente, il tracciamento esplicito della Valuta (Divisa) e l'apposizione automatica della Data di Inserimento, per un'identificazione inequivocabile dello strumento. Inoltre è stato introdotto lo stato di controllo "In Elaborazione".
+                        <strong>Oggi:</strong> È stato inserito un ID univoco di registrazione generato casualmente, il tracciamento esplicito della Valuta (Divisa) e l'apposizione automatica della Data di Inserimento, per un'identificazione inequivocabile dello strumento. Inoltre è stato introdotto lo stato di controllo "In Elaborazione".
                     </div>
                 </div>
 
                 <div class="miglioria-box">
-                    <div class="miglioria-title"><span class="status-badge status-info">UX/UI</span> 5. Filtri Avanzati e Ordinamento Interattivo</div>
+                    <div class="miglioria-title"><span class="status-badge status-info">UX/UI</span> 5. Filtri Avanzati Live e Ordinamento Interattivo</div>
                     <div class="miglioria-text">
-                        <strong>Prima:</strong> Le tabelle offrivano capacità di ricerca e filtri limitati o macchinosi.<br>
-                        <strong>Oggi:</strong> I filtri agiscono in tempo reale multi-campo. Ogni intestazione di colonna è cliccabile per effettuare l'ordinamento istantaneo (crescente/decrescente).
+                        <strong>Prima:</strong> Le tabelle offrivano capacità di ricerca manuali, vincolate al click di un pulsante.<br>
+                        <strong>Oggi:</strong> I filtri (ID, ISIN, Descrizione, Stato, Divisa, Data) agiscono in <em>Live Search</em> in tempo reale mentre l'utente digita. Ogni intestazione di colonna è cliccabile per effettuare l'ordinamento istantaneo (crescente/decrescente).
                     </div>
                 </div>
 
@@ -435,12 +434,12 @@
             document.getElementById('table-count').innerText = `${visibleCount} record trovati`;
         }
 
-        // --- FILTRI TABELLA ---
+        // --- FILTRI TABELLA (LIVE SEARCH) ---
         function applyFilters() {
             const fId = document.getElementById('filter-id').value.toLowerCase();
             const fIsin = document.getElementById('filter-isin').value.toLowerCase();
             const fDesc = document.getElementById('filter-desc').value.toLowerCase();
-            const fStatus = document.getElementById('filter-status').value;
+            const fStatus = document.getElementById('filter-status').value; // Match esatto
             const fDivisa = document.getElementById('filter-divisa').value;
             const fDate = document.getElementById('filter-date').value;
 
@@ -464,6 +463,7 @@
                 if (fId && !tId.includes(fId)) match = false;
                 if (fIsin && !tIsin.includes(fIsin)) match = false;
                 if (fDesc && !tDesc.includes(fDesc)) match = false;
+                // Controllo stato esatto
                 if (fStatus && tStatus !== fStatus) match = false;
                 if (fDivisa && tDivisa !== fDivisa) match = false;
                 if (formattedDate && tDate !== formattedDate) match = false;
