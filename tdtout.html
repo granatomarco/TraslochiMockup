@@ -3,16 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TDTOUT - Mediobanca Premier</title>
+    <title>Cruscotto TDTOUT - Mediobanca Premier</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: #f5f7fa; color: #2c3e50; padding-bottom: 60px; }
         .material-icons { vertical-align: middle; font-size: 20px; }
         
-        .navbar { background: #202742; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 100%; }
+        /* Navbar Architecture */
+        .navbar { background: #202742; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 30px 0; width: 100%; }
         .nav-container { max-width: 1600px; margin: 0 auto; padding: 30px 40px; display: flex; align-items: center; justify-content: space-between; min-height: 120px; }
-        .logo-section { display: flex; align-items: center; }
+        
+        .logo-wrapper { display: flex; align-items: center; }
+        .logo-section { display: flex; align-items: center; gap: 15px; }
         .brand-logo { height: 60px; width: auto; object-fit: contain; display: block; }
         
         .fallback-logo { display: flex; align-items: center; gap: 15px; }
@@ -23,46 +26,52 @@
         .brand-subtitle { font-size: 12px; letter-spacing: 3px; margin-top: 2px; opacity: 0.9; }
         
         .nav-menu { display: flex; gap: 20px; }
-        .nav-link { color: white; text-decoration: none; opacity: 0.7; font-size: 14px; font-weight: 500; padding: 8px 16px; border-radius: 4px; transition: all 0.3s; cursor: pointer;}
+        .nav-link { color: white; text-decoration: none; opacity: 0.7; font-size: 14px; font-weight: 500; padding: 8px 16px; border-radius: 4px; transition: all 0.3s; cursor: pointer; display: flex; align-items: center; gap: 6px;}
         .nav-link:hover, .nav-link.active { opacity: 1; background: rgba(255,255,255,0.1); }
 
+        /* Container & Header */
         .container { max-width: 1600px; margin: 0 auto; padding: 30px 40px; }
-        .page-header { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;}
+        .page-header { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-start;}
         h1.page-title { font-size: 26px; font-weight: 400; color: #2c3e50; margin-bottom: 8px; }
+        .header-divider { border-top: 2px solid rgb(32, 39, 66); width: 150px; padding-top: 8px; margin-bottom: 8px; }
+        .header-actions { display: flex; gap: 12px; align-items: center; }
 
+        /* Search Section */
         .search-section { background: white; padding: 30px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 25px; }
         h2.search-title { font-size: 16px; font-weight: 600; color: #2c3e50; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
         .search-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 20px; }
         .form-group { display: flex; flex-direction: column; }
-        .form-group label { font-size: 13px; font-weight: 500; color: #2c3e50; margin-bottom: 8px; }
-        .form-group input, .form-group select { padding: 10px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; background: white; transition: border-color 0.3s; }
+        .form-group label { font-size: 13px; font-weight: 500; color: #2c3e50; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+        .form-group input, .form-group select { padding: 10px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; background: white; transition: border-color 0.3s; font-family: inherit; }
         .form-group input:focus, .form-group select:focus { outline: none; border-color: #2c3e50; }
         .search-actions { display: flex; gap: 12px; justify-content: flex-end; }
 
+        /* Results Section */
         .results-section { background: white; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; }
         .results-header { padding: 20px 30px; background: #f8f9fa; border-bottom: 1px solid #e9ecef; display: flex; justify-content: space-between; align-items: center; }
         h2.results-title { font-size: 16px; font-weight: 600; color: #2c3e50; display: flex; align-items: center; gap: 8px; }
-        .results-count { font-size: 13px; color: #6c757d; }
+        .results-count { font-size: 13px; color: #6c757d; font-weight: 500;}
         .table-wrapper { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; }
         thead { background: #f8f9fa; }
-        th { padding: 14px 16px; text-align: left; font-weight: 600; color: #2c3e50; font-size: 13px; border-bottom: 2px solid #e9ecef; white-space: nowrap; }
+        th { padding: 14px 16px; text-align: left; font-weight: 600; color: #2c3e50; font-size: 13px; border-bottom: 2px solid #e9ecef; white-space: nowrap; user-select: none; transition: background 0.2s;}
         td { padding: 14px 16px; border-bottom: 1px solid #e9ecef; font-size: 14px; color: #2c3e50; vertical-align: middle;}
         tr:hover { background: #f8f9fa; transition: background 0.2s; }
 
-        .btn { padding: 10px 24px; border: none; border-radius: 4px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px; text-decoration: none;}
+        /* Buttons & Badges */
+        .btn { padding: 10px 24px; border: none; border-radius: 4px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none;}
         .btn-primary { background: #2c3e50; color: white; }
         .btn-primary:hover { background: #3d5266; }
         .btn-secondary { background: #6c757d; color: white; }
         .btn-secondary:hover { background: #5a6268; }
-        .btn-light { background: #b8cce4; color: #2c3e50; }
-        .btn-light:hover { background: #a3b9d4; }
+        .btn-light { background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1; }
+        .btn-light:hover { background: #cbd5e1; }
         .btn-alert { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;}
         
-        .status-badge { padding: 5px 10px; border-radius: 3px; font-size: 12px; font-weight: 500; display: inline-block; }
-        .status-inlavorazione { background: #fff3cd; color: #856404; }
-        .status-errore { background: #f8d7da; color: #721c24; }
+        .status-badge { padding: 5px 10px; border-radius: 3px; font-size: 12px; font-weight: 600; display: inline-block; letter-spacing: 0.5px;}
         .status-attesa { background: #e2e3e5; color: #383d41; border: 1px dashed #adb5bd;}
+        .status-errore { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;}
+        .status-inlavorazione { background: #fff3cd; color: #856404; border: 1px solid #ffeeba;}
         .status-info { background: #e2e8f0; color: #334155; font-size: 11px; padding: 3px 6px; }
 
         .footer { background: #2c3e50; color: white; padding: 15px 40px; position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; font-size: 13px; z-index: 100; }
@@ -94,10 +103,11 @@
         @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
         @media (max-width: 768px) {
-            .nav-container { flex-direction: column; gap: 15px; padding: 20px; min-height: auto;}
+            .navbar-container { flex-direction: column; gap: 15px; padding: 0 20px; }
             .page-header { flex-direction: column; align-items: flex-start; gap: 15px;}
             .container { padding: 20px; }
-            .detail-grid { grid-template-columns: 1fr; }
+            .search-grid, .detail-grid { grid-template-columns: 1fr; }
+            .header-actions { flex-direction: column; align-items: stretch; width: 100%;}
             table { font-size: 12px; }
             th, td { padding: 10px 8px; }
         }
@@ -107,20 +117,20 @@
 
     <nav class="navbar">
         <div class="nav-container">
-            <div class="logo-section">
-                <img src="logo_MBP.png" alt="Logo Mediobanca Premier" class="brand-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                <div class="fallback-logo" style="display: none;">
+            <div class="logo-wrapper">
+                <img src="logo_MBP.png" id="main-logo" alt="Mediobanca Premier" style="max-height: 80px;" onerror="this.style.display='none'; document.getElementById('fallback-logo').style.display='flex';">
+                <div id="fallback-logo" class="logo-section" style="display: none; align-items: center; gap: 15px;">
                     <div class="logo-circle"><span class="material-icons">account_balance</span></div>
                     <div class="brand-text">
                         <div class="brand-name">MEDIOBANCA PREMIER</div>
-                        <div class="brand-subtitle">ESTINZIONI SUCCESSIONI</div>
+                        <div class="brand-subtitle">TRASLOCHI TITOLI</div>
                     </div>
                 </div>
             </div>
             <div class="nav-menu">
-                <span class="nav-link" onclick="window.location.href='index.html'">Trasferibilità</span>
-                <span class="nav-link" onclick="window.location.href='tdtin.html'">Traslochi IN (TDTIN)</span>
-                <span class="nav-link active">Traslochi OUT (TDTOUT)</span>
+                <span class="nav-link" onclick="window.location.href='index.html'"><span class="material-icons">swap_horiz</span> Trasferibilità</span>
+                <span class="nav-link" onclick="window.location.href='tdtin.html'"><span class="material-icons">login</span> Traslochi IN</span>
+                <span class="nav-link active"><span class="material-icons">logout</span> Traslochi OUT</span>
             </div>
         </div>
     </nav>
@@ -128,30 +138,32 @@
     <div class="container">
         <div class="page-header">
             <div>
-                <h1 class="page-title">Monitoraggio Pratiche in Uscita (TDTOUT)</h1>
-                <span style="font-size: 14px; color: #6c757d;">Gestione dei trasferimenti verso banche esterne e risoluzione anomalie</span>
+                <h1 class="page-title">Cruscotto Traslochi OUT (TDTOUT)</h1>
+                <div class="header-divider"></div>
+                <span style="font-size: 14px; color: #6c757d; display: block; margin-top: 10px;">Gestione dei trasferimenti verso banche esterne e risoluzione anomalie del flusso</span>
             </div>
-            <div style="display: flex; gap: 10px;">
-                <button class="btn btn-light" onclick="openModal('modal-migliorie')" style="background: #e2e8f0; border: 1px solid #cbd5e1;">
-                    <span class="material-icons" style="color: #475569;">info</span> Dettaglio Migliorie
+            <div class="header-actions">
+                <button class="btn btn-light" onclick="openModal('modal-migliorie')">
+                    <span class="material-icons" style="color: #0ea5e9;">military_tech</span> Dettaglio Migliorie
                 </button>
                 <button class="btn btn-alert" onclick="openModal('modal-sicav')">
-                    <span class="material-icons">notifications_active</span> Notifiche Trasferimenti Fondi SICAV (1)
+                    <span class="material-icons">notifications_active</span> Notifiche Fondi SICAV (1)
                 </button>
             </div>
         </div>
 
         <div class="search-section">
-            <h2 class="search-title"><span class="material-icons">filter_list</span> Ricerca Pratiche in Uscita</h2>
+            <h2 class="search-title"><span class="material-icons">filter_list</span> Motore di Ricerca Pratiche in Uscita</h2>
             <div class="search-grid">
                 <div class="form-group">
-                    <label>Codice Identificativo</label>
+                    <label><span class="material-icons" style="font-size: 16px; color: #64748b;">tag</span> Codice Identificativo</label>
                     <input type="text" id="filter-id" placeholder="Es. OUT-2026-991" oninput="applyFilters()">
                 </div>
                 <div class="form-group">
-                    <label>Stato di Avanzamento</label>
+                    <label><span class="material-icons" style="font-size: 16px; color: #64748b;">fact_check</span> Stato Avanzamento Pratica</label>
                     <select id="filter-status" onchange="applyFilters()">
                         <option value="">Mostra Tutti gli Stati</option>
+                        <option value="Controllo Preliminare in Corso">Controllo Preliminare in Corso</option>
                         <option value="In Elaborazione">In Elaborazione</option>
                         <option value="In Attesa di Caricamento Modulo Firmato">In Attesa di Caricamento Modulo Firmato</option>
                         <option value="Dati Bancari Mancanti o Errati">Dati Bancari Mancanti o Errati</option>
@@ -159,38 +171,38 @@
                 </div>
             </div>
             <div class="search-actions">
-                <button class="btn btn-secondary" onclick="clearFilters()"><span class="material-icons">clear</span> Azzera Filtri</button>
-                </div>
+                <button class="btn btn-secondary" onclick="clearFilters()"><span class="material-icons">filter_alt_off</span> Azzera Filtri di Ricerca</button>
+            </div>
         </div>
 
         <div class="results-section">
             <div class="results-header">
-                <h2 class="results-title"><span class="material-icons">outbound</span> Elenco Pratiche in Corso</h2>
+                <h2 class="results-title"><span class="material-icons">table_chart</span> Elenco Pratiche in Corso di Elaborazione</h2>
                 <span class="results-count">Mostrando 4 pratiche attive</span>
             </div>
             <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
-                            <th>Codice Identificativo</th>
-                            <th>Nominativo Intestatario</th>
-                            <th>Coordinate Banca Uscente (ABI/CAB)</th>
-                            <th>Stato Avanzamento Pratica</th>
-                            <th>Dettaglio Segnalazione di Sistema</th>
-                            <th>Gestione</th>
+                            <th><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">tag</span> Codice Identificativo</th>
+                            <th><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">person</span> Nominativo Intestatario</th>
+                            <th><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">account_balance</span> Coordinate Banca Uscente (ABI/CAB)</th>
+                            <th><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">fact_check</span> Stato Avanzamento Pratica</th>
+                            <th><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">warning</span> Dettaglio Segnalazione di Sistema</th>
+                            <th><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">settings</span> Gestione</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>OUT-2026-991</td>
+                            <td style="font-weight: 500; color: #64748b;">OUT-2026-991</td>
                             <td>Mario Rossi</td>
                             <td>03058 / 01604</td>
-                            <td><span class="status-badge status-inlavorazione">In Elaborazione</span></td>
+                            <td><span class="status-badge status-inlavorazione">Controllo Preliminare in Corso</span></td>
                             <td>Ricerca anagrafica e controlli in corso</td>
                             <td>-</td>
                         </tr>
                         <tr>
-                            <td>OUT-2026-992</td>
+                            <td style="font-weight: 500; color: #64748b;">OUT-2026-992</td>
                             <td>Luigi Bianchi</td>
                             <td>03058 / 01604</td>
                             <td><span class="status-badge status-attesa">In Attesa di Caricamento Modulo Firmato</span></td>
@@ -202,7 +214,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>OUT-2026-993</td>
+                            <td style="font-weight: 500; color: #64748b;">OUT-2026-993</td>
                             <td>Anna Verdi</td>
                             <td>Dati Mancanti</td>
                             <td><span class="status-badge status-errore">Dati Bancari Mancanti o Errati</span></td>
@@ -214,7 +226,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>OUT-2026-994</td>
+                            <td style="font-weight: 500; color: #64748b;">OUT-2026-994</td>
                             <td>Carlo Neri</td>
                             <td>03015 / 01602</td>
                             <td><span class="status-badge status-inlavorazione">In Elaborazione</span></td>
@@ -239,16 +251,16 @@
                 <button class="close-btn" onclick="closeModal('modal-upload')"><span class="material-icons">close</span></button>
             </div>
             <div class="modal-body">
-                <div style="background: #e2e3e5; padding: 15px; border-radius: 4px; margin-bottom: 20px; font-size: 13px;">
-                    <strong>Informazione per l'operatore:</strong> Il caricamento del modulo in questa sezione consente la ripresa automatica della lavorazione a sistema, sostituendo la precedente procedura basata sulle comunicazioni email.
+                <div style="background: #e2e8f0; padding: 15px; border-radius: 4px; margin-bottom: 20px; font-size: 13px; line-height: 1.5; color: #334155;">
+                    <strong>Informazione Operativa:</strong> Il caricamento del modulo in questa sezione consente la ripresa automatica della lavorazione a sistema, sostituendo la precedente procedura as-is basata sulle comunicazioni email e azzerando i tempi di latenza.
                 </div>
                 <div class="form-group">
-                    <label>Seleziona File (Formato richiesto: PDF)</label>
-                    <input type="file" accept=".pdf" style="padding: 20px; border: 2px dashed #ddd; text-align: center; width: 100%;">
+                    <label>Seleziona Documento (Formato richiesto: PDF)</label>
+                    <input type="file" accept=".pdf" style="padding: 20px; border: 2px dashed #cbd5e1; background: #f8fafc; text-align: center; width: 100%; cursor: pointer;">
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('modal-upload')">Annulla Operazione</button>
+                <button class="btn btn-secondary" onclick="closeModal('modal-upload')"><span class="material-icons">cancel</span> Annulla Operazione</button>
                 <button class="btn btn-primary"><span class="material-icons">check_circle</span> Salva File e Sblocca Pratica</button>
             </div>
         </div>
@@ -261,13 +273,13 @@
                 <button class="close-btn" onclick="closeModal('modal-sicav')"><span class="material-icons">close</span></button>
             </div>
             <div class="modal-body">
-                <p style="font-size: 14px; margin-bottom: 15px;">Le seguenti comunicazioni richiedono un controllo incrociato con gli enti esterni. Verifica la correttezza delle coordinate bancarie ed evadi la notifica cliccando l'apposito pulsante.</p>
+                <p style="font-size: 14px; margin-bottom: 15px; color: #495057;">Le seguenti comunicazioni richiedono un controllo incrociato con gli enti esterni. Verifica la correttezza delle coordinate bancarie ed evadi la notifica cliccando l'apposito comando, senza dover redigere email esterne.</p>
                 <div class="detail-grid">
-                    <div class="detail-item detail-item-full" style="border-left: 4px solid #f39c12;">
+                    <div class="detail-item detail-item-full" style="border-left: 4px solid #f39c12; background: #fffdf9;">
                         <div class="detail-label">Codice Pratica: OUT-2026-995 | Nominativo Cliente: Mario Rossi</div>
-                        <div class="detail-value" style="margin-bottom: 10px;">Coordinate Banca Uscente da verificare: ABI 03058 CAB 01604</div>
+                        <div class="detail-value" style="margin-bottom: 10px;">Coordinate Banca Uscente da verificare: <strong>ABI 03058 CAB 01604</strong></div>
                         <button class="btn btn-light" style="font-size: 12px; padding: 6px 12px;" onclick="closeModal('modal-sicav')">
-                            <span class="material-icons" style="font-size: 16px;">done_all</span> Conferma Ricezione e Chiudi Notifica
+                            <span class="material-icons" style="font-size: 16px;">done_all</span> Conferma Avvenuta Ricezione ed Evadi
                         </button>
                     </div>
                 </div>
@@ -282,51 +294,51 @@
                 <button class="close-btn" onclick="closeModal('modal-migliorie')"><span class="material-icons">close</span></button>
             </div>
             <div class="modal-body">
-                <p style="margin-bottom: 25px; font-size: 14px; color: #495057; line-height: 1.6;">L'attuale architettura ridefinisce la gestione dei "Traslochi in Uscita", eliminando drasticamente la dipendenza dal client di posta elettronica e inserendo strumenti di Data Entry e tracciatura diretta nel sistema.</p>
+                <p style="margin-bottom: 25px; font-size: 14px; color: #495057; line-height: 1.6;">L'architettura aggiornata ridefinisce totalmente la gestione dei "Traslochi in Uscita". Il processo documentato precedentemente nel PDD è stato ingegnerizzato per azzerare la dipendenza dal client di posta elettronica, integrando nativamente gli strumenti di Data Entry nel sistema di lavorazione.</p>
                 
                 <div class="miglioria-box">
                     <div class="miglioria-title"><span class="status-badge status-info">Automazione</span> 1. Dematerializzazione delle Richieste per i Moduli Firmati</div>
                     <div class="miglioria-text">
-                        <strong>Prima:</strong> All'interno dello "Step 1", per richiedere una copia del modulo di trasferimento firmato, il sistema generava un'email automatica indirizzata a <em>BO_Traslocotitoli@...</em>, imponendo un'attesa fuori applicativo.<br>
-                        <strong>Oggi:</strong> Il ricorso all'invio dell'email è stato totalmente soppresso. Il gestionale segnala la necessità impostando lo stato in "Attesa Modulo Firmato". L'operatore carica il file PDF tramite il comando In-Line, sbloccando immediatamente il flusso di lavorazione.
+                        <strong>Prima:</strong> All'interno dello "Step 1", per richiedere una copia del modulo di trasferimento firmato, il sistema generava un'email automatica indirizzata a <em>BO_Traslocotitoli@...</em>, imponendo un'attesa del tutto estranea e non governabile dall'applicativo.<br>
+                        <strong>Oggi:</strong> Il ricorso all'invio dell'email è stato <strong>totalmente soppresso</strong>. Il gestionale segnala la necessità impostando lo stato in "In Attesa di Caricamento Modulo Firmato". L'operatore carica il file PDF tramite l'azione In-Line sulla singola riga, sbloccando immediatamente e matematicamente il flusso di lavorazione RPA.
                     </div>
                 </div>
 
                 <div class="miglioria-box">
                     <div class="miglioria-title"><span class="status-badge status-info">Automazione</span> 2. Gestione In-App delle Notifiche verso SICAV esterne</div>
                     <div class="miglioria-text">
-                        <strong>Prima:</strong> Per trasferire informazioni legate ai trasferimenti (es. Cambio collocatore o comunicazione dell'ABI/CAB uscente), si redigevano email dirette alle SICAV o agli operatori preposti.<br>
-                        <strong>Oggi:</strong> È stata predisposta una Coda Operativa centralizzata (bottone "Notifiche SICAV" nel cruscotto). Le informazioni sulle controparti bancarie sono visibili a video. L'operatore evade la notifica con un clic confermando l'avvenuta verifica a sistema.
+                        <strong>Prima:</strong> Per trasferire informazioni legate ai trasferimenti (es. Cambio collocatore o comunicazione dell'ABI/CAB uscente come da manuale), l'operatore doveva redigere e gestire email libere dirette alle SICAV o agli operatori preposti, con forte rischio di dispersione del tracciato operativo.<br>
+                        <strong>Oggi:</strong> È stata predisposta una Coda Operativa centralizzata ("Notifiche Fondi SICAV" direttamente nel cruscotto). Le informazioni sulle controparti bancarie sono presentate a video e blindate in una logica di task. L'operatore evade la notifica confermando l'avvenuta verifica direttamente a sistema, azzerando le interazioni esterne.
                     </div>
                 </div>
 
                 <div class="miglioria-box">
-                    <div class="miglioria-title"><span class="status-badge status-info">Operatività</span> 3. Data Entry Istantaneo per "Abi Data Not Found"</div>
+                    <div class="miglioria-title"><span class="status-badge status-info">Operatività</span> 3. Data Entry Istantaneo per l'Eccezione "Abi Data Not Found"</div>
                     <div class="miglioria-text">
-                        <strong>Prima:</strong> La mancanza di parametri (Controparte ABI, SIP ABI, Descrizione ABI) causava la produzione del feedback terminale "Abi Data not found" sul DB e l'interruzione della pratica, che andava corretta via ticket o in backend.<br>
-                        <strong>Oggi:</strong> La pratica in anomalia risiede nel cruscotto in evidenza (Stato Errore). Attraverso il pulsante dedicato "Inserisci Coordinate Bancarie", l'operatore valorizza il campo mancante direttamente a video e permette la prosecuzione del workflow.
+                        <strong>Prima:</strong> La mancanza di parametri bancari obbligatori (Controparte ABI, SIP ABI, Descrizione ABI) causava la produzione di un feedback d'errore applicativo sul DB ("Abi Data not found") con la conseguente interruzione forzata della pratica. La correzione necessitava l'apertura di un ticket o l'intervento in backend.<br>
+                        <strong>Oggi:</strong> La pratica in anomalia rimane visibile nel cruscotto in Stato di Errore ("Dati Bancari Mancanti o Errati"). L'interfaccia abilita in automatico il comando di Gestione per inserire le coordinate. L'operatore valorizza il campo mancante in tempo reale a video e ripristina la prosecuzione fisiologica del workflow.
                     </div>
                 </div>
 
                 <div class="miglioria-box">
-                    <div class="miglioria-title"><span class="status-badge status-info">Ricerca</span> 4. Filtri di Ricerca Dedicati e Live Search</div>
+                    <div class="miglioria-title"><span class="status-badge status-info">UX/UI</span> 4. Filtri di Ricerca Dedicati e Live Search</div>
                     <div class="miglioria-text">
-                        <strong>Prima:</strong> Le pratiche venivano elaborate in blocco o visibili solo in modo aggregato da report estratti, senza interfacce agili per rintracciare un'operazione specifica in tempi rapidi.<br>
-                        <strong>Oggi:</strong> È stato inserito un blocco filtri intelligente in testa alla pagina. L'operatore ricerca le pratiche in uscita per Codice Identificativo o le filtra per Stato (incluso il nuovo stato visuale "In Elaborazione") ed i risultati si aggiornano istantaneamente in tempo reale.
+                        <strong>Prima:</strong> Le pratiche venivano elaborate in blocco dal server senza una reale interfaccia di filtro in tempo reale o visibili in modo aggregato solo da vecchi report estratti, impedendo il rintracciamento immediato di una pratica critica.<br>
+                        <strong>Oggi:</strong> È stato inserito un blocco filtri intelligente in testa alla pagina. L'operatore ricerca le pratiche per Codice Identificativo o le filtra per Stato e i risultati della tabella si adattano <strong>istantaneamente durante la digitazione (Live Search)</strong>.
                     </div>
                 </div>
 
                 <div class="miglioria-box">
-                    <div class="miglioria-title"><span class="status-badge status-info">Tracciatura</span> 5. Monitoraggio Centralizzato e DB Aggiornato</div>
+                    <div class="miglioria-title"><span class="status-badge status-info">Tracciatura</span> 5. Monitoraggio Centralizzato e Trasparente</div>
                     <div class="miglioria-text">
-                        <strong>Prima:</strong> Lo stato avanzamento di TDTOUT risiedeva unicamente in tabelle di backend invisibili all'utente finale (tabella "TraslochiOUT_Pratiche").<br>
-                        <strong>Oggi:</strong> Il frontend interroga dinamicamente il DB "Settings" e le tabelle di servizio, fornendo una rappresentazione grafica, intellegibile e real-time dell'andamento di tutte le pratiche.
+                        <strong>Prima:</strong> Lo stato avanzamento del flusso "TDTOUT" risiedeva unicamente in tabelle tecniche di backend, non accessibili e non intellegibili all'utente finale (tabella "TraslochiOUT_Pratiche").<br>
+                        <strong>Oggi:</strong> Il frontend interroga dinamicamente il Database e la tabella di servizio e fornisce una rappresentazione grafica ed elegante. Sono stati implementati gli stati visivi (Badge colorati), compreso il nuovo stato "In Elaborazione", in modo da certificare all'operatore che l'automazione sta lavorando attivamente su un record.
                     </div>
                 </div>
 
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('modal-migliorie')">Chiudi Changelog</button>
+                <button class="btn btn-secondary" onclick="closeModal('modal-migliorie')"><span class="material-icons">close</span> Chiudi Changelog</button>
             </div>
         </div>
     </div>
