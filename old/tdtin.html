@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cruscotto TDTIN - Mediobanca Premier</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: #f5f7fa; color: #2c3e50; padding-bottom: 60px; }
+        .material-icons { vertical-align: middle; font-size: 20px; }
+        
+        /* Navbar Architecture */
+        .navbar { background: #202742; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 30px 0; width: 100%; }
+        .navbar-container { max-width: 1600px; margin: 0 auto; padding: 0 40px; width: 100%; display: flex; align-items: center; justify-content: space-between; }
+        
+        .logo-wrapper { display: flex; align-items: center; }
+        .logo-section { display: flex; align-items: center; gap: 15px; }
+        .logo-circle { width: 50px; height: 50px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #2c3e50; }
+        .logo-circle .material-icons { font-size: 32px; }
+        .brand-text { color: white; }
+        .brand-name { font-size: 18px; font-weight: 600; letter-spacing: 2px; }
+        .brand-subtitle { font-size: 12px; letter-spacing: 3px; margin-top: 2px; opacity: 0.9; }
+        
+        .nav-menu { display: flex; gap: 20px; }
+        .nav-link { color: white; text-decoration: none; opacity: 0.7; font-size: 14px; font-weight: 500; padding: 8px 16px; border-radius: 4px; transition: all 0.3s; cursor: pointer; display: flex; align-items: center; gap: 6px;}
+        .nav-link:hover, .nav-link.active { opacity: 1; background: rgba(255,255,255,0.1); }
+
+        /* Container & Header */
+        .container { max-width: 1600px; margin: 0 auto; padding: 30px 40px; }
+        .page-header { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-start;}
+        h1.page-title { font-size: 26px; font-weight: 400; color: #2c3e50; margin-bottom: 8px; }
+        .header-divider { border-top: 2px solid rgb(32, 39, 66); width: 150px; padding-top: 8px; margin-bottom: 8px; }
+        .header-actions { display: flex; gap: 12px; align-items: center; }
+
+        /* Search Section */
+        .search-section { background: white; padding: 30px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 25px; }
+        h2.search-title { font-size: 16px; font-weight: 600; color: #2c3e50; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+        .search-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 20px; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { font-size: 13px; font-weight: 500; color: #2c3e50; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+        .form-group input, .form-group select { padding: 10px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; background: white; transition: border-color 0.3s; font-family: inherit; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #2c3e50; }
+        .search-actions { display: flex; gap: 12px; justify-content: flex-end; }
+
+        /* Results Section */
+        .results-section { background: white; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; }
+        .results-header { padding: 20px 30px; background: #f8f9fa; border-bottom: 1px solid #e9ecef; display: flex; justify-content: space-between; align-items: center; }
+        h2.results-title { font-size: 16px; font-weight: 600; color: #2c3e50; display: flex; align-items: center; gap: 8px; }
+        .results-count { font-size: 13px; color: #6c757d; font-weight: 500;}
+        .action-bar { padding: 20px 30px; background: #f8f9fa; border-bottom: 1px solid #e9ecef; display: flex; gap: 12px; align-items: center; }
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        thead { background: #f8f9fa; }
+        th { padding: 14px 16px; text-align: left; font-weight: 600; color: #2c3e50; font-size: 13px; border-bottom: 2px solid #e9ecef; white-space: nowrap; user-select: none; transition: background 0.2s;}
+        td { padding: 14px 16px; border-bottom: 1px solid #e9ecef; font-size: 14px; color: #2c3e50; vertical-align: middle;}
+        tr:hover { background: #f8f9fa; transition: background 0.2s; }
+
+        /* Buttons & Badges */
+        .btn { padding: 10px 24px; border: none; border-radius: 4px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
+        .btn-primary { background: #2c3e50; color: white; }
+        .btn-primary:hover { background: #3d5266; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-secondary:hover { background: #5a6268; }
+        .btn-light { background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1; }
+        .btn-light:hover { background: #cbd5e1; }
+        
+        .status-badge { padding: 5px 10px; border-radius: 3px; font-size: 12px; font-weight: 600; display: inline-block; letter-spacing: 0.5px;}
+        .status-nuovo { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb;}
+        .status-completato { background: #d4edda; color: #155724; border: 1px solid #c3e6cb;}
+        .status-errore { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;}
+        .status-inlavorazione { background: #fff3cd; color: #856404; border: 1px solid #ffeeba;}
+        .status-info { background: #e2e8f0; color: #334155; font-size: 11px; padding: 3px 6px; }
+
+        .footer { background: #2c3e50; color: white; padding: 15px 40px; position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; font-size: 13px; z-index: 100; }
+
+        /* Modali */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; animation: fadeIn 0.3s; }
+        .modal.active { display: flex; align-items: center; justify-content: center; }
+        .modal-content { background: white; border-radius: 4px; max-width: 850px; width: 90%; max-height: 85vh; overflow-y: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.3); animation: slideUp 0.3s; }
+        .modal-header { background: #2c3e50; color: white; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h3 { font-size: 18px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+        .close-btn { background: none; border: none; color: white; cursor: pointer; line-height: 1; transition: opacity 0.3s; padding: 0; display: flex; align-items: center; }
+        .close-btn .material-icons { font-size: 28px; }
+        .close-btn:hover { opacity: 0.7; }
+        .modal-body { padding: 30px; }
+        .modal-footer { padding: 20px 30px; background: #f8f9fa; display: flex; gap: 10px; justify-content: flex-end; }
+        
+        .miglioria-box { background: white; border: 1px solid #e9ecef; border-left: 4px solid #3b82f6; padding: 20px; border-radius: 4px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .miglioria-title { font-weight: 600; font-size: 15px; color: #2c3e50; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;}
+        .miglioria-text { font-size: 14px; color: #495057; line-height: 1.6;}
+        .miglioria-text strong { color: #2c3e50; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        @media (max-width: 768px) {
+            .navbar-container { flex-direction: column; gap: 15px; padding: 0 20px; }
+            .page-header { flex-direction: column; align-items: flex-start; gap: 15px;}
+            .container { padding: 20px; }
+            .search-grid { grid-template-columns: 1fr; }
+            .action-bar { flex-direction: column; align-items: stretch; }
+            table { font-size: 12px; }
+            th, td { padding: 10px 8px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="logo-wrapper">
+                <img src="logo_MBP.png" id="main-logo" alt="Mediobanca Premier" style="max-height: 80px;" onerror="this.style.display='none'; document.getElementById('fallback-logo').style.display='flex';">
+                <div id="fallback-logo" class="logo-section" style="display: none; align-items: center; gap: 15px;">
+                    <div class="logo-circle"><span class="material-icons">account_balance</span></div>
+                    <div class="brand-text">
+                        <div class="brand-name">MEDIOBANCA PREMIER</div>
+                        <div class="brand-subtitle">TRASLOCHI TITOLI</div>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-menu">
+                <span class="nav-link" onclick="window.location.href='index.html'"><span class="material-icons">swap_horiz</span> Trasferibilità</span>
+                <span class="nav-link active"><span class="material-icons">login</span> Traslochi IN</span>
+                <span class="nav-link" onclick="window.location.href='tdtout.html'"><span class="material-icons">logout</span> Traslochi OUT</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Cruscotto Traslochi IN (TDTIN)</h1>
+                <div class="header-divider"></div>
+                <span style="font-size: 14px; color: #6c757d; display: block; margin-top: 10px;">Verifica lo stato delle pratiche in ingresso e gestisci eventuali anomalie in carico al Back Office.</span>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-light" onclick="openModal('modal-migliorie')">
+                    <span class="material-icons" style="color: #0ea5e9;">military_tech</span> Dettaglio Migliorie
+                </button>
+            </div>
+        </div>
+
+        <div class="search-section">
+            <h2 class="search-title"><span class="material-icons">search</span> Motore di Ricerca Pratiche</h2>
+            <div class="search-grid">
+                <div class="form-group">
+                    <label><span class="material-icons" style="font-size: 16px; color: #64748b;">tag</span> Numero Pratica</label>
+                    <input type="text" id="filter-id" placeholder="Es. 1468128" oninput="applyFilters()">
+                </div>
+                <div class="form-group">
+                    <label><span class="material-icons" style="font-size: 16px; color: #64748b;">fact_check</span> Stato Attuale</label>
+                    <select id="filter-status" onchange="applyFilters()">
+                        <option value="">Mostra Tutti gli Stati</option>
+                        <option value="In Attesa di Inserimento a Sistema">In Attesa di Inserimento a Sistema</option>
+                        <option value="In Elaborazione">In Elaborazione</option>
+                        <option value="Inserita a Sistema con Successo">Inserita a Sistema con Successo</option>
+                        <option value="Richiede Controllo Manuale Dati">Richiede Controllo Manuale Dati</option>
+                    </select>
+                </div>
+            </div>
+            <div class="search-actions">
+                <button class="btn btn-secondary" onclick="clearFilters()"><span class="material-icons">filter_alt_off</span> Azzera Filtri di Ricerca</button>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <div class="results-header">
+                <h2 class="results-title"><span class="material-icons">table_chart</span> Elenco Pratiche TDTIN</h2>
+                <span class="results-count">4 pratiche individuate</span>
+            </div>
+            <div class="action-bar">
+                <button class="btn btn-primary"><span class="material-icons">play_circle_filled</span> Riprendi Lavorazione Tutte (In Attesa)</button>
+                <a href="#" class="btn btn-light" target="_blank"><span class="material-icons">open_in_new</span> Apri Portale SAS per Estrazione Report Certificato</a>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">tag</span> Numero Pratica</th>
+                            <th><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">folder</span> Dossier Titoli di Destinazione</th>
+                            <th><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">account_balance</span> Banca Controparte</th>
+                            <th><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">calendar_today</span> Data di Acquisizione</th>
+                            <th><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">fact_check</span> Stato Attuale</th>
+                            <th><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">warning</span> Dettaglio Segnalazione di Sistema</th>
+                            <th><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">settings</span> Gestione</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="font-weight: 500; color: #64748b;">1468128</td>
+                            <td>52688508</td>
+                            <td>INTESA SANPAOLO</td>
+                            <td>12/12/2025</td>
+                            <td><span class="status-badge status-completato">Inserita a Sistema con Successo</span></td>
+                            <td>Nessuna anomalia rilevata</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500; color: #64748b;">1468129</td>
+                            <td>52688393</td>
+                            <td>UNICREDIT</td>
+                            <td>20/01/2026</td>
+                            <td><span class="status-badge status-nuovo">In Attesa di Inserimento a Sistema</span></td>
+                            <td>Documentazione in attesa di controllo</td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 12px;">
+                                    <span class="material-icons" style="font-size: 16px;">play_arrow</span> Avvia Singola Pratica
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500; color: #64748b;">1468130</td>
+                            <td>Dato Mancante</td>
+                            <td>BPM</td>
+                            <td>10/02/2026</td>
+                            <td><span class="status-badge status-errore">Richiede Controllo Manuale Dati</span></td>
+                            <td>Numero Dossier Titoli non identificato</td>
+                            <td>
+                                <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 12px;">
+                                    <span class="material-icons" style="font-size: 16px;">edit</span> Correggi Dati
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500; color: #64748b;">1468131</td>
+                            <td>52688999</td>
+                            <td>BPER BANCA</td>
+                            <td>20/02/2026</td>
+                            <td><span class="status-badge status-inlavorazione">In Elaborazione</span></td>
+                            <td>Operazioni di acquisizione in corso da parte del sistema</td>
+                            <td>-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <span>&copy; 2026 Mediobanca Premier - Back Office Operativo</span>
+        <span>Versione 2.0.0 (To-Be) | Utente: BO_Admin</span>
+    </div>
+
+    <div id="modal-migliorie" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><span class="material-icons">verified</span> Changelog Completo delle Migliorie di Processo</h3>
+                <button class="close-btn" onclick="closeModal('modal-migliorie')"><span class="material-icons">close</span></button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 25px; font-size: 14px; color: #495057; line-height: 1.6;">Il cruscotto Traslochi IN (TDTIN) è stato completamente riprogettato per risolvere i blocchi documentati nell'applicativo precedente (AEA/Video). Di seguito l'elenco completo delle innovazioni integrate a livello architetturale e funzionale.</p>
+                
+                <div class="miglioria-box">
+                    <div class="miglioria-title"><span class="status-badge status-info">Architettura</span> 1. Superamento della Navigazione Paginata (Max 9 Righe)</div>
+                    <div class="miglioria-text">
+                        <strong>Prima:</strong> Nel vecchio portale, la consultazione delle "Richieste da valutare" era forzatamente paginata con un limite massimo di 9 record per schermata, obbligando a una continua e limitante navigazione sequenziale.<br>
+                        <strong>Oggi:</strong> La nuova interfaccia aggrega tutti i record in un'unica visuale fluida (Single Page Application), eliminando i vincoli di paginazione e integrando un motore di ricerca nativo (Live Search).
+                    </div>
+                </div>
+
+                <div class="miglioria-box">
+                    <div class="miglioria-title"><span class="status-badge status-info">Operatività</span> 2. Avvio Lavorazione Flessibile e Granulare</div>
+                    <div class="miglioria-text">
+                        <strong>Prima:</strong> La ripresa della lavorazione delle pratiche sospese procedeva in modo indiscriminato (es. riavvio massivo dal record 1 al limite della pagina), senza offrire il controllo sulle priorità.<br>
+                        <strong>Oggi:</strong> L'operatore mantiene il totale controllo decisionale. Può avviare simultaneamente tutte le pratiche dal bottone principale, o scegliere di far ripartire <strong>una singola pratica specifica</strong> attraverso l'apposito comando "Avvia Singola Pratica" posto sulla riga.
+                    </div>
+                </div>
+
+                <div class="miglioria-box">
+                    <div class="miglioria-title"><span class="status-badge status-info">Anomalie</span> 3. Correzione In-Line delle Eccezioni (Es. Dossier Titoli)</div>
+                    <div class="miglioria-text">
+                        <strong>Prima:</strong> Anomalie sui dati primari, come la mancata identificazione di un Dossier Titoli, arrestavano l'elaborazione rendendo necessario un intervento IT o l'apertura di ticket manuali.<br>
+                        <strong>Oggi:</strong> L'interfaccia intercetta e mostra in chiaro la causa del blocco. La riga evidenzia l'errore e presenta il comando "Correggi Dati". Questo permette l'inserimento manuale delle informazioni mancanti e l'immediata riattivazione della pratica.
+                    </div>
+                </div>
+
+                <div class="miglioria-box">
+                    <div class="miglioria-title"><span class="status-badge status-info">Integrazione</span> 4. Estrazione Dati Certificata via Portale SAS</div>
+                    <div class="miglioria-text">
+                        <strong>Prima:</strong> Il flusso prevedeva l'esportazione di file locali CSV (es. `REPORT_PRATICHE.csv`) che l'operatore scaricava e distribuiva esponendosi al rischio di consultare o processare dati obsoleti.<br>
+                        <strong>Oggi:</strong> La generazione di file testuali a bordo macchina è stata abolita a favore del consolidamento dei dati nel database. Il sistema predispone un reindirizzamento al <strong>Portale Aziendale SAS</strong>, garantendo elaborazioni e reportistiche istituzionali sicure.
+                    </div>
+                </div>
+
+                <div class="miglioria-box">
+                    <div class="miglioria-title"><span class="status-badge status-info">Tracciatura</span> 5. Visibilità in Tempo Reale dello Stato Applicativo</div>
+                    <div class="miglioria-text">
+                        <strong>Prima:</strong> Verificare l'avanzamento reale di un "Trasloco in Ingresso" richiedeva incrociare i dati tra i log di sistema e i vecchi applicativi (AEA e Video).<br>
+                        <strong>Oggi:</strong> Tutti gli stati elaborativi ("Inserita a Sistema con Successo", "In Elaborazione", "In Attesa di Inserimento a Sistema", "Richiede Controllo Manuale Dati") sono aggiornati in background dall'infrastruttura RPA e resi visibili in chiaro e in tempo reale all'operatore di Back Office.
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-migliorie')"><span class="material-icons">close</span> Chiudi Changelog</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openModal(modalId) { document.getElementById(modalId).classList.add('active'); }
+        function closeModal(modalId) { document.getElementById(modalId).classList.remove('active'); }
+        window.onclick = function(event) { if (event.target.classList.contains('modal')) event.target.classList.remove('active'); }
+
+        // --- FILTRI LIVE SEARCH ---
+        function applyFilters() {
+            const fId = document.getElementById('filter-id').value.toLowerCase();
+            const fStatus = document.getElementById('filter-status').value.toLowerCase();
+
+            const rows = document.querySelectorAll('.table-wrapper tbody tr');
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const tId = row.cells[0].innerText.toLowerCase();
+                const tStatus = row.cells[4].innerText.toLowerCase();
+
+                let match = true;
+                if (fId && !tId.includes(fId)) match = false;
+                if (fStatus && !tStatus.includes(fStatus)) match = false;
+
+                row.style.display = match ? '' : 'none';
+                if (match) visibleCount++;
+            });
+
+            document.querySelector('.results-count').innerText = `${visibleCount} pratiche individuate`;
+        }
+
+        function clearFilters() {
+            document.getElementById('filter-id').value = '';
+            document.getElementById('filter-status').value = '';
+            applyFilters();
+        }
+    </script>
+</body>
+</html>

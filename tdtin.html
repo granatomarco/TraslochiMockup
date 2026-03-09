@@ -3,19 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cruscotto TDTIN - Mediobanca Premier</title>
+    <title>Cruscotto TDT IN - Mediobanca Premier</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: #f5f7fa; color: #2c3e50; padding-bottom: 60px; }
         .material-icons { vertical-align: middle; font-size: 20px; }
         
-        /* Navbar Architecture */
+        /* Navbar - Allineata per entrambi i file */
         .navbar { background: #202742; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 30px 0; width: 100%; }
         .navbar-container { max-width: 1600px; margin: 0 auto; padding: 0 40px; width: 100%; display: flex; align-items: center; justify-content: space-between; }
         
         .logo-wrapper { display: flex; align-items: center; }
         .logo-section { display: flex; align-items: center; gap: 15px; }
+        .brand-logo { height: 60px; width: auto; object-fit: contain; display: block; }
+        .fallback-logo { display: flex; align-items: center; gap: 15px; }
         .logo-circle { width: 50px; height: 50px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #2c3e50; }
         .logo-circle .material-icons { font-size: 32px; }
         .brand-text { color: white; }
@@ -26,24 +28,21 @@
         .nav-link { color: white; text-decoration: none; opacity: 0.7; font-size: 14px; font-weight: 500; padding: 8px 16px; border-radius: 4px; transition: all 0.3s; cursor: pointer; display: flex; align-items: center; gap: 6px;}
         .nav-link:hover, .nav-link.active { opacity: 1; background: rgba(255,255,255,0.1); }
 
-        /* Container & Header */
         .container { max-width: 1600px; margin: 0 auto; padding: 30px 40px; }
         .page-header { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-start;}
         h1.page-title { font-size: 26px; font-weight: 400; color: #2c3e50; margin-bottom: 8px; }
         .header-divider { border-top: 2px solid rgb(32, 39, 66); width: 150px; padding-top: 8px; margin-bottom: 8px; }
         .header-actions { display: flex; gap: 12px; align-items: center; }
 
-        /* Search Section */
         .search-section { background: white; padding: 30px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 25px; }
         h2.search-title { font-size: 16px; font-weight: 600; color: #2c3e50; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
-        .search-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 20px; }
+        .search-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 20px; }
         .form-group { display: flex; flex-direction: column; }
         .form-group label { font-size: 13px; font-weight: 500; color: #2c3e50; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
         .form-group input, .form-group select { padding: 10px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; background: white; transition: border-color 0.3s; font-family: inherit; }
         .form-group input:focus, .form-group select:focus { outline: none; border-color: #2c3e50; }
         .search-actions { display: flex; gap: 12px; justify-content: flex-end; }
 
-        /* Results Section */
         .results-section { background: white; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; }
         .results-header { padding: 20px 30px; background: #f8f9fa; border-bottom: 1px solid #e9ecef; display: flex; justify-content: space-between; align-items: center; }
         h2.results-title { font-size: 16px; font-weight: 600; color: #2c3e50; display: flex; align-items: center; gap: 8px; }
@@ -53,28 +52,48 @@
         table { width: 100%; border-collapse: collapse; }
         thead { background: #f8f9fa; }
         th { padding: 14px 16px; text-align: left; font-weight: 600; color: #2c3e50; font-size: 13px; border-bottom: 2px solid #e9ecef; white-space: nowrap; user-select: none; transition: background 0.2s;}
+        th.sortable { cursor: pointer; }
+        th.sortable:hover { background: #e2e8f0; }
+        th .sort-icon { font-size: 16px; opacity: 0.3; margin-left: 4px; transition: opacity 0.2s;}
+        th.asc .sort-icon { opacity: 1; transform: rotate(180deg); }
+        th.desc .sort-icon { opacity: 1; transform: rotate(0deg); }
         td { padding: 14px 16px; border-bottom: 1px solid #e9ecef; font-size: 14px; color: #2c3e50; vertical-align: middle;}
         tr:hover { background: #f8f9fa; transition: background 0.2s; }
 
-        /* Buttons & Badges */
-        .btn { padding: 10px 24px; border: none; border-radius: 4px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
+        .inner-table { width: 100%; border: 1px solid #ddd; margin-top: 10px; border-radius: 4px; overflow: hidden;}
+        .inner-table th { background: #f1f5f9; padding: 10px; font-size: 12px; }
+        .inner-table td { padding: 10px; font-size: 13px; border-bottom: 1px solid #eee;}
+
+        .action-group { display: flex; gap: 8px; align-items: center; }
+        .btn { padding: 8px 16px; border: none; border-radius: 4px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; }
+        .btn-icon { padding: 8px; border-radius: 4px; border: 1px solid #ddd; background: white; color: #6c757d; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center;}
+        .btn-icon:hover { background: #f8f9fa; color: #2c3e50; border-color: #2c3e50;}
         .btn-primary { background: #2c3e50; color: white; }
         .btn-primary:hover { background: #3d5266; }
         .btn-secondary { background: #6c757d; color: white; }
         .btn-secondary:hover { background: #5a6268; }
         .btn-light { background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1; }
         .btn-light:hover { background: #cbd5e1; }
+        .btn-salesforce { background: #00a1e0; color: white; border: none; }
+        .btn-salesforce:hover { background: #0081b3; }
+        .btn-alert { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;}
         
         .status-badge { padding: 5px 10px; border-radius: 3px; font-size: 12px; font-weight: 600; display: inline-block; letter-spacing: 0.5px;}
-        .status-nuovo { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb;}
+        .status-nuovo { background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1;}
         .status-completato { background: #d4edda; color: #155724; border: 1px solid #c3e6cb;}
         .status-errore { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;}
-        .status-inlavorazione { background: #fff3cd; color: #856404; border: 1px solid #ffeeba;}
-        .status-info { background: #e2e8f0; color: #334155; font-size: 11px; padding: 3px 6px; }
+        .status-warning { background: #ffeeba; color: #856404; border: 1px solid #ffdf7e;}
+        .status-bot-working { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd;}
+        .status-info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        
+        .bot-text { font-size: 13px; color: #0284c7; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+        .sub-text { font-size: 11px; color: #6c757d; font-weight: 400; display: block; margin-top: 4px; }
 
         .footer { background: #2c3e50; color: white; padding: 15px 40px; position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; font-size: 13px; z-index: 100; }
 
-        /* Modali */
+        #toast { visibility: hidden; min-width: 300px; background-color: #202742; color: #fff; text-align: center; border-radius: 4px; padding: 16px 24px; position: fixed; z-index: 2000; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 14px; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.3); opacity: 0; transition: opacity 0.3s, bottom 0.3s; display: flex; align-items: center; gap: 12px; border-left: 4px solid #0ea5e9;}
+        #toast.show { visibility: visible; opacity: 1; bottom: 80px; }
+
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; animation: fadeIn 0.3s; }
         .modal.active { display: flex; align-items: center; justify-content: center; }
         .modal-content { background: white; border-radius: 4px; max-width: 850px; width: 90%; max-height: 85vh; overflow-y: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.3); animation: slideUp 0.3s; }
@@ -86,23 +105,19 @@
         .modal-body { padding: 30px; }
         .modal-footer { padding: 20px 30px; background: #f8f9fa; display: flex; gap: 10px; justify-content: flex-end; }
         
-        .miglioria-box { background: white; border: 1px solid #e9ecef; border-left: 4px solid #3b82f6; padding: 20px; border-radius: 4px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .detail-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 20px;}
+        .detail-item { padding: 15px; background: #f8f9fa; border-radius: 4px; border-left: 4px solid #2c3e50;}
+        .detail-label { font-size: 12px; color: #6c757d; font-weight: 500; margin-bottom: 6px; }
+        .detail-value { font-size: 15px; color: #2c3e50; font-weight: 600; }
+        .detail-item-full { grid-column: 1 / -1; }
+
+        .miglioria-box { background: white; border: 1px solid #e9ecef; border-left: 4px solid #0ea5e9; padding: 20px; border-radius: 4px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
         .miglioria-title { font-weight: 600; font-size: 15px; color: #2c3e50; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;}
         .miglioria-text { font-size: 14px; color: #495057; line-height: 1.6;}
-        .miglioria-text strong { color: #2c3e50; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        @media (max-width: 768px) {
-            .navbar-container { flex-direction: column; gap: 15px; padding: 0 20px; }
-            .page-header { flex-direction: column; align-items: flex-start; gap: 15px;}
-            .container { padding: 20px; }
-            .search-grid { grid-template-columns: 1fr; }
-            .action-bar { flex-direction: column; align-items: stretch; }
-            table { font-size: 12px; }
-            th, td { padding: 10px 8px; }
-        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -111,7 +126,7 @@
         <div class="navbar-container">
             <div class="logo-wrapper">
                 <img src="logo_MBP.png" id="main-logo" alt="Mediobanca Premier" style="max-height: 80px;" onerror="this.style.display='none'; document.getElementById('fallback-logo').style.display='flex';">
-                <div id="fallback-logo" class="logo-section" style="display: none; align-items: center; gap: 15px;">
+                <div id="fallback-logo" class="logo-section" style="display: none;">
                     <div class="logo-circle"><span class="material-icons">account_balance</span></div>
                     <div class="brand-text">
                         <div class="brand-name">MEDIOBANCA PREMIER</div>
@@ -120,7 +135,6 @@
                 </div>
             </div>
             <div class="nav-menu">
-                <span class="nav-link" onclick="window.location.href='index.html'"><span class="material-icons">swap_horiz</span> Trasferibilità</span>
                 <span class="nav-link active"><span class="material-icons">login</span> Traslochi IN</span>
                 <span class="nav-link" onclick="window.location.href='tdtout.html'"><span class="material-icons">logout</span> Traslochi OUT</span>
             </div>
@@ -130,106 +144,233 @@
     <div class="container">
         <div class="page-header">
             <div>
-                <h1 class="page-title">Cruscotto Traslochi IN (TDTIN)</h1>
+                <h1 class="page-title">Cruscotto Traslochi IN (TDT IN)</h1>
                 <div class="header-divider"></div>
-                <span style="font-size: 14px; color: #6c757d; display: block; margin-top: 10px;">Verifica lo stato delle pratiche in ingresso e gestisci eventuali anomalie in carico al Back Office.</span>
+                <span style="font-size: 14px; color: #6c757d; display: block; margin-top: 10px;">Applicativo direzionale per controlli AML, verifiche ISIN e integrazioni Salesforce/Mainframe.</span>
             </div>
             <div class="header-actions">
                 <button class="btn btn-light" onclick="openModal('modal-migliorie')">
-                    <span class="material-icons" style="color: #0ea5e9;">military_tech</span> Dettaglio Migliorie
+                    <span class="material-icons" style="color: #0ea5e9;">military_tech</span> Feature Integrate
                 </button>
             </div>
         </div>
 
         <div class="search-section">
-            <h2 class="search-title"><span class="material-icons">search</span> Motore di Ricerca Pratiche</h2>
+            <h2 class="search-title"><span class="material-icons">search</span> Motore di Ricerca Pratiche IN</h2>
             <div class="search-grid">
                 <div class="form-group">
-                    <label><span class="material-icons" style="font-size: 16px; color: #64748b;">tag</span> Numero Pratica</label>
-                    <input type="text" id="filter-id" placeholder="Es. 1468128" oninput="applyFilters()">
+                    <label><span class="material-icons" style="font-size: 16px; color: #64748b;">tag</span> ID Pratica (SF/AEA)</label>
+                    <input type="text" id="filter-id" placeholder="Es. 1468" oninput="applyFilters()">
                 </div>
                 <div class="form-group">
-                    <label><span class="material-icons" style="font-size: 16px; color: #64748b;">fact_check</span> Stato Attuale</label>
+                    <label><span class="material-icons" style="font-size: 16px; color: #64748b;">account_balance</span> Banca Controparte</label>
+                    <input type="text" id="filter-banca" placeholder="Es. INTESA" oninput="applyFilters()">
+                </div>
+                <div class="form-group">
+                    <label><span class="material-icons" style="font-size: 16px; color: #64748b;">swap_horiz</span> Stato Trasferibilità</label>
+                    <select id="filter-trasf" onchange="applyFilters()">
+                        <option value="">Mostra Tutti</option>
+                        <option value="Trasferibile">Trasferibile</option>
+                        <option value="Non Trasferibile">Non Trasferibile</option>
+                        <option value="Da Verificare">Da Verificare</option>
+                        <option value="Verifica ISIN">Verifica ISIN</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label><span class="material-icons" style="font-size: 16px; color: #64748b;">fact_check</span> Stato Lavorazione</label>
                     <select id="filter-status" onchange="applyFilters()">
-                        <option value="">Mostra Tutti gli Stati</option>
-                        <option value="In Attesa di Inserimento a Sistema">In Attesa di Inserimento a Sistema</option>
+                        <option value="">Mostra Tutti</option>
+                        <option value="Da Lavorare">Da Lavorare (90111)</option>
+                        <option value="Scarto Controparte">Scarto Controparte (90614)</option>
                         <option value="In Elaborazione">In Elaborazione</option>
-                        <option value="Inserita a Sistema con Successo">Inserita a Sistema con Successo</option>
-                        <option value="Richiede Controllo Manuale Dati">Richiede Controllo Manuale Dati</option>
+                        <option value="Accettata">Accettata (90165)</option>
+                        <option value="Bloccata (Manca Dossier)">Bloccata (Manca Dossier)</option>
+                        <option value="Verifica Antiriciclaggio">Verifica Antiriciclaggio</option>
+                        <option value="Allarme Penale">Allarme Penale (90617)</option>
                     </select>
                 </div>
             </div>
             <div class="search-actions">
-                <button class="btn btn-secondary" onclick="clearFilters()"><span class="material-icons">filter_alt_off</span> Azzera Filtri di Ricerca</button>
+                <button class="btn btn-secondary" onclick="clearFilters()"><span class="material-icons">filter_alt_off</span> Azzera Filtri</button>
             </div>
         </div>
 
         <div class="results-section">
             <div class="results-header">
-                <h2 class="results-title"><span class="material-icons">table_chart</span> Elenco Pratiche TDTIN</h2>
-                <span class="results-count">4 pratiche individuate</span>
+                <h2 class="results-title"><span class="material-icons">table_chart</span> Elenco Pratiche in Ingresso</h2>
+                <span class="results-count">8 pratiche individuate</span>
             </div>
             <div class="action-bar">
-                <button class="btn btn-primary"><span class="material-icons">play_circle_filled</span> Riprendi Lavorazione Tutte (In Attesa)</button>
-                <a href="#" class="btn btn-light" target="_blank"><span class="material-icons">open_in_new</span> Apri Portale SAS per Estrazione Report Certificato</a>
+                <button class="btn btn-primary" onclick="showToast('Comando batch inviato al motore RPA. Le pratiche verranno processate su AEA a breve.', 'settings_system_daydream')">
+                    <span class="material-icons">play_circle_filled</span> Esegui Tutte le Pratiche (Massivo)
+                </button>
+                <a href="#" class="btn btn-light" target="_blank" onclick="showToast('Apertura sessione sicura portale SAS in corso...', 'open_in_new')">
+                    <span class="material-icons">bar_chart</span> Estrazione Dati (SAS)
+                </a>
             </div>
             <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
-                            <th><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">tag</span> Numero Pratica</th>
-                            <th><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">folder</span> Dossier Titoli di Destinazione</th>
-                            <th><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">account_balance</span> Banca Controparte</th>
-                            <th><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">calendar_today</span> Data di Acquisizione</th>
-                            <th><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">fact_check</span> Stato Attuale</th>
-                            <th><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">warning</span> Dettaglio Segnalazione di Sistema</th>
-                            <th><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">settings</span> Gestione</th>
+                            <th class="sortable" onclick="sortTable(0, 'number')"><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">tag</span> ID Pratica <span class="material-icons sort-icon">arrow_downward</span></th>
+                            <th class="sortable" onclick="sortTable(1, 'string')"><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">account_balance</span> Banca Controparte <span class="material-icons sort-icon">arrow_downward</span></th>
+                            <th class="sortable" onclick="sortTable(2, 'string')"><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">folder</span> Dossier Destinazione <span class="material-icons sort-icon">arrow_downward</span></th>
+                            <th class="sortable" onclick="sortTable(3, 'string')"><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">account_box</span> Tipo Pratica / Cliente <span class="material-icons sort-icon">arrow_downward</span></th>
+                            <th class="sortable" onclick="sortTable(4, 'string')"><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">swap_horiz</span> Trasferibilità Titolo <span class="material-icons sort-icon">arrow_downward</span></th>
+                            <th class="sortable" onclick="sortTable(5, 'string')"><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">fact_check</span> Stato Lavorazione <span class="material-icons sort-icon">arrow_downward</span></th>
+                            <th><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">settings</span> Azioni Operatore</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
+                    <tbody id="table-body">
+                        <tr id="row-1468128">
                             <td style="font-weight: 500; color: #64748b;">1468128</td>
-                            <td>52688508</td>
                             <td>INTESA SANPAOLO</td>
-                            <td>12/12/2025</td>
-                            <td><span class="status-badge status-completato">Inserita a Sistema con Successo</span></td>
-                            <td>Nessuna anomalia rilevata</td>
-                            <td>-</td>
+                            <td>52688508</td>
+                            <td>
+                                <span style="font-weight: 500;">Amministrato (142)</span>
+                                <span class="sub-text">Persona Fisica</span>
+                            </td>
+                            <td><span class="status-badge status-completato">Trasferibile</span></td>
+                            <td><span class="status-badge status-completato" id="badge-1468128">Accettata (90165)</span></td>
+                            <td>
+                                <div class="action-group" id="actions-1468128">
+                                    <span style="font-size: 13px; color: #155724; font-weight: 500;"><span class="material-icons" style="font-size: 16px; vertical-align: middle;">done_all</span> Operazione Conclusa</span>
+                                </div>
+                            </td>
                         </tr>
-                        <tr>
+                        <tr id="row-1468129">
                             <td style="font-weight: 500; color: #64748b;">1468129</td>
-                            <td>52688393</td>
                             <td>UNICREDIT</td>
-                            <td>20/01/2026</td>
-                            <td><span class="status-badge status-nuovo">In Attesa di Inserimento a Sistema</span></td>
-                            <td>Documentazione in attesa di controllo</td>
+                            <td>52688393</td>
                             <td>
-                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 12px;">
-                                    <span class="material-icons" style="font-size: 16px;">play_arrow</span> Avvia Singola Pratica
-                                </button>
+                                <span style="font-weight: 500;">Amministrato (142)</span>
+                                <span class="sub-text">Persona Fisica</span>
+                            </td>
+                            <td><span class="status-badge status-completato">Trasferibile</span></td>
+                            <td><span class="status-badge status-nuovo" id="badge-1468129">Da Lavorare (Rich. 90111)</span></td>
+                            <td>
+                                <div class="action-group" id="actions-1468129">
+                                    <button class="btn btn-primary" onclick="setBotWorking('1468129', 'Inoltro messaggio RNI in corso...')">
+                                        <span class="material-icons" style="font-size: 16px;">play_arrow</span> Avvia Flusso
+                                    </button>
+                                    <button class="btn-icon" title="Gestione Titoli (Master-Detail)" onclick="openModal('modal-dettaglio-pratica')"><span class="material-icons">visibility</span></button>
+                                </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="row-1468130">
                             <td style="font-weight: 500; color: #64748b;">1468130</td>
-                            <td>Dato Mancante</td>
-                            <td>BPM</td>
-                            <td>10/02/2026</td>
-                            <td><span class="status-badge status-errore">Richiede Controllo Manuale Dati</span></td>
-                            <td>Numero Dossier Titoli non identificato</td>
+                            <td>INTESA SANPAOLO</td>
+                            <td>52681122</td>
                             <td>
-                                <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 12px;">
-                                    <span class="material-icons" style="font-size: 16px;">edit</span> Correggi Dati
-                                </button>
+                                <span style="font-weight: 500;">Gestito (143)</span>
+                                <span class="sub-text">Persona Fisica</span>
+                            </td>
+                            <td><span class="status-badge status-completato">Trasferibile</span></td>
+                            <td><span class="status-badge status-errore" id="badge-1468130">Verifica Antiriciclaggio</span></td>
+                            <td>
+                                <div class="action-group" id="actions-1468130">
+                                    <button class="btn btn-secondary" onclick="openModal('modal-aml')">
+                                        <span class="material-icons" style="font-size: 16px;">gavel</span> Risolvi Anomalia AML
+                                    </button>
+                                    <button class="btn-icon" title="Verifica Cointestatari" onclick="openModal('modal-cointestatari')"><span class="material-icons">group</span></button>
+                                </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="row-1468131">
                             <td style="font-weight: 500; color: #64748b;">1468131</td>
-                            <td>52688999</td>
+                            <td>BPM</td>
+                            <td id="dossier-1468131" style="color: #dc3545; font-weight: 500;">Dato Mancante</td>
+                            <td>
+                                <span style="font-weight: 500;">Amministrato (142)</span>
+                                <span class="sub-text">Soggetto Giuridico (P.IVA)</span>
+                            </td>
+                            <td><span class="status-badge status-completato">Trasferibile</span></td>
+                            <td><span class="status-badge status-errore" id="badge-1468131">Bloccata (Manca Dossier)</span></td>
+                            <td>
+                                <div class="action-group" id="actions-1468131">
+                                    <button class="btn btn-secondary" onclick="openModal('modal-dossier')">
+                                        <span class="material-icons" style="font-size: 16px;">edit</span> Inserisci Dossier
+                                    </button>
+                                    <button class="btn-icon" title="Scarta Pratica" style="color: #dc3545;" onclick="scartaPratica('1468131')"><span class="material-icons">delete_forever</span></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr id="row-1468132">
+                            <td style="font-weight: 500; color: #64748b;">1468132</td>
+                            <td>CREDIT SUISSE</td>
+                            <td>52689911</td>
+                            <td>
+                                <span style="font-weight: 500;">Titolo Estero</span>
+                                <span class="sub-text">Precarico Fiscale Necessario</span>
+                            </td>
+                            <td><span class="status-badge status-completato">Trasferibile</span></td>
+                            <td><span class="status-badge status-info" id="badge-1468132">Dati Pronti (Msg 90168)</span></td>
+                            <td>
+                                <div class="action-group" id="actions-1468132">
+                                    <button class="btn btn-light" onclick="openModal('modal-fiscali')">
+                                        <span class="material-icons" style="font-size: 16px;">receipt</span> Valida Dati Fiscali
+                                    </button>
+                                    <button class="btn-icon" title="Dettaglio Pratica" onclick="openModal('modal-dettaglio-pratica')"><span class="material-icons">visibility</span></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr id="row-1468133">
+                            <td style="font-weight: 500; color: #64748b;">1468133</td>
                             <td>BPER BANCA</td>
-                            <td>20/02/2026</td>
-                            <td><span class="status-badge status-inlavorazione">In Elaborazione</span></td>
-                            <td>Operazioni di acquisizione in corso da parte del sistema</td>
-                            <td>-</td>
+                            <td>52684455</td>
+                            <td>
+                                <span style="font-weight: 500;">Fondo Flash</span>
+                                <span class="sub-text">Persona Fisica</span>
+                            </td>
+                            <td><span class="status-badge status-completato">Trasferibile</span></td>
+                            <td>
+                                <span class="status-badge status-bot-working">
+                                    <span class="material-icons" style="font-size: 12px; animation: spin 2s linear infinite; margin-right: 4px;">autorenew</span> In Elaborazione
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-group">
+                                    <span class="bot-text">🤖 Il sistema sta elaborando la pratica...</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr id="row-1468134">
+                            <td style="font-weight: 500; color: #64748b;">1468134</td>
+                            <td>FINECO</td>
+                            <td>52681000</td>
+                            <td>
+                                <span style="font-weight: 500;">Amministrato (142)</span>
+                                <span class="sub-text">Persona Fisica</span>
+                            </td>
+                            <td><span class="status-badge status-completato">Trasferibile</span></td>
+                            <td><span class="status-badge status-errore" id="badge-1468134">Scarto Controparte (90614)</span></td>
+                            <td>
+                                <div class="action-group" id="actions-1468134">
+                                    <button class="btn btn-secondary" onclick="setBotWorking('1468134', 'Reinserimento flusso 90614...')">
+                                        <span class="material-icons" style="font-size: 16px;">replay</span> Reinserisci Pratica
+                                    </button>
+                                    <button class="btn-icon" title="Leggi Motivo Scarto RNI" onclick="openModal('modal-scarto-rni')"><span class="material-icons">feedback</span></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr id="row-1468135">
+                            <td style="font-weight: 500; color: #64748b;">1468135</td>
+                            <td>MEDIOLANUM</td>
+                            <td>52682211</td>
+                            <td>
+                                <span style="font-weight: 500;">Fondo Flash (143)</span>
+                                <span class="sub-text">Persona Fisica</span>
+                            </td>
+                            <td><span class="status-badge status-info">Verifica ISIN</span></td>
+                            <td><span class="status-badge status-warning" id="badge-1468135">Allarme Penale (90617)</span></td>
+                            <td>
+                                <div class="action-group" id="actions-1468135">
+                                    <button class="btn btn-alert" style="background:#e67e22; color:white; border:none;" onclick="segnalaRitardo()">
+                                        <span class="material-icons" style="font-size: 16px;">timer</span> Segnala Ritardo
+                                    </button>
+                                    <button class="btn-icon" title="Gestione Titoli (Verifica Trasferibilità)" onclick="openModal('modal-dettaglio-pratica')"><span class="material-icons">visibility</span></button>
+                                </div>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -237,63 +378,228 @@
         </div>
     </div>
 
-    <div class="footer">
-        <span>&copy; 2026 Mediobanca Premier - Back Office Operativo</span>
-        <span>Versione 2.0.0 (To-Be) | Utente: BO_Admin</span>
+    <div id="modal-dettaglio-pratica" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3><span class="material-icons">visibility</span> Dettaglio Titoli (ISIN) associati alla Pratica</h3>
+                <button class="close-btn" onclick="closeModal('modal-dettaglio-pratica')"><span class="material-icons">close</span></button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 15px; font-size: 14px; color: #495057;">Una pratica può contenere molteplici titoli. Da qui puoi verificare ed eventualmente forzare lo stato di trasferibilità del singolo ISIN (Gestione Master-Detail).</p>
+                <table class="inner-table">
+                    <thead>
+                        <tr>
+                            <th>Codice ISIN</th>
+                            <th>Descrizione Titolo</th>
+                            <th>Quantità</th>
+                            <th>Stato Trasferibilità</th>
+                            <th>Azione Titolo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="font-weight:500;">IT0005218380</td>
+                            <td>BTP ITALIA 2028</td>
+                            <td>15.000</td>
+                            <td><span class="status-badge status-completato">Trasferibile</span></td>
+                            <td><span style="color:#6c757d; font-size:12px;">OK</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight:500;">CH0012032048</td>
+                            <td>ROCHE HOLDING AG</td>
+                            <td>250</td>
+                            <td><span class="status-badge status-info" id="isin-status-2">Verifica ISIN</span></td>
+                            <td>
+                                <button class="btn btn-salesforce" style="padding: 4px 8px; font-size: 11px;" onclick="forzaIsin()">
+                                    <span class="material-icons" style="font-size: 14px;">api</span> Notifica SF (API)
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-dettaglio-pratica')">Chiudi Dettaglio</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-scarto-rni" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header" style="background: #dc3545;">
+                <h3><span class="material-icons">feedback</span> Dettaglio Scarto Controparte (Messaggio 90614)</h3>
+                <button class="close-btn" onclick="closeModal('modal-scarto-rni')"><span class="material-icons">close</span></button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 20px; font-size: 14px; color: #495057;">Il flusso di richiesta è stato rifiutato dalla Banca Ricevente. Di seguito la risposta esatta estratta dai log RNI.</p>
+                <div class="detail-grid">
+                    <div class="detail-item detail-item-full" style="border-left-color: #dc3545;">
+                        <div class="detail-label">Codice Errore Restituito</div>
+                        <div class="detail-value" style="color: #dc3545;">ERR-90614-ANA</div>
+                    </div>
+                    <div class="detail-item detail-item-full">
+                        <div class="detail-label">Descrizione del Rifiuto</div>
+                        <div class="detail-value">L'anagrafica dei cointestatari associata al Dossier 52681000 non corrisponde con i dati forniti. Impossibile procedere al carico dei titoli.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-scarto-rni')">Chiudi</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-cointestatari" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3><span class="material-icons">group</span> Dettaglio Anagrafica Intestazioni</h3>
+                <button class="close-btn" onclick="closeModal('modal-cointestatari')"><span class="material-icons">close</span></button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 20px; font-size: 14px; color: #495057;">Discrepanza rilevata tra l'intestazione della banca d'origine e il dossier di destinazione.</p>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Intestazione Origine (Controparte)</div>
+                        <div class="detail-value">Mario Rossi, Luigi Bianchi</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Intestazione Destinazione (Dossier Interno)</div>
+                        <div class="detail-value">Mario Rossi</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-cointestatari')">Chiudi</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-dossier" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3><span class="material-icons">folder</span> Inserimento Dossier Mancante</h3>
+                <button class="close-btn" onclick="closeModal('modal-dossier')"><span class="material-icons">close</span></button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 20px; font-size: 14px; color: #495057;">La ricerca anagrafica non ha restituito il Dossier. Inserisci il codice per sanare l'anomalia.</p>
+                <div class="form-group">
+                    <label>Numero Dossier Titoli</label>
+                    <input type="text" id="input-dossier" placeholder="Es. 52681234">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-dossier')">Annulla</button>
+                <button class="btn btn-primary" onclick="salvaDossier()"><span class="material-icons">save</span> Salva e Sblocca</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-aml" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3><span class="material-icons">gavel</span> Risoluzione Verifica Antiriciclaggio</h3>
+                <button class="close-btn" onclick="closeModal('modal-aml')"><span class="material-icons">close</span></button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 20px; font-size: 14px; color: #495057;">La pratica <strong>1468130</strong> risulta sospesa per "Diversa Intestazione". Indica l'esito AML per autorizzare l'elaborazione.</p>
+                <div class="form-group">
+                    <label>Esito Valutazione Compliance</label>
+                    <select id="esito-aml">
+                        <option value="ok">Conforme - Autorizza Procedimento</option>
+                        <option value="ko">Non Conforme - Respingi Pratica Immediatamente</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-aml')">Annulla</button>
+                <button class="btn btn-primary" onclick="risolviAML()"><span class="material-icons">check_circle</span> Conferma Esito</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-fiscali" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3><span class="material-icons">receipt</span> Dati Fiscali per Precarico (Messaggio 168)</h3>
+                <button class="close-btn" onclick="closeModal('modal-fiscali')"><span class="material-icons">close</span></button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 20px; font-size: 14px; color: #495057;">Dati acquisiti automaticamente per il titolo estero. Procedere al precarico fiscale.</p>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Codice ISIN Estero</div>
+                        <div class="detail-value">CH0012032048</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Piazza di Regolamento</div>
+                        <div class="detail-value">Zurigo (SIX)</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Valuta (Divisa)</div>
+                        <div class="detail-value">CHF</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Trade Date</div>
+                        <div class="detail-value">12/01/2026</div>
+                    </div>
+                    <div class="detail-item detail-item-full" style="border-left-color: #0ea5e9;">
+                        <div class="detail-label">Prezzo Fiscale di Carico</div>
+                        <div class="detail-value">254.30 CHF</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="chiudiFiscali()"><span class="material-icons">done_all</span> Conferma Inserimento a Terminale 3270</button>
+            </div>
+        </div>
     </div>
 
     <div id="modal-migliorie" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><span class="material-icons">verified</span> Changelog Completo delle Migliorie di Processo</h3>
+                <h3><span class="material-icons">verified</span> Sintesi Funzionalità Business Integrate (TDT IN)</h3>
                 <button class="close-btn" onclick="closeModal('modal-migliorie')"><span class="material-icons">close</span></button>
             </div>
             <div class="modal-body">
-                <p style="margin-bottom: 25px; font-size: 14px; color: #495057; line-height: 1.6;">Il cruscotto Traslochi IN (TDTIN) è stato completamente riprogettato per risolvere i blocchi documentati nell'applicativo precedente (AEA/Video). Di seguito l'elenco completo delle innovazioni integrate a livello architetturale e funzionale.</p>
+                <p style="margin-bottom: 20px; font-size: 14px; color: #495057; line-height: 1.6;">Interfaccia sviluppata sui requisiti emersi dai tavoli operativi per il governo totale della messaggistica RNI.</p>
                 
                 <div class="miglioria-box">
-                    <div class="miglioria-title"><span class="status-badge status-info">Architettura</span> 1. Superamento della Navigazione Paginata (Max 9 Righe)</div>
+                    <div class="miglioria-title"><span class="material-icons" style="color:#0ea5e9">swap_horiz</span> Integrazione Codici RNI e Logica Master-Detail</div>
                     <div class="miglioria-text">
-                        <strong>Prima:</strong> Nel vecchio portale, la consultazione delle "Richieste da valutare" era forzatamente paginata con un limite massimo di 9 record per schermata, obbligando a una continua e limitante navigazione sequenziale.<br>
-                        <strong>Oggi:</strong> La nuova interfaccia aggrega tutti i record in un'unica visuale fluida (Single Page Application), eliminando i vincoli di paginazione e integrando un motore di ricerca nativo (Live Search).
+                        Adozione dei codici di stato di rete (90111, 90165, 90614, ecc.) associati a diciture in chiaro. Implementata la vista <strong>Master-Detail</strong>: cliccando sul dettaglio pratica è possibile vedere la lista dei singoli ISIN figli e forzare controlli specifici per ciascuno, garantendo l'aggiornamento dello stato (es. "Trasferibile").
                     </div>
                 </div>
 
                 <div class="miglioria-box">
-                    <div class="miglioria-title"><span class="status-badge status-info">Operatività</span> 2. Avvio Lavorazione Flessibile e Granulare</div>
+                    <div class="miglioria-title"><span class="material-icons" style="color:#0ea5e9">replay</span> Gestione Scarto Controparte (Reinserimento 90614)</div>
                     <div class="miglioria-text">
-                        <strong>Prima:</strong> La ripresa della lavorazione delle pratiche sospese procedeva in modo indiscriminato (es. riavvio massivo dal record 1 al limite della pagina), senza offrire il controllo sulle priorità.<br>
-                        <strong>Oggi:</strong> L'operatore mantiene il totale controllo decisionale. Può avviare simultaneamente tutte le pratiche dal bottone principale, o scegliere di far ripartire <strong>una singola pratica specifica</strong> attraverso l'apposito comando "Avvia Singola Pratica" posto sulla riga.
+                        In caso di esito negativo o respingimento da parte della controparte (Messaggio 90614), l'operatore non deve più creare la pratica da capo. L'azione "Reinserisci Pratica" permette di correggere e istruire il sistema al re-invio automatico del flusso di richiesta.
                     </div>
                 </div>
 
                 <div class="miglioria-box">
-                    <div class="miglioria-title"><span class="status-badge status-info">Anomalie</span> 3. Correzione In-Line delle Eccezioni (Es. Dossier Titoli)</div>
+                    <div class="miglioria-title"><span class="material-icons" style="color:#0ea5e9">timer</span> Alert Penali di Ritardo (90617)</div>
                     <div class="miglioria-text">
-                        <strong>Prima:</strong> Anomalie sui dati primari, come la mancata identificazione di un Dossier Titoli, arrestavano l'elaborazione rendendo necessario un intervento IT o l'apertura di ticket manuali.<br>
-                        <strong>Oggi:</strong> L'interfaccia intercetta e mostra in chiaro la causa del blocco. La riga evidenzia l'errore e presenta il comando "Correggi Dati". Questo permette l'inserimento manuale delle informazioni mancanti e l'immediata riattivazione della pratica.
+                        Se le tempistiche di risposta della controparte superano le SLA previste, il sistema evidenzia immediatamente la pratica in rosso ("Allarme Penale 90617"), permettendo all'ufficio di sollecitare ed evitare decurtazioni economiche.
                     </div>
                 </div>
 
                 <div class="miglioria-box">
-                    <div class="miglioria-title"><span class="status-badge status-info">Integrazione</span> 4. Estrazione Dati Certificata via Portale SAS</div>
+                    <div class="miglioria-title"><span class="material-icons" style="color:#0ea5e9">account_box</span> Distinzione Automatizzata Amministrato/Gestito e P.IVA</div>
                     <div class="miglioria-text">
-                        <strong>Prima:</strong> Il flusso prevedeva l'esportazione di file locali CSV (es. `REPORT_PRATICHE.csv`) che l'operatore scaricava e distribuiva esponendosi al rischio di consultare o processare dati obsoleti.<br>
-                        <strong>Oggi:</strong> La generazione di file testuali a bordo macchina è stata abolita a favore del consolidamento dei dati nel database. Il sistema predispone un reindirizzamento al <strong>Portale Aziendale SAS</strong>, garantendo elaborazioni e reportistiche istituzionali sicure.
+                        Riconoscimento nativo a cruscotto della natura del trasferimento (142 Amministrato / 143 Gestito) e della tipologia di clientela (Persona Fisica vs Soggetto Giuridico), per evitare scarti a monte e indirizzare i check documentali corretti.
                     </div>
                 </div>
 
                 <div class="miglioria-box">
-                    <div class="miglioria-title"><span class="status-badge status-info">Tracciatura</span> 5. Visibilità in Tempo Reale dello Stato Applicativo</div>
+                    <div class="miglioria-title"><span class="material-icons" style="color:#0ea5e9">gavel</span> Risoluzione AML In-App (Zero Email)</div>
                     <div class="miglioria-text">
-                        <strong>Prima:</strong> Verificare l'avanzamento reale di un "Trasloco in Ingresso" richiedeva incrociare i dati tra i log di sistema e i vecchi applicativi (AEA e Video).<br>
-                        <strong>Oggi:</strong> Tutti gli stati elaborativi ("Inserita a Sistema con Successo", "In Elaborazione", "In Attesa di Inserimento a Sistema", "Richiede Controllo Manuale Dati") sono aggiornati in background dall'infrastruttura RPA e resi visibili in chiaro e in tempo reale all'operatore di Back Office.
+                        Sostituzione dello scambio email per le "Diverse Intestazioni" con un task di autorizzazione Antiriciclaggio interno alla riga. L'esito certificato fa ripartire l'automazione.
                     </div>
                 </div>
-
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('modal-migliorie')"><span class="material-icons">close</span> Chiudi Changelog</button>
+                <button class="btn btn-secondary" onclick="closeModal('modal-migliorie')">Chiudi Informativa</button>
             </div>
         </div>
     </div>
@@ -303,33 +609,127 @@
         function closeModal(modalId) { document.getElementById(modalId).classList.remove('active'); }
         window.onclick = function(event) { if (event.target.classList.contains('modal')) event.target.classList.remove('active'); }
 
-        // --- FILTRI LIVE SEARCH ---
+        // --- SISTEMA DI TOAST FEEDBACK ---
+        function showToast(message, icon = 'info') {
+            const toast = document.getElementById("toast");
+            document.getElementById("toast-msg").innerText = message;
+            document.getElementById("toast-icon").innerText = icon;
+            toast.className = "show";
+            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3500);
+        }
+
+        // --- MOTORE DI AZIONI INTERATTIVE E ROBOT ---
+        function setBotWorking(rowId, customMessage) {
+            const badge = document.getElementById('badge-' + rowId);
+            const actions = document.getElementById('actions-' + rowId);
+
+            badge.className = 'status-badge status-bot-working';
+            badge.innerHTML = '<span class="material-icons" style="font-size: 12px; animation: spin 2s linear infinite; margin-right: 4px;">autorenew</span> In Elaborazione';
+            
+            actions.innerHTML = `<span class="bot-text">🤖 ${customMessage}</span>`;
+            showToast('Azione recepita. L\'automazione ha preso in carico il task.', 'smart_toy');
+        }
+
+        function forzaIsin() {
+            document.getElementById('isin-status-2').className = 'status-badge status-bot-working';
+            document.getElementById('isin-status-2').innerHTML = '<span class="material-icons" style="font-size: 12px; animation: spin 2s linear infinite; margin-right: 4px;">autorenew</span> Interrogazione SF...';
+            showToast('Chiamata API inoltrata a Salesforce per controllo ISIN.', 'api');
+            
+            setTimeout(() => {
+                document.getElementById('isin-status-2').className = 'status-badge status-completato';
+                document.getElementById('isin-status-2').innerText = 'Trasferibile';
+                showToast('Risposta ricevuta: Titolo Trasferibile.', 'check_circle');
+            }, 2500);
+        }
+
+        function salvaDossier() {
+            const val = document.getElementById('input-dossier').value;
+            if(!val) return;
+            document.getElementById('dossier-1468131').innerText = val;
+            document.getElementById('dossier-1468131').style.color = '#2c3e50';
+            
+            closeModal('modal-dossier');
+            setBotWorking('1468131', 'Il bot sta aggiornando i dati in AEA...');
+        }
+
+        function risolviAML() {
+            const esito = document.getElementById('esito-aml').value;
+            closeModal('modal-aml');
+            
+            if(esito === 'ok') {
+                setBotWorking('1468130', 'Registrazione autorizzazione su DB...');
+            } else {
+                const badge = document.getElementById('badge-1468130');
+                badge.className = 'status-badge status-errore';
+                badge.innerText = 'Pratica Respinta';
+                document.getElementById('actions-1468130').innerHTML = '<span style="font-size: 13px; color: #dc3545; font-weight: 500;"><span class="material-icons" style="font-size: 16px; vertical-align: middle;">block</span> Bloccata</span>';
+                showToast('Pratica bloccata definitivamente.', 'gavel');
+            }
+        }
+
+        function chiudiFiscali() {
+            closeModal('modal-fiscali');
+            setBotWorking('1468132', 'Esecuzione script precarico 3270...');
+        }
+
+        function segnalaRitardo() {
+            setBotWorking('1468135', 'Invio alert via rete RNI (Msg 90617)...');
+        }
+
+        function scartaPratica(id) {
+            document.getElementById('row-' + id).remove();
+            showToast(`La pratica ${id} è stata annullata e rimossa dalla coda.`, 'delete');
+            applyFilters();
+        }
+
+        // --- FILTRI LIVE SEARCH E SORTING ---
         function applyFilters() {
             const fId = document.getElementById('filter-id').value.toLowerCase();
-            const fStatus = document.getElementById('filter-status').value.toLowerCase();
-
+            const fBanca = document.getElementById('filter-banca').value.toLowerCase();
+            
             const rows = document.querySelectorAll('.table-wrapper tbody tr');
             let visibleCount = 0;
-
             rows.forEach(row => {
                 const tId = row.cells[0].innerText.toLowerCase();
-                const tStatus = row.cells[4].innerText.toLowerCase();
-
+                const tBanca = row.cells[1].innerText.toLowerCase();
                 let match = true;
                 if (fId && !tId.includes(fId)) match = false;
-                if (fStatus && !tStatus.includes(fStatus)) match = false;
-
+                if (fBanca && !tBanca.includes(fBanca)) match = false;
                 row.style.display = match ? '' : 'none';
                 if (match) visibleCount++;
             });
-
             document.querySelector('.results-count').innerText = `${visibleCount} pratiche individuate`;
         }
-
         function clearFilters() {
             document.getElementById('filter-id').value = '';
-            document.getElementById('filter-status').value = '';
+            document.getElementById('filter-banca').value = '';
             applyFilters();
+            showToast('Filtri azzerati.', 'filter_alt_off');
+        }
+
+        // Sorting
+        let sortDir = [true, true, true, true, true, true]; 
+        function sortTable(colIndex, type) {
+            const table = document.getElementById("table-body");
+            const rows = Array.from(table.querySelectorAll("tr"));
+            const ths = document.querySelectorAll("th");
+            const isAsc = sortDir[colIndex];
+
+            ths.forEach(th => { th.classList.remove('asc', 'desc'); });
+            ths[colIndex].classList.add(isAsc ? 'asc' : 'desc');
+
+            rows.sort((a, b) => {
+                let cellA = a.cells[colIndex].innerText.trim();
+                let cellB = b.cells[colIndex].innerText.trim();
+
+                if (type === 'number') { return isAsc ? cellA - cellB : cellB - cellA; }
+                if (cellA < cellB) return isAsc ? -1 : 1;
+                if (cellA > cellB) return isAsc ? 1 : -1;
+                return 0;
+            });
+
+            rows.forEach(row => table.appendChild(row));
+            sortDir[colIndex] = !isAsc;
         }
     </script>
 </body>
