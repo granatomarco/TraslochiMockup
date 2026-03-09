@@ -10,7 +10,6 @@
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: #f5f7fa; color: #2c3e50; padding-bottom: 60px; }
         .material-icons { vertical-align: middle; font-size: 20px; }
         
-        /* Navbar - Allineata per entrambi i file */
         .navbar { background: #202742; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 30px 0; width: 100%; }
         .navbar-container { max-width: 1600px; margin: 0 auto; padding: 0 40px; width: 100%; display: flex; align-items: center; justify-content: space-between; }
         
@@ -60,6 +59,7 @@
         td { padding: 14px 16px; border-bottom: 1px solid #e9ecef; font-size: 14px; color: #2c3e50; vertical-align: middle;}
         tr:hover { background: #f8f9fa; transition: background 0.2s; }
 
+        /* Inner Table for Master-Detail ISINs */
         .inner-table { width: 100%; border: 1px solid #ddd; margin-top: 10px; border-radius: 4px; overflow: hidden;}
         .inner-table th { background: #f1f5f9; padding: 10px; font-size: 12px; }
         .inner-table td { padding: 10px; font-size: 13px; border-bottom: 1px solid #eee;}
@@ -159,8 +159,8 @@
             <h2 class="search-title"><span class="material-icons">search</span> Motore di Ricerca Pratiche IN</h2>
             <div class="search-grid">
                 <div class="form-group">
-                    <label><span class="material-icons" style="font-size: 16px; color: #64748b;">tag</span> ID Pratica (SF/AEA)</label>
-                    <input type="text" id="filter-id" placeholder="Es. 1468" oninput="applyFilters()">
+                    <label><span class="material-icons" style="font-size: 16px; color: #64748b;">tag</span> Codice Pratica (SF/AEA)</label>
+                    <input type="text" id="filter-id" placeholder="Es. IN-2026" oninput="applyFilters()">
                 </div>
                 <div class="form-group">
                     <label><span class="material-icons" style="font-size: 16px; color: #64748b;">account_balance</span> Banca Controparte</label>
@@ -187,6 +187,7 @@
                         <option value="Bloccata (Manca Dossier)">Bloccata (Manca Dossier)</option>
                         <option value="Verifica Antiriciclaggio">Verifica Antiriciclaggio</option>
                         <option value="Allarme Penale">Allarme Penale (90617)</option>
+                        <option value="Pratica Bloccata (KO Titoli)">Pratica Bloccata (KO Titoli)</option>
                     </select>
                 </div>
             </div>
@@ -198,10 +199,10 @@
         <div class="results-section">
             <div class="results-header">
                 <h2 class="results-title"><span class="material-icons">table_chart</span> Elenco Pratiche in Ingresso</h2>
-                <span class="results-count">8 pratiche individuate</span>
+                <span class="results-count">9 pratiche individuate</span>
             </div>
             <div class="action-bar">
-                <button class="btn btn-primary" onclick="showToast('Comando batch inviato al motore RPA. Le pratiche verranno processate su AEA a breve.', 'settings_system_daydream')">
+                <button class="btn btn-primary" onclick="avviaMassivo()">
                     <span class="material-icons">play_circle_filled</span> Esegui Tutte le Pratiche (Massivo)
                 </button>
                 <a href="#" class="btn btn-light" target="_blank" onclick="showToast('Apertura sessione sicura portale SAS in corso...', 'open_in_new')">
@@ -212,7 +213,7 @@
                 <table>
                     <thead>
                         <tr>
-                            <th class="sortable" onclick="sortTable(0, 'number')"><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">tag</span> ID Pratica <span class="material-icons sort-icon">arrow_downward</span></th>
+                            <th class="sortable" onclick="sortTable(0, 'string')"><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">tag</span> Codice Pratica <span class="material-icons sort-icon">arrow_downward</span></th>
                             <th class="sortable" onclick="sortTable(1, 'string')"><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">account_balance</span> Banca Controparte <span class="material-icons sort-icon">arrow_downward</span></th>
                             <th class="sortable" onclick="sortTable(2, 'string')"><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">folder</span> Dossier Destinazione <span class="material-icons sort-icon">arrow_downward</span></th>
                             <th class="sortable" onclick="sortTable(3, 'string')"><span class="material-icons" style="font-size: 16px; color: #64748b; margin-right: 4px;">account_box</span> Tipo Pratica / Cliente <span class="material-icons sort-icon">arrow_downward</span></th>
@@ -222,8 +223,8 @@
                         </tr>
                     </thead>
                     <tbody id="table-body">
-                        <tr id="row-1468128">
-                            <td style="font-weight: 500; color: #64748b;">1468128</td>
+                        <tr id="row-001">
+                            <td style="font-weight: 500; color: #64748b;">IN-2026-001</td>
                             <td>INTESA SANPAOLO</td>
                             <td>52688508</td>
                             <td>
@@ -231,15 +232,15 @@
                                 <span class="sub-text">Persona Fisica</span>
                             </td>
                             <td><span class="status-badge status-completato">Trasferibile</span></td>
-                            <td><span class="status-badge status-completato" id="badge-1468128">Accettata (90165)</span></td>
+                            <td><span class="status-badge status-completato" id="badge-001">Accettata (90165)</span></td>
                             <td>
-                                <div class="action-group" id="actions-1468128">
+                                <div class="action-group" id="actions-001">
                                     <span style="font-size: 13px; color: #155724; font-weight: 500;"><span class="material-icons" style="font-size: 16px; vertical-align: middle;">done_all</span> Operazione Conclusa</span>
                                 </div>
                             </td>
                         </tr>
-                        <tr id="row-1468129">
-                            <td style="font-weight: 500; color: #64748b;">1468129</td>
+                        <tr id="row-002">
+                            <td style="font-weight: 500; color: #64748b;">IN-2026-002</td>
                             <td>UNICREDIT</td>
                             <td>52688393</td>
                             <td>
@@ -247,18 +248,18 @@
                                 <span class="sub-text">Persona Fisica</span>
                             </td>
                             <td><span class="status-badge status-completato">Trasferibile</span></td>
-                            <td><span class="status-badge status-nuovo" id="badge-1468129">Da Lavorare (Rich. 90111)</span></td>
+                            <td><span class="status-badge status-nuovo" id="badge-002">Da Lavorare (Rich. 90111)</span></td>
                             <td>
-                                <div class="action-group" id="actions-1468129">
-                                    <button class="btn btn-primary" onclick="setBotWorking('1468129', 'Inoltro messaggio RNI in corso...')">
+                                <div class="action-group" id="actions-002">
+                                    <button class="btn btn-primary" onclick="setBotWorking('002', 'Inoltro messaggio RNI in corso...')">
                                         <span class="material-icons" style="font-size: 16px;">play_arrow</span> Avvia Flusso
                                     </button>
                                     <button class="btn-icon" title="Gestione Titoli (Master-Detail)" onclick="openModal('modal-dettaglio-pratica')"><span class="material-icons">visibility</span></button>
                                 </div>
                             </td>
                         </tr>
-                        <tr id="row-1468130">
-                            <td style="font-weight: 500; color: #64748b;">1468130</td>
+                        <tr id="row-003">
+                            <td style="font-weight: 500; color: #64748b;">IN-2026-003</td>
                             <td>INTESA SANPAOLO</td>
                             <td>52681122</td>
                             <td>
@@ -266,9 +267,9 @@
                                 <span class="sub-text">Persona Fisica</span>
                             </td>
                             <td><span class="status-badge status-completato">Trasferibile</span></td>
-                            <td><span class="status-badge status-errore" id="badge-1468130">Verifica Antiriciclaggio</span></td>
+                            <td><span class="status-badge status-errore" id="badge-003">Verifica Antiriciclaggio</span></td>
                             <td>
-                                <div class="action-group" id="actions-1468130">
+                                <div class="action-group" id="actions-003">
                                     <button class="btn btn-secondary" onclick="openModal('modal-aml')">
                                         <span class="material-icons" style="font-size: 16px;">gavel</span> Risolvi Anomalia AML
                                     </button>
@@ -276,27 +277,27 @@
                                 </div>
                             </td>
                         </tr>
-                        <tr id="row-1468131">
-                            <td style="font-weight: 500; color: #64748b;">1468131</td>
+                        <tr id="row-004">
+                            <td style="font-weight: 500; color: #64748b;">IN-2026-004</td>
                             <td>BPM</td>
-                            <td id="dossier-1468131" style="color: #dc3545; font-weight: 500;">Dato Mancante</td>
+                            <td id="dossier-004" style="color: #dc3545; font-weight: 500;">Dato Mancante</td>
                             <td>
                                 <span style="font-weight: 500;">Amministrato (142)</span>
                                 <span class="sub-text">Soggetto Giuridico (P.IVA)</span>
                             </td>
                             <td><span class="status-badge status-completato">Trasferibile</span></td>
-                            <td><span class="status-badge status-errore" id="badge-1468131">Bloccata (Manca Dossier)</span></td>
+                            <td><span class="status-badge status-errore" id="badge-004">Bloccata (Manca Dossier)</span></td>
                             <td>
-                                <div class="action-group" id="actions-1468131">
+                                <div class="action-group" id="actions-004">
                                     <button class="btn btn-secondary" onclick="openModal('modal-dossier')">
                                         <span class="material-icons" style="font-size: 16px;">edit</span> Inserisci Dossier
                                     </button>
-                                    <button class="btn-icon" title="Scarta Pratica" style="color: #dc3545;" onclick="scartaPratica('1468131')"><span class="material-icons">delete_forever</span></button>
+                                    <button class="btn-icon" title="Scarta Pratica" style="color: #dc3545;" onclick="scartaPratica('004')"><span class="material-icons">delete_forever</span></button>
                                 </div>
                             </td>
                         </tr>
-                        <tr id="row-1468132">
-                            <td style="font-weight: 500; color: #64748b;">1468132</td>
+                        <tr id="row-005">
+                            <td style="font-weight: 500; color: #64748b;">IN-2026-005</td>
                             <td>CREDIT SUISSE</td>
                             <td>52689911</td>
                             <td>
@@ -304,9 +305,9 @@
                                 <span class="sub-text">Precarico Fiscale Necessario</span>
                             </td>
                             <td><span class="status-badge status-completato">Trasferibile</span></td>
-                            <td><span class="status-badge status-info" id="badge-1468132">Dati Pronti (Msg 90168)</span></td>
+                            <td><span class="status-badge status-info" id="badge-005">Dati Pronti (Msg 90168)</span></td>
                             <td>
-                                <div class="action-group" id="actions-1468132">
+                                <div class="action-group" id="actions-005">
                                     <button class="btn btn-light" onclick="openModal('modal-fiscali')">
                                         <span class="material-icons" style="font-size: 16px;">receipt</span> Valida Dati Fiscali
                                     </button>
@@ -314,8 +315,8 @@
                                 </div>
                             </td>
                         </tr>
-                        <tr id="row-1468133">
-                            <td style="font-weight: 500; color: #64748b;">1468133</td>
+                        <tr id="row-006">
+                            <td style="font-weight: 500; color: #64748b;">IN-2026-006</td>
                             <td>BPER BANCA</td>
                             <td>52684455</td>
                             <td>
@@ -334,8 +335,8 @@
                                 </div>
                             </td>
                         </tr>
-                        <tr id="row-1468134">
-                            <td style="font-weight: 500; color: #64748b;">1468134</td>
+                        <tr id="row-007">
+                            <td style="font-weight: 500; color: #64748b;">IN-2026-007</td>
                             <td>FINECO</td>
                             <td>52681000</td>
                             <td>
@@ -343,18 +344,18 @@
                                 <span class="sub-text">Persona Fisica</span>
                             </td>
                             <td><span class="status-badge status-completato">Trasferibile</span></td>
-                            <td><span class="status-badge status-errore" id="badge-1468134">Scarto Controparte (90614)</span></td>
+                            <td><span class="status-badge status-errore" id="badge-007">Scarto Controparte (90614)</span></td>
                             <td>
-                                <div class="action-group" id="actions-1468134">
-                                    <button class="btn btn-secondary" onclick="setBotWorking('1468134', 'Reinserimento flusso 90614...')">
+                                <div class="action-group" id="actions-007">
+                                    <button class="btn btn-secondary" onclick="setBotWorking('007', 'Reinserimento flusso 90614...')">
                                         <span class="material-icons" style="font-size: 16px;">replay</span> Reinserisci Pratica
                                     </button>
                                     <button class="btn-icon" title="Leggi Motivo Scarto RNI" onclick="openModal('modal-scarto-rni')"><span class="material-icons">feedback</span></button>
                                 </div>
                             </td>
                         </tr>
-                        <tr id="row-1468135">
-                            <td style="font-weight: 500; color: #64748b;">1468135</td>
+                        <tr id="row-008">
+                            <td style="font-weight: 500; color: #64748b;">IN-2026-008</td>
                             <td>MEDIOLANUM</td>
                             <td>52682211</td>
                             <td>
@@ -362,13 +363,32 @@
                                 <span class="sub-text">Persona Fisica</span>
                             </td>
                             <td><span class="status-badge status-info">Verifica ISIN</span></td>
-                            <td><span class="status-badge status-warning" id="badge-1468135">Allarme Penale (90617)</span></td>
+                            <td><span class="status-badge status-warning" id="badge-008">Allarme Penale (90617)</span></td>
                             <td>
-                                <div class="action-group" id="actions-1468135">
+                                <div class="action-group" id="actions-008">
                                     <button class="btn btn-alert" style="background:#e67e22; color:white; border:none;" onclick="segnalaRitardo()">
                                         <span class="material-icons" style="font-size: 16px;">timer</span> Segnala Ritardo
                                     </button>
                                     <button class="btn-icon" title="Gestione Titoli (Verifica Trasferibilità)" onclick="openModal('modal-dettaglio-pratica')"><span class="material-icons">visibility</span></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr id="row-009">
+                            <td style="font-weight: 500; color: #64748b;">IN-2026-009</td>
+                            <td>BANCA SELLA</td>
+                            <td>52687788</td>
+                            <td>
+                                <span style="font-weight: 500;">Gestito (143)</span>
+                                <span class="sub-text">Persona Fisica</span>
+                            </td>
+                            <td><span class="status-badge status-errore">Non Trasferibile</span></td>
+                            <td><span class="status-badge status-errore" id="badge-009">Pratica Bloccata (KO Titoli)</span></td>
+                            <td>
+                                <div class="action-group" id="actions-009">
+                                    <button class="btn btn-secondary" onclick="scartaPratica('009')">
+                                        <span class="material-icons" style="font-size: 16px;">delete_forever</span> Scarta Pratica
+                                    </button>
+                                    <button class="btn-icon" title="Dettaglio Pratica (Elenco ISIN)" onclick="openModal('modal-dettaglio-pratica')"><span class="material-icons">visibility</span></button>
                                 </div>
                             </td>
                         </tr>
@@ -378,6 +398,8 @@
         </div>
     </div>
 
+    <div id="toast"><span class="material-icons" id="toast-icon">info</span> <span id="toast-msg">Messaggio</span></div>
+
     <div id="modal-dettaglio-pratica" class="modal">
         <div class="modal-content" style="max-width: 800px;">
             <div class="modal-header">
@@ -385,7 +407,7 @@
                 <button class="close-btn" onclick="closeModal('modal-dettaglio-pratica')"><span class="material-icons">close</span></button>
             </div>
             <div class="modal-body">
-                <p style="margin-bottom: 15px; font-size: 14px; color: #495057;">Una pratica può contenere molteplici titoli. Da qui puoi verificare ed eventualmente forzare lo stato di trasferibilità del singolo ISIN (Gestione Master-Detail).</p>
+                <p style="margin-bottom: 15px; font-size: 14px; color: #495057;">Una singola pratica può contenere molteplici titoli. Da qui puoi verificare ed eventualmente forzare lo stato di trasferibilità del singolo ISIN (Gestione Master-Detail).</p>
                 <table class="inner-table">
                     <thead>
                         <tr>
@@ -405,10 +427,17 @@
                             <td><span style="color:#6c757d; font-size:12px;">OK</span></td>
                         </tr>
                         <tr>
+                            <td style="font-weight:500;">BMG162341090</td>
+                            <td>BROOKFIELD BUSINESS LP</td>
+                            <td>3.000</td>
+                            <td><span class="status-badge status-errore">Non Trasferibile</span></td>
+                            <td><span style="color:#dc3545; font-size:12px;">KO</span></td>
+                        </tr>
+                        <tr>
                             <td style="font-weight:500;">CH0012032048</td>
                             <td>ROCHE HOLDING AG</td>
                             <td>250</td>
-                            <td><span class="status-badge status-info" id="isin-status-2">Verifica ISIN</span></td>
+                            <td><span class="status-badge status-info" id="isin-status-2">Da Verificare</span></td>
                             <td>
                                 <button class="btn btn-salesforce" style="padding: 4px 8px; font-size: 11px;" onclick="forzaIsin()">
                                     <span class="material-icons" style="font-size: 14px;">api</span> Notifica SF (API)
@@ -501,7 +530,7 @@
                 <button class="close-btn" onclick="closeModal('modal-aml')"><span class="material-icons">close</span></button>
             </div>
             <div class="modal-body">
-                <p style="margin-bottom: 20px; font-size: 14px; color: #495057;">La pratica <strong>1468130</strong> risulta sospesa per "Diversa Intestazione". Indica l'esito AML per autorizzare l'elaborazione.</p>
+                <p style="margin-bottom: 20px; font-size: 14px; color: #495057;">La pratica <strong>IN-2026-003</strong> risulta sospesa per "Diversa Intestazione". Indica l'esito AML per autorizzare l'elaborazione.</p>
                 <div class="form-group">
                     <label>Esito Valutazione Compliance</label>
                     <select id="esito-aml">
@@ -566,7 +595,7 @@
                 <div class="miglioria-box">
                     <div class="miglioria-title"><span class="material-icons" style="color:#0ea5e9">swap_horiz</span> Integrazione Codici RNI e Logica Master-Detail</div>
                     <div class="miglioria-text">
-                        Adozione dei codici di stato di rete (90111, 90165, 90614, ecc.) associati a diciture in chiaro. Implementata la vista <strong>Master-Detail</strong>: cliccando sul dettaglio pratica è possibile vedere la lista dei singoli ISIN figli e forzare controlli specifici per ciascuno, garantendo l'aggiornamento dello stato (es. "Trasferibile").
+                        Adozione dei codici di stato di rete (90111, 90165, 90614, ecc.) associati a diciture in chiaro. Implementata la vista <strong>Master-Detail</strong>: cliccando sul dettaglio pratica è possibile vedere la lista dei singoli ISIN figli e forzare controlli specifici per ciascuno, garantendo l'aggiornamento dello stato (es. "Trasferibile" o "Non Trasferibile").
                     </div>
                 </div>
 
@@ -630,6 +659,13 @@
             showToast('Azione recepita. L\'automazione ha preso in carico il task.', 'smart_toy');
         }
 
+        function avviaMassivo() {
+            showToast('Comando batch inviato al motore RPA. Le pratiche verranno processate su AEA a breve.', 'settings_system_daydream');
+            setTimeout(() => {
+                setBotWorking('002', 'Inoltro messaggio RNI in corso...');
+            }, 1000);
+        }
+
         function forzaIsin() {
             document.getElementById('isin-status-2').className = 'status-badge status-bot-working';
             document.getElementById('isin-status-2').innerHTML = '<span class="material-icons" style="font-size: 12px; animation: spin 2s linear infinite; margin-right: 4px;">autorenew</span> Interrogazione SF...';
@@ -645,11 +681,11 @@
         function salvaDossier() {
             const val = document.getElementById('input-dossier').value;
             if(!val) return;
-            document.getElementById('dossier-1468131').innerText = val;
-            document.getElementById('dossier-1468131').style.color = '#2c3e50';
+            document.getElementById('dossier-004').innerText = val;
+            document.getElementById('dossier-004').style.color = '#2c3e50';
             
             closeModal('modal-dossier');
-            setBotWorking('1468131', 'Il bot sta aggiornando i dati in AEA...');
+            setBotWorking('004', 'Il bot sta aggiornando i dati in AEA...');
         }
 
         function risolviAML() {
@@ -657,28 +693,28 @@
             closeModal('modal-aml');
             
             if(esito === 'ok') {
-                setBotWorking('1468130', 'Registrazione autorizzazione su DB...');
+                setBotWorking('003', 'Registrazione autorizzazione su DB...');
             } else {
-                const badge = document.getElementById('badge-1468130');
+                const badge = document.getElementById('badge-003');
                 badge.className = 'status-badge status-errore';
                 badge.innerText = 'Pratica Respinta';
-                document.getElementById('actions-1468130').innerHTML = '<span style="font-size: 13px; color: #dc3545; font-weight: 500;"><span class="material-icons" style="font-size: 16px; vertical-align: middle;">block</span> Bloccata</span>';
+                document.getElementById('actions-003').innerHTML = '<span style="font-size: 13px; color: #dc3545; font-weight: 500;"><span class="material-icons" style="font-size: 16px; vertical-align: middle;">block</span> Bloccata</span>';
                 showToast('Pratica bloccata definitivamente.', 'gavel');
             }
         }
 
         function chiudiFiscali() {
             closeModal('modal-fiscali');
-            setBotWorking('1468132', 'Esecuzione script precarico 3270...');
+            setBotWorking('005', 'Esecuzione script precarico 3270...');
         }
 
         function segnalaRitardo() {
-            setBotWorking('1468135', 'Invio alert via rete RNI (Msg 90617)...');
+            setBotWorking('008', 'Invio alert via rete RNI (Msg 90617)...');
         }
 
         function scartaPratica(id) {
             document.getElementById('row-' + id).remove();
-            showToast(`La pratica ${id} è stata annullata e rimossa dalla coda.`, 'delete');
+            showToast(`La pratica IN-2026-${id} è stata annullata e rimossa dalla coda.`, 'delete');
             applyFilters();
         }
 
@@ -723,6 +759,11 @@
                 let cellB = b.cells[colIndex].innerText.trim();
 
                 if (type === 'number') { return isAsc ? cellA - cellB : cellB - cellA; }
+                if (type === 'string') {
+                    if (cellA < cellB) return isAsc ? -1 : 1;
+                    if (cellA > cellB) return isAsc ? 1 : -1;
+                    return 0;
+                }
                 if (cellA < cellB) return isAsc ? -1 : 1;
                 if (cellA > cellB) return isAsc ? 1 : -1;
                 return 0;
