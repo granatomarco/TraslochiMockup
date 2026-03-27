@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<script>
+  const BASE_URL = '<?= ScriptApp.getService().getUrl() ?>';
+</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TDT IN - Dettaglio ISIN</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: #f5f7fa; color: #2c3e50; padding-bottom: 60px; }
+        .material-icons { vertical-align: middle; font-size: 20px; }
+        
+        .navbar { background: #202742; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 30px 0; width: 100%; }
+        .navbar-container { max-width: 1600px; margin: 0 auto; padding: 0 40px; width: 100%; display: flex; align-items: center; justify-content: space-between; }
+        
+        .logo-wrapper { display: flex; align-items: center; }
+        .logo-section { display: flex; align-items: center; gap: 15px; }
+        .brand-logo { height: 60px; width: auto; object-fit: contain; display: block; }
+        .logo-circle { width: 50px; height: 50px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #2c3e50; }
+        .logo-circle .material-icons { font-size: 32px; }
+        .brand-text { color: white; }
+        .brand-name { font-size: 18px; font-weight: 600; letter-spacing: 2px; }
+        .brand-subtitle { font-size: 12px; letter-spacing: 3px; margin-top: 2px; opacity: 0.9; }
+        
+        .nav-menu { display: flex; gap: 20px; }
+        .nav-link { color: white; text-decoration: none; opacity: 0.7; font-size: 14px; font-weight: 500; padding: 8px 16px; border-radius: 4px; transition: all 0.3s; cursor: pointer; display: flex; align-items: center; gap: 6px;}
+        .nav-link:hover, .nav-link.active { opacity: 1; background: rgba(255,255,255,0.1); }
+
+        .container { max-width: 1600px; margin: 0 auto; padding: 30px 40px; }
+        
+        .breadcrumb { margin-bottom: 20px; font-size: 14px; color: #6c757d; }
+        .breadcrumb a { color: #0ea5e9; text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        
+        .page-header { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-start;}
+        h1.page-title { font-size: 26px; font-weight: 400; color: #2c3e50; margin-bottom: 8px; }
+        .header-divider { border-top: 2px solid rgb(32, 39, 66); width: 150px; padding-top: 8px; margin-bottom: 8px; }
+        .header-actions { display: flex; gap: 12px; align-items: center; }
+
+        .pratica-card { background: white; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 24px; margin-bottom: 25px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 20px; }
+        .card-item { padding: 12px 15px; background: #f8f9fa; border-radius: 4px; border-left: 3px solid #3b82f6; }
+        .card-label { font-size: 11px; color: #6c757d; font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
+        .card-value { font-size: 15px; color: #2c3e50; font-weight: 600; }
+        .card-value.urgent { color: #dc2626; }
+
+        .results-section { background: white; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; }
+        .results-header { padding: 20px 30px; background: #f8f9fa; border-bottom: 1px solid #e9ecef; display: flex; justify-content: space-between; align-items: center; }
+        h2.results-title { font-size: 16px; font-weight: 600; color: #2c3e50; display: flex; align-items: center; gap: 8px; }
+        .results-count { font-size: 13px; color: #6c757d; font-weight: 500;}
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        thead { background: #f8f9fa; }
+        th { padding: 14px 16px; text-align: left; font-weight: 600; color: #2c3e50; font-size: 13px; border-bottom: 2px solid #e9ecef; white-space: nowrap; }
+        td { padding: 14px 16px; border-bottom: 1px solid #e9ecef; font-size: 14px; color: #2c3e50; vertical-align: middle;}
+        tr:hover { background: #f8f9fa; }
+        tr.elaborato { background: #f8fafc; }
+        tr.elaborato td { color: #94a3b8; text-decoration: line-through; }
+
+        .action-group { display: flex; gap: 8px; align-items: center; }
+        .btn-icon { padding: 8px; border-radius: 4px; border: 1px solid #ddd; background: white; color: #6c757d; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; }
+        .btn-icon:hover { background: #f8f9fa; color: #2c3e50; border-color: #2c3e50; }
+        .btn-primary { background: #2c3e50; color: white; }
+        .btn-primary:hover { background: #3d5266; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-light { background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1; }
+        .btn-light:hover { background: #cbd5e1; }
+        .btn-ok { background: #16a34a; color: white; }
+        .btn-ok:hover { background: #15803d; }
+        .btn-ko { background: #dc2626; color: white; }
+        .btn-ko:hover { background: #b91c1c; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; animation: fadeIn 0.3s; }
+        .modal.active { display: flex; align-items: center; justify-content: center; }
+        .modal-content { background: white; border-radius: 4px; max-width: 900px; width: 95%; max-height: 85vh; overflow-y: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.3); animation: slideUp 0.3s; }
+        .modal-header { background: #2c3e50; color: white; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h3 { font-size: 18px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+        .close-btn { background: none; border: none; color: white; cursor: pointer; padding: 0; display: flex; }
+        .modal-body { padding: 30px; }
+        .modal-footer { padding: 20px 30px; background: #f8f9fa; display: flex; gap: 10px; justify-content: flex-end; border-top: 1px solid #e9ecef;}
+
+        .business-history { border: 1px solid #e9ecef; border-radius: 4px; background: white; margin-bottom: 20px; }
+        .bh-item { padding: 12px 15px; border-bottom: 1px solid #e9ecef; display: flex; align-items: flex-start; gap: 12px; font-size: 13px; color: #495057; }
+        .bh-item:last-child { border-bottom: none; background: #f8f9fa; font-weight: 500; color: #2c3e50;}
+        .bh-date { font-weight: 600; color: #6c757d; min-width: 130px; display: inline-block; font-size: 12px;}
+        .bh-icon-ok { color: #16a34a; }
+        .bh-icon-err { color: #dc2626; }
+        .bh-icon-wait { color: #17a2b8; }
+
+        .action-area { padding: 15px; border-radius: 4px; border: 1px solid #eee; margin-bottom: 20px; }
+        .action-area h5 { font-size: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .action-area p { font-size: 13px; margin-bottom: 12px; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .btn { padding: 8px 16px; border: none; border-radius: 4px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none;}
+        .btn-ok { background: #16a34a; color: white; }
+        .btn-ok:hover { background: #15803d; }
+        .btn-ko { background: #dc2626; color: white; }
+        .btn-ko:hover { background: #b91c1c; }
+        .btn-light { background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1; }
+        .btn-light:hover { background: #cbd5e1; }
+
+        .status-badge { padding: 5px 10px; border-radius: 3px; font-size: 12px; font-weight: 600; display: inline-block; letter-spacing: 0.5px;}
+        .status-trasferibile { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0;}
+        .status-non-trasferibile { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca;}
+        .status-da-verificare { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d;}
+        .status-advisory { background: #ede9fe; color: #5b21b6; border: 1px solid #ddd6fe;}
+        .status-esteri { background: #ffedd5; color: #9a3412; border: 1px solid #fed7aa;}
+        .status-elaborato { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; text-decoration: line-through; }
+        
+        .flag-estero { color: #ea580c; font-weight: 600; }
+        
+        .footer { max-width: 1600px; margin: 30px auto 0; padding: 20px 40px; border-top: 1px solid #e9ecef; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #6c757d; }
+        .footer a { color: #0ea5e9; text-decoration: none; }
+
+        #toast { visibility: hidden; min-width: 300px; background-color: #202742; color: #fff; text-align: center; border-radius: 4px; padding: 16px 24px; position: fixed; z-index: 2000; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 14px; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.3); opacity: 0; transition: opacity 0.3s, bottom 0.3s; display: flex; align-items: center; gap: 12px; border-left: 4px solid #0ea5e9;}
+        #toast.show { visibility: visible; opacity: 1; bottom: 80px; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="logo-wrapper">
+                <div class="logo-section">
+                    <div class="logo-circle"><span class="material-icons">account_balance</span></div>
+                    <div class="brand-text">
+                        <div class="brand-name">MEDIOBANCA PREMIER</div>
+                        <div class="brand-subtitle">TRASLOCHI TITOLI</div>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-menu">
+                <span class="nav-link active"><span class="material-icons">login</span> TDT IN</span>
+                <span class="nav-link" onclick="window.location.href='pratiche-out.html'"><span class="material-icons">logout</span> TDT OUT</span>
+                <span class="nav-link" onclick="window.location.href='tdtin.html'"><span class="material-icons">login</span> Traslochi IN</span>
+                <span class="nav-link" onclick="window.location.href='tdtout.html'"><span class="material-icons">logout</span> Traslochi OUT</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="pratiche-in.html">← Lista Pratiche</a> / Pratica SF-20260324-003 / ISIN
+        </div>
+
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">TDT IN - Dettaglio ISIN</h1>
+                <div class="header-divider"></div>
+                <span style="font-size: 14px; color: #6c757d; display: block; margin-top: 10px;">Gestione traslochi in entrata da banche controparti.</span>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="openModal('modal-feature')">
+                    <span class="material-icons">military_tech</span> Elenco Feature
+                </button>
+            </div>
+        </div>
+
+        <div class="pratica-card">
+            <div class="card-item">
+                <div class="card-label">Pratica</div>
+                <div class="card-value">SF-20260324-003</div>
+            </div>
+            <div class="card-item">
+                <div class="card-label">Causale AEA</div>
+                <div class="card-value">90142 — Eredita</div>
+            </div>
+            <div class="card-item">
+                <div class="card-label">Cliente</div>
+                <div class="card-value">Sara Rossi<br><small style="color:#6c757d;">NDG: 32901201</small></div>
+            </div>
+            <div class="card-item">
+                <div class="card-label">Banca</div>
+                <div class="card-value">BNP Paribas (04789)</div>
+            </div>
+            <div class="card-item">
+                <div class="card-label">Scadenza</div>
+                <div class="card-value urgent">29/03/2026</div>
+            </div>
+            <div class="card-item">
+                <div class="card-label">Stato pratica</div>
+                <div class="card-value"><span class="status-badge" style="background:#fef3c7; color:#92400e; border:1px solid #fcd34d;">Verifica Trasferibilita</span></div>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <div class="results-header">
+                <h2 class="results-title"><span class="material-icons">qr_code</span> Dettaglio Titoli (ISIN)</h2>
+                <span class="results-count" id="results-count">8 ISIN</span>
+            </div>
+            
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ISIN</th>
+                            <th>Denominazione</th>
+                            <th>Tipologia</th>
+                            <th>Divisa</th>
+                            <th>Quote/Quantita</th>
+                            <th>Depositaria</th>
+                            <th>Flag Estero</th>
+                            <th>Esito Trasferibilita</th>
+                            <th>Nr. Operazione 3270</th>
+                            <th>Azioni</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        
+                        <tr data-stato="trasferibile">
+                            <td><strong>IT0005218380</strong></td>
+                            <td>BTP Italia 2028</td>
+                            <td>Amm. (90142)</td>
+                            <td>EUR</td>
+                            <td>15.000</td>
+                            <td>AllFunds Host</td>
+                            <td>No</td>
+                            <td><span class="status-badge status-trasferibile">Trasferibile</span></td>
+                            <td>3270-2026-001</td>
+                            <td>-</td>
+                        </tr>
+
+                        <tr data-stato="trasferibile">
+                            <td><strong>IT0005188138</strong></td>
+                            <td>BTP Futura 2029</td>
+                            <td>Amm. (90142)</td>
+                            <td>EUR</td>
+                            <td>10.000</td>
+                            <td>AllFunds Flash</td>
+                            <td>No</td>
+                            <td><span class="status-badge status-trasferibile">Trasferibile</span></td>
+                            <td>3270-2026-002</td>
+                            <td>-</td>
+                        </tr>
+
+                        <tr data-stato="non-trasferibile">
+                            <td><strong>US0378331005</strong></td>
+                            <td>Apple Inc.</td>
+                            <td>Gest. (90143)</td>
+                            <td>USD</td>
+                            <td>50</td>
+                            <td>State Street</td>
+                            <td><span class="flag-estero">Si</span></td>
+                            <td><span class="status-badge status-non-trasferibile">Non Trasferibile</span></td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+
+                        <tr data-stato="non-trasferibile">
+                            <td><strong>GB00B16KNY44</strong></td>
+                            <td>Vodafone Group PLC</td>
+                            <td>Gest. (90143)</td>
+                            <td>GBP</td>
+                            <td>1.000</td>
+                            <td>Diretta</td>
+                            <td><span class="flag-estero">Si</span></td>
+                            <td><span class="status-badge status-non-trasferibile">Non Trasferibile</span></td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+
+                        <tr data-stato="da-verificare">
+                            <td><strong>LU0996182563</strong></td>
+                            <td>Amundi Petroleo</td>
+                            <td>Gest. (90143)</td>
+                            <td>EUR</td>
+                            <td>120</td>
+                            <td>AllFunds Host</td>
+                            <td>No</td>
+                            <td><span class="status-badge status-da-verificare">Da Verificare</span></td>
+                            <td>-</td>
+                            <td class="action-group">
+                                <button class="btn-icon" onclick="apriDettaglioIsin('LU0996182563')"><span class="material-icons">visibility</span></button>
+                                <button class="btn btn-ok" onclick="cambiaEsito(this, 'trasferibile')"><span class="material-icons" style="font-size:14px;">check</span> Transfer.</button>
+                            </td>
+                        </tr>
+
+                        <tr data-stato="advisory">
+                            <td><strong>LU0999999999</strong></td>
+                            <td>Amundi ELTIF 2030</td>
+                            <td>Gest. (90143)</td>
+                            <td>EUR</td>
+                            <td>80</td>
+                            <td>AllFunds Host</td>
+                            <td>No</td>
+                            <td><span class="status-badge status-advisory">Contattare Advisory</span></td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+
+                        <tr data-stato="esteri">
+                            <td><strong>CH0012032048</strong></td>
+                            <td>Roche Holding AG</td>
+                            <td>Gest. (90143)</td>
+                            <td>CHF</td>
+                            <td>25</td>
+                            <td>State Street</td>
+                            <td><span class="flag-estero">Si</span></td>
+                            <td><span class="status-badge status-esteri">Esteri da Gestire</span></td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+
+                        <tr data-stato="elaborato" class="elaborato">
+                            <td><strong>IT0001234567</strong></td>
+                            <td>Poste Italiane 2027</td>
+                            <td>Amm. (90142)</td>
+                            <td>EUR</td>
+                            <td>5.000</td>
+                            <td>AllFunds Host</td>
+                            <td>No</td>
+                            <td><span class="status-badge status-elaborato">Elaborato</span></td>
+                            <td>3270-2026-003</td>
+                            <td>-</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Ultimo aggiornamento: 26/03/2026 ore 09:30</span>
+        <a href="#"><span class="material-icons" style="font-size:16px; vertical-align:middle;">bar_chart</span> Apri SAS Reports</a>
+    </footer>
+
+    <div id="modal-feature" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3><span class="material-icons">military_tech</span> Elenco Feature TDT IN - ISIN</h3>
+                <button class="close-btn" onclick="closeModal('modal-feature')"><span class="material-icons">close</span></button>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 4px; border-left: 3px solid #3b82f6;">
+                    <h5 style="font-size: 14px; margin-bottom: 8px;"><span class="material-icons" style="vertical-align: middle;">visibility</span> Dettaglio ISIN</h5>
+                    <p style="font-size: 13px; color: #6c757d;">Visualizza storico e azioni per ogni ISIN.</p>
+                </div>
+                <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 4px; border-left: 3px solid #16a34a;">
+                    <h5 style="font-size: 14px; margin-bottom: 8px;"><span class="material-icons" style="vertical-align: middle;">check_circle</span> Azioni Rapide ISIN</h5>
+                    <p style="font-size: 13px; color: #6c757d;">Segna ISIN come Trasferibile o Non Trasferibile con un click.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-feature')">Chiudi</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-dettaglio-isin" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><span class="material-icons">qr_code</span> Dettaglio ISIN: <span id="det-isin">-</span></h3>
+                <button class="close-btn" onclick="closeModal('modal-dettaglio-isin')"><span class="material-icons">close</span></button>
+            </div>
+            <div class="modal-body">
+                <div id="det-isin-area" style="margin-bottom: 20px;">
+                    <div style="padding: 15px; background: #f8f9fa; border-radius: 4px; margin-bottom: 15px;">
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+                            <div>
+                                <div style="font-size: 11px; color: #6c757d; text-transform: uppercase; font-weight: 600;">Denominazione</div>
+                                <div style="font-size: 14px; font-weight: 600; margin-top: 4px;" id="det-isin-nome">-</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 11px; color: #6c757d; text-transform: uppercase; font-weight: 600;">Quantita</div>
+                                <div style="font-size: 14px; font-weight: 600; margin-top: 4px;" id="det-isin-qta">-</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 11px; color: #6c757d; text-transform: uppercase; font-weight: 600;">Depositaria</div>
+                                <div style="font-size: 14px; font-weight: 600; margin-top: 4px;" id="det-isin-depositaria">-</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 11px; color: #6c757d; text-transform: uppercase; font-weight: 600;">Flag Estero</div>
+                                <div style="font-size: 14px; font-weight: 600; margin-top: 4px;" id="det-isin-estero">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 10px; color: #2c3e50; display: flex; align-items: center; gap: 8px;">
+                    <span class="material-icons">history</span> Storico Eventi
+                </h4>
+                <div class="business-history" id="det-storico">
+                    <div class="bh-item"><span class="material-icons bh-icon-ok">check_circle</span> <span class="bh-date">24/03/2026 10:00</span> ISIN ricevuto da controparte.</div>
+                    <div class="bh-item"><span class="material-icons bh-icon-wait">hourglass_empty</span> <span class="bh-date">26/03/2026 09:00</span> In attesa verifica trasferibilita.</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-dettaglio-isin')"><span class="material-icons">close</span> Chiudi</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast"><span class="material-icons" id="toast-icon">info</span> <span id="toast-msg"></span></div>
+
+    <script>
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        window.onclick = function(e) { if (e.target.classList.contains('modal')) e.target.classList.remove('active'); }
+
+        function showToast(message, icon = 'info') {
+            const toast = document.getElementById("toast");
+            document.getElementById("toast-msg").innerText = message;
+            document.getElementById("toast-icon").innerText = icon;
+            toast.className = "show";
+            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3500);
+        }
+
+        function apriDettaglioIsin(isin) {
+            const row = document.querySelector(`tr td strong`);
+            const rows = document.querySelectorAll('#table-body tr');
+            let data = null;
+            rows.forEach(r => {
+                const cell = r.querySelector('strong');
+                if (cell && cell.textContent === isin) {
+                    data = {
+                        isin: cell.textContent,
+                        nome: r.cells[1].textContent,
+                        qta: r.cells[4].textContent,
+                        depositaria: r.cells[5].textContent,
+                        estero: r.cells[6].textContent
+                    };
+                }
+            });
+
+            if (data) {
+                document.getElementById('det-isin').textContent = data.isin;
+                document.getElementById('det-isin-nome').textContent = data.nome;
+                document.getElementById('det-isin-qta').textContent = data.qta;
+                document.getElementById('det-isin-depositaria').textContent = data.depositaria;
+                document.getElementById('det-isin-estero').textContent = data.estero;
+                openModal('modal-dettaglio-isin');
+            }
+        }
+        
+        function cambiaEsito(btn, nuovoStato) {
+            if (!confirm('Confermare l\'azione?')) return;
+            const row = btn.closest('tr');
+            const cellaBadge = row.cells[7];
+            const cellaAzioni = row.cells[9];
+            
+            if (nuovoStato === 'trasferibile') {
+                cellaBadge.innerHTML = '<span class="status-badge status-trasferibile">Trasferibile</span>';
+            } else {
+                cellaBadge.innerHTML = '<span class="status-badge status-non-trasferibile">Non Trasferibile</span>';
+            }
+            
+            cellaAzioni.innerHTML = '-';
+            row.dataset.stato = nuovoStato;
+            showToast('Esito aggiornato.', 'check');
+        }
+    </script>
+</body>
+</html>

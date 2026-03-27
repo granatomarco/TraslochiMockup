@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<script>
-  const BASE_URL = '<?= ScriptApp.getService().getUrl() ?>';
-</script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cruscotto TDT IN - Mediobanca Premier</title>
@@ -70,7 +66,6 @@
         .btn-light { background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1; }
         .btn-alert { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;}
         
-        /* Colori uniformati per i pulsanti Header */
         .btn-feature { background: white; color: #d35400; border: 1px solid #f39c12; font-weight: 600; }
         .btn-feature:hover { background: #fffdf9; }
 
@@ -118,12 +113,13 @@
         .bh-icon-warn { color: #e67e22; }
 
         .inner-table { width: 100%; border: 1px solid #ddd; border-radius: 4px; overflow: hidden;}
-        .inner-table th { background: #f1f5f9; padding: 12px 15px; font-size: 12px; color: #495057; }
-        .inner-table td { padding: 12px 15px; font-size: 13px; border-bottom: 1px solid #eee;}
+        .inner-table th { background: #f1f5f9; padding: 10px 15px; font-size: 12px; color: #495057; }
+        .inner-table td { padding: 10px 15px; font-size: 13px; border-bottom: 1px solid #eee;}
 
         .inline-priority-select { padding: 6px 10px; font-size: 13px; border: 1px solid #cbd5e1; border-radius: 4px; background: white; color: #2c3e50; font-weight: 500; margin-right: 15px;}
 
-        .miglioria-box { background: white; border: 1px solid #e9ecef; border-left: 4px solid #0ea5e9; padding: 20px; border-radius: 4px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        /* Feature Box */
+        .miglioria-box { background: white; border: 1px solid #e9ecef; border-left: 4px solid #f39c12; padding: 20px; border-radius: 4px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
         .miglioria-title { font-weight: 600; font-size: 15px; color: #2c3e50; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;}
         .miglioria-text { font-size: 14px; color: #495057; line-height: 1.6;}
 
@@ -136,7 +132,7 @@
     <nav class="navbar">
         <div class="navbar-container">
             <div class="logo-wrapper">
-                <img src="https://drive.google.com/thumbnail?id=1lWb1g7UaEvWgAlRo4EMZ6JSfP04BPilA&sz=s300" id="main-logo" alt="Mediobanca Premier" style="max-height: 80px;" onerror="this.style.display='none'; document.getElementById('fallback-logo').style.display='flex';">
+                <img src="logo_MBP.png" id="main-logo" alt="Mediobanca Premier" style="max-height: 80px;" onerror="this.style.display='none'; document.getElementById('fallback-logo').style.display='flex';">
                 <div id="fallback-logo" class="logo-section" style="display: none;">
                     <div class="logo-circle"><span class="material-icons">account_balance</span></div>
                     <div class="brand-text">
@@ -157,7 +153,7 @@
             <div>
                 <h1 class="page-title">Cruscotto Traslochi IN (TDT IN)</h1>
                 <div class="header-divider"></div>
-                <span style="font-size: 14px; color: #6c757d; display: block; margin-top: 10px;">Applicativo direzionale per controlli AML, verifiche ISIN e integrazioni Salesforce/Mainframe.</span>
+                <span style="font-size: 14px; color: #6c757d; display: block; margin-top: 10px;">Applicativo direzionale per controlli di Compliance, verifiche ISIN e integrazioni Mainframe.</span>
             </div>
             <div class="header-actions">
                 <button class="btn btn-feature" onclick="openModal('modal-migliorie')">
@@ -191,10 +187,9 @@
                         <option value="da lavorare">Da Lavorare</option>
                         <option value="in elaborazione">In Elaborazione</option>
                         <option value="errore scarico">Errore Scarico Titoli</option>
-                        <option value="antiriciclaggio">Verifica Antiriciclaggio</option>
+                        <option value="discordanza">Discordanza Intestatari</option>
                         <option value="in coda">In Coda Lavorazione</option>
                         <option value="scarto">Scarto Controparte</option>
-                        <option value="penale">Allarme Penale</option>
                     </select>
                 </div>
                 <div class="form-group" style="justify-content: flex-end;">
@@ -248,7 +243,7 @@
                             <td id="td-actions-2">
                                 <div class="action-group">
                                     <button class="btn-icon" title="Dettaglio Pratica" onclick="apriDettaglio('2', 'Luigi Bianchi', 'BNCLGU75A01F205E', 'BPM', 'errore_scarico')"><span class="material-icons">visibility</span></button>
-                                    <button class="btn btn-alert" onclick="apriDettaglio('2', 'Luigi Bianchi', 'BNCLGU75A01F205E', 'BPM', 'errore_scarico')"><span class="material-icons" style="font-size:16px;">build</span> Gestisci</button>
+                                    <button class="btn btn-alert" onclick="setInCoda('2', 'Restart scarico forzato inviato.', 'table')"><span class="material-icons" style="font-size:16px;">replay</span> Riavvia</button>
                                 </div>
                             </td>
                         </tr>
@@ -263,7 +258,7 @@
                             <td id="td-actions-3">
                                 <div class="action-group">
                                     <button class="btn-icon" title="Dettaglio Pratica" onclick="apriDettaglio('3', 'Sviluppo SRL', '01234567890', 'CREDIT SUISSE', 'da_lavorare')"><span class="material-icons">visibility</span></button>
-                                    <button class="btn btn-light" onclick="apriDettaglio('3', 'Sviluppo SRL', '01234567890', 'CREDIT SUISSE', 'da_lavorare')"><span class="material-icons" style="font-size:16px;">play_arrow</span> Forza Avvio</button>
+                                    <button class="btn btn-light" onclick="setInCoda('3', 'Avvio esecuzione forzato.', 'table')"><span class="material-icons" style="font-size:16px;">play_arrow</span> Forza Avvio</button>
                                 </div>
                             </td>
                         </tr>
@@ -274,11 +269,11 @@
                             <td>UNICREDIT<span class="sub-text">Dossier: 52684455</span></td>
                             <td>Giovanna Verdi<span class="sub-text">NDG: 651230</span></td>
                             <td class="prio-cell"><span class="prio-badge prio-alta">Alta</span></td>
-                            <td id="td-status-4"><span class="status-badge status-warning">Verifica Antiriciclaggio</span></td>
+                            <td id="td-status-4"><span class="status-badge status-warning">Discordanza Intestatari</span></td>
                             <td id="td-actions-4">
                                 <div class="action-group">
-                                    <button class="btn-icon" title="Dettaglio Pratica" onclick="apriDettaglio('4', 'Giovanna Verdi', 'VRDGNN60S45H501Z', 'UNICREDIT', 'aml')"><span class="material-icons">visibility</span></button>
-                                    <button class="btn btn-secondary" style="background:#e67e22; border:none;" onclick="apriDettaglio('4', 'Giovanna Verdi', 'VRDGNN60S45H501Z', 'UNICREDIT', 'aml')"><span class="material-icons" style="font-size:16px;">gavel</span> Risolvi AML</button>
+                                    <button class="btn-icon" title="Dettaglio Pratica" onclick="apriDettaglio('4', 'Giovanna Verdi', 'VRDGNN60S45H501Z', 'UNICREDIT', 'anagrafica')"><span class="material-icons">visibility</span></button>
+                                    <button class="btn btn-secondary" style="background:#e67e22; border:none;" onclick="setInCoda('4', 'Sblocco Anagrafica confermato. In coda.', 'table')"><span class="material-icons" style="font-size:16px;">gavel</span> Risolvi</button>
                                 </div>
                             </td>
                         </tr>
@@ -293,7 +288,7 @@
                             <td id="td-actions-5">
                                 <div class="action-group">
                                     <button class="btn-icon" title="Dettaglio Pratica" onclick="apriDettaglio('5', 'Anna Gialli', 'GLLNNA85B41F205C', 'MEDIOLANUM', 'scarto')"><span class="material-icons">visibility</span></button>
-                                    <button class="btn btn-secondary" onclick="apriDettaglio('5', 'Anna Gialli', 'GLLNNA85B41F205C', 'MEDIOLANUM', 'scarto')"><span class="material-icons" style="font-size:16px;">replay</span> Reinserisci</button>
+                                    <button class="btn btn-secondary" onclick="setInCoda('5', 'Pratica reinserita in coda.', 'table')"><span class="material-icons" style="font-size:16px;">replay</span> Reinserisci</button>
                                 </div>
                             </td>
                         </tr>
@@ -308,7 +303,7 @@
                             <td id="td-actions-6">
                                 <div class="action-group">
                                     <button class="btn-icon" title="Dettaglio Pratica" onclick="apriDettaglio('6', 'Paolo Neri', 'NREPLA75A01F205E', 'BANCA SELLA', 'penale')"><span class="material-icons">visibility</span></button>
-                                    <button class="btn btn-alert" style="background:#e67e22; border:none; color:white;" onclick="apriDettaglio('6', 'Paolo Neri', 'NREPLA75A01F205E', 'BANCA SELLA', 'penale')"><span class="material-icons" style="font-size:16px;">timer</span> Sollecita RNI</button>
+                                    <button class="btn btn-alert" style="background:#e67e22; border:none; color:white;" onclick="setInCoda('6', 'Sollecito penale RNI inoltrato.', 'table')"><span class="material-icons" style="font-size:16px;">timer</span> Sollecita RNI</button>
                                 </div>
                             </td>
                         </tr>
@@ -334,7 +329,7 @@
                             <td>ALLIANZ BANK<span class="sub-text">Dossier: 52689933</span></td>
                             <td>Chiara Rossi<span class="sub-text">NDG: 556677</span></td>
                             <td class="prio-cell"><span class="prio-badge prio-bassa">Bassa</span></td>
-                            <td id="td-status-8"><span class="status-badge status-bot-working"><span class="material-icons" style="font-size:12px; animation:spin 2s linear infinite; margin-right:4px;">autorenew</span> In Elaborazione</span></td>
+                            <td id="td-status-8"><span class="status-badge status-in-coda">In Coda Lavorazione</span></td>
                             <td id="td-actions-8">
                                 <div class="action-group">
                                     <button class="btn-icon" title="Dettaglio Pratica" onclick="apriDettaglio('8', 'Chiara Rossi', 'RSSCHR80M41H501U', 'ALLIANZ BANK', 'info')"><span class="material-icons">visibility</span></button>
@@ -383,8 +378,19 @@
 
                 <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px;">
                     <h4 style="font-size: 14px; font-weight: 600; color: #2c3e50;"><span class="material-icons" style="font-size: 16px;">account_balance_wallet</span> Dettaglio Titoli (ISIN)</h4>
+                    <button class="btn btn-light" style="padding: 6px 12px; font-size: 12px;" onclick="document.getElementById('inline-add-isin').style.display='flex'">
+                        <span class="material-icons" style="font-size: 14px;">add</span> Aggiungi ISIN Manuale
+                    </button>
                 </div>
                 
+                <div id="inline-add-isin" style="display:none; background:#f8f9fa; padding:10px; border:1px solid #ddd; border-radius:4px; margin-bottom:10px; gap:10px; align-items:center;">
+                    <input type="text" id="new-isin-code" placeholder="Codice ISIN" style="padding:6px; border:1px solid #ccc; border-radius:3px; font-size:12px; width:25%;">
+                    <input type="text" id="new-isin-desc" placeholder="Descrizione Titolo" style="padding:6px; border:1px solid #ccc; border-radius:3px; font-size:12px; width:35%;">
+                    <input type="text" id="new-isin-qta" placeholder="Quantità" style="padding:6px; border:1px solid #ccc; border-radius:3px; font-size:12px; width:20%;">
+                    <button class="btn btn-primary" style="padding:6px 12px; font-size:12px;" onclick="aggiungiIsinRiga()"><span class="material-icons" style="font-size:14px;">check</span> Salva</button>
+                    <button class="btn btn-secondary" style="padding:6px 12px; font-size:12px; background:transparent; color:#6c757d; border:none;" onclick="document.getElementById('inline-add-isin').style.display='none'"><span class="material-icons" style="font-size:14px;">close</span></button>
+                </div>
+
                 <table class="inner-table" id="mod-isin-table">
                     <thead>
                         <tr>
@@ -449,14 +455,14 @@
                 <div class="miglioria-box">
                     <div class="miglioria-title"><span class="material-icons" style="color:#0ea5e9">visibility</span> Layout Dettaglio Unificato e Azioni Rapide</div>
                     <div class="miglioria-text">
-                        La UX è stata uniformata. Il tasto dettaglio (Occhio) è sempre il primo a sinistra. Tutte le azioni specifiche di una pratica (es. Riavvia, Sblocca) sono speculari: aprendo il dettaglio la pagina si adatta alla richiesta attiva fungendo da unico form operativo senza "popup nel popup".
+                        La UX è stata uniformata. Tutte le azioni specifiche di una pratica (es. Riavvia, Sblocca) sono speculari: presenti sia nella riga della tabella, sia dentro la scheda di dettaglio, senza pop-up annidati, perfetti per l'implementazione in RPA Apps.
                     </div>
                 </div>
 
                 <div class="miglioria-box">
                     <div class="miglioria-title"><span class="material-icons" style="color:#0ea5e9">history</span> Storico Eventi Business (Low-code Ready)</div>
                     <div class="miglioria-text">
-                        Il dettaglio dello storico adotta una timeline pulita con icone semaforiche (Verde/Rosso) e Timestamp precisi, facile da leggere per gli utenti bancari e immediata da replicare in piattaforme come UiPath Apps.
+                        Il dettaglio dello storico adotta una timeline pulita con icone semaforiche (Verde/Rosso) e Timestamp precisi, facile da leggere per gli utenti bancari e immediata da replicare in piattaforme come UiPath Apps tramite semplici list-view.
                     </div>
                 </div>
 
@@ -516,7 +522,7 @@
                 tdStatus.innerHTML = '<span class="status-badge status-in-coda">In Coda (Ready)</span><span class="sub-text">In attesa del Bot...</span>';
             }
             
-            // Lascia solo l'occhio
+            // Lascia solo l'occhio a sinistra
             if(tdActions) {
                 tdActions.innerHTML = `
                     <div class="action-group">
@@ -527,6 +533,25 @@
             
             closeModal('modal-dettaglio-unificato');
             showToast(customMessage, 'hourglass_empty');
+        }
+
+        // Funzione per inserire ISIN in tabella
+        function aggiungiIsinRiga() {
+            const isin = document.getElementById('new-isin-code').value;
+            const desc = document.getElementById('new-isin-desc').value;
+            const qta = document.getElementById('new-isin-qta').value;
+            if(!isin || !desc || !qta) { showToast('Compila tutti i campi ISIN', 'warning'); return; }
+            
+            const tbody = document.querySelector('#mod-isin-table tbody');
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td style="font-weight:500;">${isin.toUpperCase()}</td><td>${desc.toUpperCase()}</td><td>${qta}</td><td><span class="status-badge status-nuovo">Da Verificare</span></td><td>-</td>`;
+            tbody.appendChild(tr);
+            
+            document.getElementById('new-isin-code').value = '';
+            document.getElementById('new-isin-desc').value = '';
+            document.getElementById('new-isin-qta').value = '';
+            document.getElementById('inline-add-isin').style.display = 'none';
+            showToast('ISIN aggiunto con successo alla pratica.', 'check_circle');
         }
 
         // MOTORE DETTAGLIO UNIFICATO (INJECTION INLINE)
@@ -555,8 +580,8 @@
 
             if (scenario === 'errore_scarico') {
                 historyBox.innerHTML = `
-                    <div class="bh-item"><span class="material-icons bh-icon-ok">check_circle</span> <span class="bh-date">11/03/2026 10:00</span> Pratica ricevuta dal network RNI.</div>
-                    <div class="bh-item"><span class="material-icons bh-icon-err">error</span> <span class="bh-date">11/03/2026 10:15</span> Scarico titolo fallito. Blocco su Corporate Action.</div>
+                    <div class="bh-item"><span class="material-icons bh-icon-ok">check_circle</span> <div class="bh-date">11/03/2026 08:12</div> Pratica ricevuta dal network RNI.</div>
+                    <div class="bh-item"><span class="material-icons bh-icon-err">error</span> <div class="bh-date">11/03/2026 08:15</div> Scarico titolo fallito. Blocco su Corporate Action.</div>
                 `;
                 
                 actionArea.style.display = 'block';
@@ -564,7 +589,7 @@
                 actionArea.style.borderColor = '#f5c6cb';
                 actionArea.innerHTML = `
                     <h5 style="color:#721c24; margin-bottom:4px; font-size:14px;"><span class="material-icons" style="font-size:16px; vertical-align:bottom;">error</span> Intervento su Errore di Scarico</h5>
-                    <p style="font-size:13px; color:#721c24; margin:0;">Risolvere l'anomalia sui sistemi Finanza e cliccare riavvia.</p>
+                    <p style="font-size:13px; color:#721c24; margin:0;">Risolvere l'anomalia sui sistemi Finanza e cliccare riavvia per far ripartire l'Automa.</p>
                     ${prioDropdown}
                         <button class="btn btn-alert" style="background:#dc3545; color:white; border:none;" onclick="setInCoda('${rowId}', 'Restart scarico inviato.', 'detail');"><span class="material-icons">replay</span> Riavvia Task Scarico</button>
                     </div>
@@ -572,29 +597,26 @@
 
                 tbodyIsin.innerHTML = `<tr><td style="color:#dc3545; font-weight:bold;">BMG162341090</td><td>BROOKFIELD BUSINESS</td><td>3.000</td><td><span class="status-badge status-errore">Bloccato</span></td><td>-</td></tr>`;
 
-            } else if (scenario === 'aml') {
+            } else if (scenario === 'anagrafica') {
                 historyBox.innerHTML = `
-                    <div class="bh-item"><span class="material-icons bh-icon-ok">check_circle</span> <span class="bh-date">10/03/2026 09:00</span> Acquisizione dati intestatari da controparte.</div>
-                    <div class="bh-item"><span class="material-icons bh-icon-warn">gavel</span> <span class="bh-date">10/03/2026 09:05</span> Rilevata discordanza tra cointestatari. Sospensione AML.</div>
+                    <div class="bh-item"><span class="material-icons bh-icon-ok">check_circle</span> <div class="bh-date">10/03/2026 09:30</div> Acquisizione dati intestatari da controparte.</div>
+                    <div class="bh-item"><span class="material-icons bh-icon-warn">gavel</span> <div class="bh-date">10/03/2026 09:31</div> Rilevata discordanza tra cointestatari. Sospensione.</div>
                 `;
                 actionArea.style.display = 'block';
                 actionArea.style.background = '#fff3cd';
                 actionArea.style.borderColor = '#ffeeba';
                 actionArea.innerHTML = `
-                    <h5 style="color:#856404; margin-bottom:4px; font-size:14px;"><span class="material-icons" style="font-size:16px; vertical-align:bottom;">gavel</span> Task Antiriciclaggio</h5>
-                    <p style="font-size:13px; color:#856404; margin:0;">Valutare anagrafica Origine/Destinazione e confermare sblocco.</p>
+                    <h5 style="color:#856404; margin-bottom:4px; font-size:14px;"><span class="material-icons" style="font-size:16px; vertical-align:bottom;">gavel</span> Task Verifica Anagrafica</h5>
+                    <p style="font-size:13px; color:#856404; margin:0;">Valutare anagrafica Origine/Destinazione e confermare forzatura per sbloccare.</p>
                     ${prioDropdown}
-                        <button class="btn btn-primary" style="background:#155724; border:none; margin-right:8px;" onclick="setInCoda('${rowId}', 'Sblocco AML confermato.', 'detail');"><span class="material-icons">thumb_up</span> Sblocca Pratica</button>
+                        <button class="btn btn-primary" style="background:#155724; border:none; margin-right:8px;" onclick="setInCoda('${rowId}', 'Sblocco Anagrafico confermato.', 'detail');"><span class="material-icons">thumb_up</span> Sblocca Pratica</button>
                         <button class="btn btn-secondary" style="background:#dc3545; border:none;" onclick="closeModal('modal-dettaglio-unificato'); showToast('Pratica Respinta', 'block')">Respingi</button>
                     </div>
                 `;
-                tbodyIsin.innerHTML = `<tr><td>IT0005218380</td><td>BTP ITALIA 2028</td><td>15.000</td><td><span class="status-badge status-nuovo">In Attesa AML</span></td><td>-</td></tr>`;
+                tbodyIsin.innerHTML = `<tr><td>IT0005218380</td><td>BTP ITALIA 2028</td><td>15.000</td><td><span class="status-badge status-nuovo">In Attesa Verifiche</span></td><td>-</td></tr>`;
 
             } else if (scenario === 'scarto') {
-                historyBox.innerHTML = `
-                    <div class="bh-item"><span class="material-icons bh-icon-ok">check_circle</span> <span class="bh-date">09/03/2026 14:00</span> Invio richiesta alla controparte.</div>
-                    <div class="bh-item"><span class="material-icons bh-icon-err">error</span> <span class="bh-date">09/03/2026 16:30</span> Rifiuto controparte (Msg 90614). Errore anagrafico.</div>
-                `;
+                historyBox.innerHTML = `<div class="bh-item"><span class="material-icons bh-icon-err">error</span> <div class="bh-date">09/03/2026 11:30</div> Rifiuto controparte (Msg 90614). Errore anagrafico.</div>`;
                 actionArea.style.display = 'block';
                 actionArea.style.background = '#e2e8f0';
                 actionArea.innerHTML = `
@@ -608,8 +630,8 @@
 
             } else if (scenario === 'penale') {
                  historyBox.innerHTML = `
-                    <div class="bh-item"><span class="material-icons bh-icon-ok">check_circle</span> <span class="bh-date">05/03/2026 10:00</span> Invio richiesta trasferimento alla controparte.</div>
-                    <div class="bh-item"><span class="material-icons bh-icon-warn">timer</span> <span class="bh-date">10/03/2026 15:30</span> SLA superati. Allarme penale di ritardo (Msg 90617).</div>
+                    <div class="bh-item"><span class="material-icons bh-icon-ok">check_circle</span> <div class="bh-date">05/03/2026 10:00</div> Invio richiesta trasferimento alla controparte.</div>
+                    <div class="bh-item"><span class="material-icons bh-icon-warn">timer</span> <div class="bh-date">05/03/2026 15:30</div> SLA superati. Allarme penale di ritardo (Msg 90617).</div>
                 `;
                  actionArea.style.display = 'block';
                  actionArea.style.background = '#fffbeb';
@@ -623,7 +645,7 @@
                  tbodyIsin.innerHTML = `<tr><td>IT0005218380</td><td>BTP ITALIA 2028</td><td>15.000</td><td><span class="status-badge status-completato">Trasferibile</span></td><td>-</td></tr>`;
 
             } else if (scenario === 'da_lavorare') {
-                historyBox.innerHTML = `<div class="bh-item"><span class="material-icons bh-icon-wait">hourglass_empty</span> <span class="bh-date">12/03/2026 11:00</span> In attesa ciclo di avvio programmato.</div>`;
+                historyBox.innerHTML = `<div class="bh-item"><span class="material-icons bh-icon-wait">hourglass_empty</span> <div class="bh-date">12/03/2026 11:00</div> In attesa ciclo di avvio programmato.</div>`;
                 actionArea.style.display = 'block';
                 actionArea.style.background = '#f8f9fa';
                 actionArea.innerHTML = `
@@ -636,13 +658,13 @@
                 tbodyIsin.innerHTML = `<tr><td>CH0012032048</td><td>ROCHE HOLDING AG</td><td>250</td><td><span class="status-badge status-nuovo">Da Lavorare</span></td><td>-</td></tr>`;
 
             } else if (scenario === 'accettata') {
-                historyBox.innerHTML = `<div class="bh-item"><span class="material-icons bh-icon-ok">check_circle</span> <span class="bh-date">08/03/2026 16:45</span> Trasferimento completato con successo (90165).</div>`;
+                historyBox.innerHTML = `<div class="bh-item"><span class="material-icons bh-icon-ok">check_circle</span> <div class="bh-date">08/03/2026 16:45</div> Trasferimento completato con successo (90165).</div>`;
                 tbodyIsin.innerHTML = `<tr><td>IT0005218380</td><td>BTP ITALIA 2028</td><td>15.000</td><td><span class="status-badge status-completato">Trasferibile</span></td><td>-</td></tr>`;
             
             } else {
                 historyBox.innerHTML = `
-                    <div class="bh-item"><span class="material-icons bh-icon-ok">check_circle</span> <span class="bh-date">12/03/2026 09:00</span> Pratica registrata senza anomalie anagrafiche.</div>
-                    <div class="bh-item"><span class="material-icons bh-icon-wait">hourglass_empty</span> <span class="bh-date">12/03/2026 09:15</span> Elaborazione RPA in corso...</div>
+                    <div class="bh-item"><span class="material-icons bh-icon-ok">check_circle</span> <div class="bh-date">12/03/2026 09:00</div> Pratica registrata senza anomalie anagrafiche.</div>
+                    <div class="bh-item"><span class="material-icons bh-icon-wait">hourglass_empty</span> <div class="bh-date">12/03/2026 09:15</div> Elaborazione RPA in corso...</div>
                 `;
                 tbodyIsin.innerHTML = `<tr><td>CH0012032048</td><td>ROCHE HOLDING AG</td><td>250</td><td><span class="status-badge status-info">In Lavorazione</span></td><td>-</td></tr>`;
             }

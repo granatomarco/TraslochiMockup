@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<script>
+  const BASE_URL = '<?= ScriptApp.getService().getUrl() ?>';
+</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TDT IN - Lista Pratiche</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: #f5f7fa; color: #2c3e50; padding-bottom: 60px; }
+        .material-icons { vertical-align: middle; font-size: 20px; }
+        
+        .navbar { background: #202742; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 30px 0; width: 100%; }
+        .navbar-container { max-width: 1600px; margin: 0 auto; padding: 0 40px; width: 100%; display: flex; align-items: center; justify-content: space-between; }
+        
+        .logo-wrapper { display: flex; align-items: center; }
+        .logo-section { display: flex; align-items: center; gap: 15px; }
+        .brand-logo { height: 60px; width: auto; object-fit: contain; display: block; }
+        .logo-circle { width: 50px; height: 50px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #2c3e50; }
+        .logo-circle .material-icons { font-size: 32px; }
+        .brand-text { color: white; }
+        .brand-name { font-size: 18px; font-weight: 600; letter-spacing: 2px; }
+        .brand-subtitle { font-size: 12px; letter-spacing: 3px; margin-top: 2px; opacity: 0.9; }
+        
+        .nav-menu { display: flex; gap: 20px; }
+        .nav-link { color: white; text-decoration: none; opacity: 0.7; font-size: 14px; font-weight: 500; padding: 8px 16px; border-radius: 4px; transition: all 0.3s; cursor: pointer; display: flex; align-items: center; gap: 6px;}
+        .nav-link:hover, .nav-link.active { opacity: 1; background: rgba(255,255,255,0.1); }
+
+        .container { max-width: 1600px; margin: 0 auto; padding: 30px 40px; }
+        .page-header { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-start;}
+        h1.page-title { font-size: 26px; font-weight: 400; color: #2c3e50; margin-bottom: 8px; }
+        .header-divider { border-top: 2px solid rgb(32, 39, 66); width: 150px; padding-top: 8px; margin-bottom: 8px; }
+        .header-actions { display: flex; gap: 12px; align-items: center; }
+
+        .search-section { background: white; padding: 30px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 25px; }
+        h2.search-title { font-size: 16px; font-weight: 600; color: #2c3e50; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+        .search-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; margin-bottom: 20px; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { font-size: 13px; font-weight: 500; color: #2c3e50; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+        .form-group input, .form-group select { padding: 10px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; background: white; transition: border-color 0.3s; font-family: inherit; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #2c3e50; }
+
+        .results-section { background: white; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; }
+        .results-header { padding: 20px 30px; background: #f8f9fa; border-bottom: 1px solid #e9ecef; display: flex; justify-content: space-between; align-items: center; }
+        h2.results-title { font-size: 16px; font-weight: 600; color: #2c3e50; display: flex; align-items: center; gap: 8px; }
+        .results-count { font-size: 13px; color: #6c757d; font-weight: 500;}
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        thead { background: #f8f9fa; }
+        th { padding: 14px 16px; text-align: left; font-weight: 600; color: #2c3e50; font-size: 13px; border-bottom: 2px solid #e9ecef; white-space: nowrap; cursor: pointer; user-select: none;}
+        th:hover { background: #e2e8f0; }
+        th .sort-icon { font-size: 16px; opacity: 0.3; margin-left: 4px; vertical-align: middle; transition: opacity 0.2s;}
+        th.asc .sort-icon { opacity: 1; transform: rotate(180deg); }
+        th.desc .sort-icon { opacity: 1; transform: rotate(0deg); }
+        td { padding: 14px 16px; border-bottom: 1px solid #e9ecef; font-size: 14px; color: #2c3e50; vertical-align: middle;}
+        tr:hover { background: #f8f9fa; }
+        tr[data-archiviata="si"] { background: #f8fafc; }
+        tr[data-archiviata="si"]:hover { background: #f1f5f9; }
+
+        .action-group { display: flex; gap: 8px; align-items: center; }
+        .btn { padding: 8px 16px; border: none; border-radius: 4px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none;}
+        .btn-icon { padding: 8px; border-radius: 4px; border: 1px solid #ddd; background: white; color: #6c757d; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center;}
+        .btn-icon:hover { background: #f8f9fa; color: #2c3e50; border-color: #2c3e50;}
+        .btn-primary { background: #2c3e50; color: white; }
+        .btn-primary:hover { background: #3d5266; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-light { background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1; }
+        .btn-alert { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;}
+        .btn-ok { background: #16a34a; color: white; }
+        .btn-ok:hover { background: #15803d; }
+        .btn-ko { background: #dc2626; color: white; }
+        .btn-ko:hover { background: #b91c1c; }
+        .btn-warn { background: #ea580c; color: white; }
+        .btn-warn:hover { background: #c2410c; }
+
+        .status-badge { padding: 5px 10px; border-radius: 3px; font-size: 12px; font-weight: 600; display: inline-block; letter-spacing: 0.5px;}
+        .status-verifica-modulo { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d;}
+        .status-inserimento-aea { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe;}
+        .status-attesa-risposta { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; opacity: 0.8;}
+        .status-verifica-trasf { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d;}
+        .status-trasferibile { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0;}
+        .status-non-trasferibile { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca;}
+        .status-da-verificare { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d;}
+        .status-advisory { background: #ede9fe; color: #5b21b6; border: 1px solid #ddd6fe;}
+        .status-ko { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca;}
+        .status-extra-tdt { background: #ffedd5; color: #9a3412; border: 1px solid #fed7aa;}
+        .status-business-error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca;}
+        .status-system-exception { background: #7f1d1d; color: white; border: 1px solid #991b1b;}
+        .status-completata { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;}
+        .status-in-coda { background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe;}
+
+        .sub-text { font-size: 11px; color: #6c757d; font-weight: 400; display: block; margin-top: 4px; }
+        .link-sf { color: #00a1e0; font-weight: 600; text-decoration: none; }
+        
+        .prio-icon { font-size: 18px; }
+        .prio-red { color: #dc2626; }
+        .prio-yellow { color: #f59e0b; }
+        .prio-gray { color: #94a3b8; }
+        .in-coda-badge { background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; padding: 2px 6px; border-radius: 3px; font-size: 11px; font-weight: 600; }
+        
+        .miglioria-box { background: white; border: 1px solid #e9ecef; border-left: 4px solid #0ea5e9; padding: 20px; border-radius: 4px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .miglioria-title { font-weight: 600; font-size: 15px; color: #2c3e50; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;}
+        .miglioria-text { font-size: 14px; color: #495057; line-height: 1.6;}
+        
+        .footer { max-width: 1600px; margin: 30px auto 0; padding: 20px 40px; border-top: 1px solid #e9ecef; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #6c757d; }
+        .footer a { color: #0ea5e9; text-decoration: none; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="logo-wrapper">
+                <div class="logo-section">
+                    <div class="logo-circle"><span class="material-icons">account_balance</span></div>
+                    <div class="brand-text">
+                        <div class="brand-name">MEDIOBANCA PREMIER</div>
+                        <div class="brand-subtitle">TRASLOCHI TITOLI</div>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-menu">
+                <span class="nav-link active"><span class="material-icons">login</span> TDT IN</span>
+                <span class="nav-link" onclick="window.location.href='pratiche-out.html'"><span class="material-icons">logout</span> TDT OUT</span>
+                <span class="nav-link" onclick="window.location.href='tdtin.html'"><span class="material-icons">login</span> Traslochi IN</span>
+                <span class="nav-link" onclick="window.location.href='tdtout.html'"><span class="material-icons">logout</span> Traslochi OUT</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">TDT IN - Lista Pratiche</h1>
+                <div class="header-divider"></div>
+                <span style="font-size: 14px; color: #6c757d; display: block; margin-top: 10px;">Gestione traslochi in entrata da banche controparti.</span>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-feature" onclick="openModal('modal-feature')">
+                    <span class="material-icons">military_tech</span> Elenco Feature
+                </button>
+            </div>
+        </div>
+
+        <div class="search-section">
+            <h2 class="search-title"><span class="material-icons">search</span> Filtri Ricerca</h2>
+            <div class="search-grid">
+                <div class="form-group">
+                    <label>Stato</label>
+                    <select id="filtro-stato" onchange="applicaFiltri()">
+                        <option value="">Tutti gli stati</option>
+                        <option value="verifica-modulo">Verifica Modulo</option>
+                        <option value="inserimento-aea">Inserimento in AEA</option>
+                        <option value="attesa-risposta">Attesa Risposta</option>
+                        <option value="verifica-trasf">Verifica Trasferibilita</option>
+                        <option value="trasferibile">Trasferibile</option>
+                        <option value="non-trasferibile">Non Trasferibile</option>
+                        <option value="da-verificare">Da Verificare</option>
+                        <option value="advisory">Contattare Advisory</option>
+                        <option value="ko-90165">KO - Annullata</option>
+                        <option value="ko-96114">KO - Penale a Credito</option>
+                        <option value="ko-96115">KO - Penale a Debito</option>
+                        <option value="ko-retention">KO - Retention</option>
+                        <option value="extra-tdt">Lavorazione Extra TDT</option>
+                        <option value="esteri-90168">Esteri da Gestire</option>
+                        <option value="business-error">Business Error</option>
+                        <option value="system-exception">System Exception</option>
+                        <option value="completata">Completata</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Causale AEA</label>
+                    <select id="filtro-causale" onchange="applicaFiltri()">
+                        <option value="">Tutte</option>
+                        <option value="90111">90111 - Trasferimento</option>
+                        <option value="90142">90142 - Eredita</option>
+                        <option value="90143">90143 - Donazione</option>
+                        <option value="90618">90618 - Altro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Controparte</label>
+                    <input type="text" id="filtro-controparte" placeholder="Cerca banca..." oninput="applicaFiltri()">
+                </div>
+                <div class="form-group">
+                    <label>Data scad. da</label>
+                    <input type="date" id="filtro-data-da" onchange="applicaFiltri()">
+                </div>
+                <div class="form-group" style="justify-content: flex-end;">
+                    <label>&nbsp;</label>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <label style="display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer;">
+                            <input type="checkbox" id="filtro-archiviate" onchange="applicaFiltri()"> Mostra archiviate
+                        </label>
+                        <button class="btn btn-secondary" onclick="resetFiltri()"><span class="material-icons">filter_alt_off</span> Reset</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <div class="results-header">
+                <h2 class="results-title"><span class="material-icons">table_chart</span> Pratiche TDT IN</h2>
+                <span class="results-count" id="results-count">8 pratiche</span>
+            </div>
+            
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th onclick="sortTable(0, 'string')" class="sortable">Case Salesforce <span class="material-icons sort-icon">arrow_downward</span></th>
+                            <th onclick="sortTable(1, 'string')" class="sortable">Cliente <span class="material-icons sort-icon">arrow_downward</span></th>
+                            <th onclick="sortTable(2, 'date')" class="sortable">Data Scadenza <span class="material-icons sort-icon">arrow_downward</span></th>
+                            <th onclick="sortTable(3, 'string')" class="sortable">Stato Pratica <span class="material-icons sort-icon">arrow_downward</span></th>
+                            <th onclick="sortTable(4, 'string')" class="sortable">Fase Corrente <span class="material-icons sort-icon">arrow_downward</span></th>
+                            <th style="text-align:center;">Titoli <span class="sub-text">&#10003; / &#10007; / &#9888;</span></th>
+                            <th style="width:160px; cursor:default; pointer-events:none;">Azioni Operative</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        
+                        <tr id="row-1" data-stato="verifica-modulo" data-banca="Banca Gestione">
+                            <td><a href="https://mediobanca.my.salesforce.com/001" target="_blank" class="link-sf">SF-20260326-001</a></td>
+                            <td>Mario Bianchi<span class="sub-text">NDG: 45678901</span></td>
+                            <td id="td-scad-1"></td>
+                            <td id="td-status-1"><span class="status-badge status-verifica-modulo">In Lavorazione</span></td>
+                            <td>Verifica Modulo</td>
+                            <td style="text-align:center; font-family:monospace;"><span style="color:#16a34a;font-weight:bold;">8</span> / <span style="color:#dc2626;font-weight:bold;">1</span> / <span style="color:#f59e0b;font-weight:bold;">2</span></td>
+                            <td id="td-actions-1">
+                                <div class="action-group">
+                                    <button class="btn-icon" onclick="apriDettaglioRow('1')" title="Dettaglio"><span class="material-icons">visibility</span></button>
+                                    <button class="btn btn-primary" onclick="azioneRapida('1', 'verifica-modulo')"><span class="material-icons">check</span> Conferma Modulo</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr id="row-2" data-stato="inserimento-aea" data-banca="Intesa Sanpaolo">
+                            <td><a href="https://mediobanca.my.salesforce.com/002" target="_blank" class="link-sf">SF-20260326-002</a></td>
+                            <td>Luigi Verdi<span class="sub-text">NDG: 78234501</span></td>
+                            <td id="td-scad-2"></td>
+                            <td id="td-status-2"><span class="status-badge status-inserimento-aea">In Lavorazione</span></td>
+                            <td>Inserimento AEA</td>
+                            <td style="text-align:center; font-family:monospace;"><span style="color:#16a34a;font-weight:bold;">5</span> / <span style="color:#dc2626;font-weight:bold;">0</span> / <span style="color:#f59e0b;font-weight:bold;">1</span></td>
+                            <td id="td-actions-2">
+                                <div class="action-group">
+                                    <button class="btn-icon" onclick="apriDettaglioRow('2')" title="Dettaglio"><span class="material-icons">visibility</span></button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr id="row-3" data-stato="verifica-trasf" data-banca="Unicredit">
+                            <td><a href="https://mediobanca.my.salesforce.com/003" target="_blank" class="link-sf">SF-20260326-003</a></td>
+                            <td>Sara Rossi<span class="sub-text">NDG: 32901201</span></td>
+                            <td id="td-scad-3"></td>
+                            <td id="td-status-3"><span class="status-badge status-verifica-trasf">Richiede Intervento</span></td>
+                            <td>Verifica Trasferibilita</td>
+                            <td style="text-align:center; font-family:monospace;"><span style="color:#16a34a;font-weight:bold;">3</span> / <span style="color:#dc2626;font-weight:bold;">2</span> / <span style="color:#f59e0b;font-weight:bold;">1</span></td>
+                            <td id="td-actions-3">
+                                <div class="action-group">
+                                    <button class="btn-icon" onclick="apriDettaglioRow('3')" title="Dettaglio"><span class="material-icons">visibility</span></button>
+                                    <button class="btn btn-secondary" onclick="azioneRapida('3', 'verifica-trasf')"><span class="material-icons">rule</span> Verifica Trasf.</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr id="row-4" data-stato="da-verificare" data-banca="Banca MPS">
+                            <td><a href="https://mediobanca.my.salesforce.com/004" target="_blank" class="link-sf">SF-20260326-004</a></td>
+                            <td>Marco Neri<span class="sub-text">NDG: 55120901</span></td>
+                            <td id="td-scad-4"></td>
+                            <td id="td-status-4"><span class="status-badge status-da-verificare">Richiede Intervento</span></td>
+                            <td>Da Verificare</td>
+                            <td style="text-align:center; font-family:monospace;"><span style="color:#16a34a;font-weight:bold;">2</span> / <span style="color:#dc2626;font-weight:bold;">0</span> / <span style="color:#f59e0b;font-weight:bold;">3</span></td>
+                            <td id="td-actions-4">
+                                <div class="action-group">
+                                    <button class="btn-icon" onclick="apriDettaglioRow('4')" title="Dettaglio"><span class="material-icons">visibility</span></button>
+                                    <button class="btn btn-ok" onclick="azioneRapida('4', 'da-verificare')"><span class="material-icons">check_circle</span> Segna Verificato</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr id="row-5" data-stato="extra-tdt" data-banca="Credit Agricole">
+                            <td><a href="https://mediobanca.my.salesforce.com/005" target="_blank" class="link-sf">SF-20260326-005</a></td>
+                            <td>Anna Gialli<span class="sub-text">NDG: 90123401</span></td>
+                            <td id="td-scad-5"></td>
+                            <td id="td-status-5"><span class="status-badge status-extra-tdt">Richiede Intervento</span></td>
+                            <td>Extra TDT</td>
+                            <td style="text-align:center; font-family:monospace;"><span style="color:#16a34a;font-weight:bold;">4</span> / <span style="color:#dc2626;font-weight:bold;">1</span> / <span style="color:#f59e0b;font-weight:bold;">0</span></td>
+                            <td id="td-actions-5">
+                                <div class="action-group">
+                                    <button class="btn-icon" onclick="apriDettaglioRow('5')" title="Dettaglio"><span class="material-icons">visibility</span></button>
+                                    <button class="btn btn-warn" onclick="azioneRapida('5', 'extra-tdt')"><span class="material-icons">build</span> Gestisci Extra</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr id="row-6" data-stato="ko-96114" data-banca="BPER Banca">
+                            <td><a href="https://mediobanca.my.salesforce.com/006" target="_blank" class="link-sf">SF-20260326-006</a></td>
+                            <td>Paolo Bianchi<span class="sub-text">NDG: 12345601</span></td>
+                            <td id="td-scad-6"></td>
+                            <td id="td-status-6"><span class="status-badge status-ko">Errore</span></td>
+                            <td>KO Penale Credito</td>
+                            <td style="text-align:center; font-family:monospace;"><span style="color:#16a34a;font-weight:bold;">0</span> / <span style="color:#dc2626;font-weight:bold;">6</span> / <span style="color:#f59e0b;font-weight:bold;">0</span></td>
+                            <td id="td-actions-6">
+                                <div class="action-group">
+                                    <button class="btn-icon" onclick="apriDettaglioRow('6')" title="Dettaglio"><span class="material-icons">visibility</span></button>
+                                    <button class="btn btn-ko" onclick="azioneRapida('6', 'ko-96114')"><span class="material-icons">replay</span> Reinserisci</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr id="row-7" data-stato="business-error" data-banca="Banco BPM">
+                            <td><a href="https://mediobanca.my.salesforce.com/007" target="_blank" class="link-sf">SF-20260326-007</a></td>
+                            <td>Giulia Verdi<span class="sub-text">NDG: 67890101</span></td>
+                            <td id="td-scad-7"></td>
+                            <td id="td-status-7"><span class="status-badge status-ko">Errore</span></td>
+                            <td>Business Error</td>
+                            <td style="text-align:center; font-family:monospace;"><span style="color:#16a34a;font-weight:bold;">1</span> / <span style="color:#dc2626;font-weight:bold;">2</span> / <span style="color:#f59e0b;font-weight:bold;">1</span></td>
+                            <td id="td-actions-7">
+                                <div class="action-group">
+                                    <button class="btn-icon" onclick="apriDettaglioRow('7')" title="Dettaglio"><span class="material-icons">visibility</span></button>
+                                    <button class="btn btn-alert" onclick="azioneRapida('7', 'business-error')"><span class="material-icons">sync_problem</span> Risubmit</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr id="row-8" data-stato="completata" data-banca="Mediolanum">
+                            <td><a href="https://mediobanca.my.salesforce.com/008" target="_blank" class="link-sf">SF-20260326-008</a></td>
+                            <td>Francesca Rossi<span class="sub-text">NDG: 34567801</span></td>
+                            <td>-</td>
+                            <td id="td-status-8"><span class="status-badge status-completata">Completata</span></td>
+                            <td>-</td>
+                            <td style="text-align:center; font-family:monospace;"><span style="color:#16a34a;font-weight:bold;">10</span> / <span style="color:#dc2626;font-weight:bold;">0</span> / <span style="color:#f59e0b;font-weight:bold;">0</span></td>
+                            <td id="td-actions-8">
+                                <div class="action-group">
+                                    <button class="btn-icon" onclick="apriDettaglioRow('8')" title="Dettaglio"><span class="material-icons">visibility</span></button>
+                                </div>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span id="footer-date">Ultimo aggiornamento: --</span>
+        <a href="#"><span class="material-icons" style="font-size:16px; vertical-align:middle;">bar_chart</span> Apri SAS Reports</a>
+    </footer>
+
+    <div id="modal-dettaglio" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><span class="material-icons">visibility</span> Dettaglio Pratica: <span id="det-id-pratica">IN-26-001</span></h3>
+                <button class="close-btn" onclick="closeModal('modal-dettaglio')"><span class="material-icons">close</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Cliente</div>
+                        <div class="detail-value" id="det-cliente">-</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Codice Fiscale</div>
+                        <div class="detail-value" id="det-cf">-</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Banca Controparte</div>
+                        <div class="detail-value" id="det-banca">-</div>
+                    </div>
+                    <div class="detail-item" style="border-left-color: #0ea5e9;">
+                        <div class="detail-label">NDG</div>
+                        <div class="detail-value" id="det-ndg" style="color: #0ea5e9;">-</div>
+                    </div>
+                </div>
+
+                <div id="det-modulo-area" style="margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <h4 style="font-size: 14px; font-weight: 600; color: #2c3e50; display: flex; align-items: center; gap: 8px; margin: 0;">
+                            <span class="material-icons">description</span> Modulo TDT
+                        </h4>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-light" onclick="apriModuloPDF()" style="padding: 6px 12px; font-size: 12px;">
+                                <span class="material-icons" style="font-size: 16px;">open_in_new</span> Apri PDF
+                            </button>
+                            <button class="btn btn-light" onclick="scaricaModuloPDF()" style="padding: 6px 12px; font-size: 12px;">
+                                <span class="material-icons" style="font-size: 16px;">download</span> Scarica
+                            </button>
+                        </div>
+                    </div>
+                    <div class="modulo-preview" id="modulo-preview-box" style="height: 300px;">
+                        <div style="text-align: center;">
+                            <span class="material-icons" style="font-size: 64px; color: #94a3b8;">picture_as_pdf</span>
+                            <p style="color: #6c757d; margin-top: 12px; font-size: 14px; font-weight: 500;">Modulo TDT</p>
+                            <p style="color: #94a3b8; margin-top: 4px; font-size: 12px;">ID Documento: <span id="modulo-doc-id">SF-DOC-001</span></p>
+                            <p style="color: #94a3b8; margin-top: 4px; font-size: 12px;">Formato: PDF | Pagine: 2</p>
+                            <button class="btn btn-primary" onclick="apriModuloPDF()" style="margin-top: 16px;">
+                                <span class="material-icons">visibility</span> Visualizza Documento
+                            </button>
+                        </div>
+                    </div>
+                    <div id="modulo-pdf-frame" style="display: none; margin-top: 10px;">
+                        <iframe id="pdf-viewer" style="width: 100%; height: 400px; border: 1px solid #e9ecef; border-radius: 4px;" src=""></iframe>
+                    </div>
+                </div>
+
+                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 10px; color: #2c3e50; display: flex; align-items: center; gap: 8px;">
+                    <span class="material-icons">history</span> Storico Eventi
+                </h4>
+                <div class="business-history" id="det-storico">
+                    <div class="bh-item"><span class="material-icons bh-icon-wait">hourglass_empty</span> <span class="bh-date">-</span> Caricamento...</div>
+                </div>
+
+                <div id="det-action-area" style="display:none; padding: 15px; border-radius: 4px; border: 1px solid #eee; margin-bottom: 20px;">
+                    <h5 id="det-action-title" style="font-size: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;"></h5>
+                    <p id="det-action-desc" style="font-size: 13px; margin-bottom: 12px;"></p>
+                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                        <button id="det-action-btn" class="btn btn-primary"><span class="material-icons">check</span> Conferma</button>
+                        <button class="btn btn-secondary" onclick="closeModal('modal-dettaglio')"><span class="material-icons">close</span> Annulla</button>
+                    </div>
+                </div>
+
+                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 10px; color: #2c3e50; display: flex; align-items: center; gap: 8px;">
+                    <span class="material-icons">account_balance_wallet</span> Dettaglio ISIN
+                </h4>
+                <table class="inner-table" id="det-isin-table">
+                    <thead>
+                        <tr>
+                            <th>ISIN</th>
+                            <th>Descrizione</th>
+                            <th>Tipologia</th>
+                            <th style="text-align:right;">Quantita</th>
+                            <th>Depositaria</th>
+                            <th>Trasferibile</th>
+                            <th>Motivo Blocco</th>
+                            <th style="text-align:right;">Imposta (EUR)</th>
+                            <th style="text-align:right;">Saldo Residuo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="det-isin-tbody">
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-dettaglio')"><span class="material-icons">close</span> Chiudi</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-feature" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><span class="material-icons">verified</span> Sintesi Funzionalita TDT IN</h3>
+                <button class="close-btn" onclick="closeModal('modal-feature')"><span class="material-icons">close</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="miglioria-box">
+                    <div class="miglioria-title"><span class="material-icons" style="color:#0ea5e9">visibility</span> Layout Dettaglio Unificato</div>
+                    <div class="miglioria-text">Dettaglio completo con storico eventi, modulo PDF e azioni rapide.</div>
+                </div>
+                <div class="miglioria-box">
+                    <div class="miglioria-title"><span class="material-icons" style="color:#0ea5e9">check_circle</span> Azioni Rapide in Tabella</div>
+                    <div class="miglioria-text">Azione piu comune sempre visibile in ogni riga per velocizzare il lavoro.</div>
+                </div>
+                <div class="miglioria-box">
+                    <div class="miglioria-title"><span class="material-icons" style="color:#0ea5e9">filter_list</span> Filtri Avanzati</div>
+                    <div class="miglioria-text">Filtra per stato, causale AEA, controparte e scadenza.</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-feature')">Chiudi</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-conferma" class="modal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header" style="background: #2c3e50;">
+                <h3><span class="material-icons" id="conf-icon">help</span> <span id="conf-title">Conferma Azione</span></h3>
+                <button class="close-btn" onclick="closeModal('modal-conferma')"><span class="material-icons">close</span></button>
+            </div>
+            <div class="modal-body">
+                <p id="conf-message" style="font-size: 14px; color: #2c3e50; margin-bottom: 20px;"></p>
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e9ecef;">
+                    <label style="font-size: 12px; font-weight: 600; color: #2c3e50; margin-bottom: 8px; display: block;">Priorita Task in Coda:</label>
+                    <select id="conf-priority" class="inline-priority-select">
+                        <option value="Alta">Alta</option>
+                        <option value="Media" selected>Media</option>
+                        <option value="Bassa">Bassa</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-conferma')"><span class="material-icons">close</span> Annulla</button>
+                <button class="btn btn-primary" id="conf-btn-ok" onclick="confermaAzione()"><span class="material-icons">check</span> Conferma</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast"><span class="material-icons" id="toast-icon">info</span> <span id="toast-msg"></span></div>
+
+    <script>
+        let currentRow = null;
+        let currentAction = null;
+        let pendingAction = null;
+
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        window.onclick = function(e) { if (e.target.classList.contains('modal')) e.target.classList.remove('active'); }
+
+        function showToast(msg, icon) {
+            const toast = document.getElementById("toast");
+            document.getElementById("toast-msg").textContent = msg;
+            document.getElementById("toast-icon").textContent = icon || 'info';
+            toast.className = "show";
+            setTimeout(() => toast.className = toast.className.replace("show", ""), 3500);
+        }
+
+        function apriDettaglioRow(rowId) {
+            const row = document.getElementById('row-' + rowId);
+            if (!row) return;
+            
+            const stato = row.dataset.stato || '';
+            const banca = row.dataset.banca || '';
+            const cliente = row.cells[1].textContent.split('\n')[0].trim();
+            const cf = row.querySelector('.sub-text')?.textContent.replace('NDG: ', '') || '';
+            
+            apriDettaglio(rowId, cliente, cf, banca, stato);
+        }
+
+        function azioneRapida(rowId, stato) {
+            const messages = {
+                'verifica-modulo': { msg: 'Modulo confermato. Pratica in coda per Inserimento AEA.', icon: 'check_circle' },
+                'verifica-trasf': { msg: 'Pratica inviata per verifica trasferibilita.', icon: 'rule' },
+                'da-verificare': { msg: 'ISIN verificato. Pratica in coda.', icon: 'check_circle' },
+                'extra-tdt': { msg: 'Extra TDT gestito. Pratica in coda.', icon: 'build' },
+                'ko-96114': { msg: 'Pratica reinserita nel flusso.', icon: 'replay' },
+                'business-error': { msg: 'Pratica risubmessa in coda.', icon: 'sync_problem' }
+            };
+            
+            const msgData = messages[stato] || { msg: 'Azione completata.', icon: 'check' };
+            setInCoda(rowId, msgData.msg, msgData.icon);
+        }
+
+        function apriDettaglio(rowId, cliente, cf, banca, stato) {
+            document.getElementById('det-id-pratica').textContent = 'IN-26-' + String(rowId).padStart(3, '0');
+            document.getElementById('det-cliente').textContent = cliente;
+            document.getElementById('det-cf').textContent = cf;
+            document.getElementById('det-banca').textContent = banca;
+            document.getElementById('det-ndg').textContent = 'Dato Anagrafico';
+
+            const storico = document.getElementById('det-storico');
+            const actionArea = document.getElementById('det-action-area');
+            const isinTbody = document.getElementById('det-isin-tbody');
+            
+            currentRow = rowId;
+            currentAction = stato;
+
+            // Storico basato sullo stato
+            if (stato === 'verifica-modulo') {
+                storico.innerHTML = `
+                    <div class="bh-item"><span class="material-icons bh-icon-ok">check_circle</span> <span class="bh-date">25/03/2026 10:00</span> Pratica ricevuta da controparte.</div>
+                    <div class="bh-item"><span class="material-icons bh-icon-wait">hourglass_empty</span> <span class="bh-date">26/03/2026 09:00</span> In attesa verifica modulo.</div>
+                `;
+                actionArea.style.display = 'block';
+                actionArea.style.background = '#fef3c7';
+                actionArea.style.borderColor = '#fcd34d';
+                document.getElementById('det-action-title').innerHTML = '<span class="material-icons" style="color:#92400e;">description</span> Verifica Modulo';
+                document.getElementById('det-action-desc').textContent = 'Controllare che il modulo sia compilato in tutte le parti.';
+                document.getElementById('det-action-btn').onclick = () => eseguiAzioneDetail('verifica-modulo');
+                document.getElementById('det-action-btn').innerHTML = '<span class="material-icons">check</span> Modulo OK';
+                document.getElementById('det-action-btn').className = 'btn btn-ok';
+                isinTbody.innerHTML = '<tr><td style="font-family:monospace;">IT0005218380</td><td>BTP Italia 2028</td><td>Obbligazione (BTP)</td><td style="text-align:right;">15.000</td><td><span class="status-badge" style="background:#dbeafe;color:#1e40af;">Italia</span></td><td><span class="status-badge" style="background:#fef3c7;color:#92400e;">Da Verificare</span></td><td>-</td><td style="text-align:right;">-</td><td style="text-align:right;">-</td></tr>';
+            } else if (stato === 'inserimento-aea') {
+                storico.innerHTML = `
+                    <div class="bh-item"><span class="material-icons bh-icon-ok">check_circle</span> <span class="bh-date">25/03/2026 10:00</span> Pratica ricevuta.</div>
+                    <div class="bh-item"><span class="material-icons bh-icon-ok">check_circle</span> <span class="bh-date">25/03/2026 10:30</span> Modulo verificato OK.</div>
+                    <div class="bh-item"><span class="material-icons bh-icon-wait">hourglass_empty</span> <span class="bh-date">26/03/2026 09:00</span> Inserimento in AEA in corso.</div>
+                `;
+                actionArea.style.display = 'none';
+                isinTbody.innerHTML = '<tr><td style="font-family:monospace;">IT0005218380</td><td>BTP Italia 2028</td><td>Obbligazione (BTP)</td><td style="text-align:right;">15.000</td><td><span class="status-badge" style="background:#dbeafe;color:#1e40af;">Italia</span></td><td><span class="status-badge" style="background:#e0f2fe;color:#0284c7;">In Corso</span></td><td>-</td><td style="text-align:right;">-</td><td style="text-align:right;">-</td></tr>';
+            } else if (stato === 'verifica-trasf') {
+                storico.innerHTML = `
+                    <div class="bh-item"><span class="material-icons bh-icon-ok">check_circle</span> <span class="bh-date">24/03/2026 14:00</span> Inserimento AEA completato.</div>
+                    <div class="bh-item"><span class="material-icons bh-icon-wait">schedule</span> <span class="bh-date">26/03/2026 09:00</span> Verifica trasferibilita in corso.</div>
+                `;
+                actionArea.style.display = 'none';
+                isinTbody.innerHTML = `
+                    <tr><td style="font-family:monospace;">IT0005218380</td><td>BTP Italia 2028</td><td>Obbligazione (BTP)</td><td style="text-align:right;">15.000</td><td><span class="status-badge" style="background:#dbeafe;color:#1e40af;">Italia</span></td><td><span class="status-badge" style="background:#fef3c7;color:#92400e;">Da Verificare</span></td><td>-</td><td style="text-align:right;">-</td><td style="text-align:right;">-</td></tr>
+                    <tr><td style="font-family:monospace;">IT0005188138</td><td>BTP Futura 2029</td><td>Obbligazione (BTP)</td><td style="text-align:right;">10.000</td><td><span class="status-badge" style="background:#dbeafe;color:#1e40af;">Italia</span></td><td><span class="status-badge" style="background:#fef3c7;color:#92400e;">Da Verificare</span></td><td>-</td><td style="text-align:right;">-</td><td style="text-align:right;">-</td></tr>
+                `;
+            } else if (stato === 'da-verificare') {
+                storico.innerHTML = `
+                    <div class="bh-item"><span class="material-icons bh-icon-ok">check_circle</span> <span class="bh-date">23/03/2026 10:00</span>Richiesta Supporto inviata.</div>
+                    <div class="bh-item"><span class="material-icons bh-icon-warn">support_agent</span> <span class="bh-date">26/03/2026 09:00</span> In attesa Supporto.</div>
+                `;
+                actionArea.style.display = 'block';
+                actionArea.style.background = '#ffedd5';
+                actionArea.style.borderColor = '#fed7aa';
+                document.getElementById('det-action-title').innerHTML = '<span class="material-icons" style="color:#9a3412;">help</span> Da Verificare';
+                document.getElementById('det-action-desc').textContent = 'Supporto non ancora risposto. Riprovare o contattare direttamente.';
+                document.getElementById('det-action-btn').onclick = () => eseguiAzioneDetail('da-verificare');
+                document.getElementById('det-action-btn').innerHTML = '<span class="material-icons">check</span> Segna come Verificato';
+                document.getElementById('det-action-btn').className = 'btn btn-ok';
+                isinTbody.innerHTML = `
+                    <tr><td style="font-family:monospace;">LU0996182563</td><td>Amundi Petroleo</td><td>Organismo di Investimento</td><td style="text-align:right;">120</td><td><span class="status-badge" style="background:#ffedd5;color:#9a3412;">Estero</span></td><td><span class="status-badge" style="background:#fef3c7;color:#92400e;">Da Verificare</span></td><td>-</td><td style="text-align:right;">-</td><td style="text-align:right;">-</td></tr>
+                    <tr><td style="font-family:monospace;">LU0999999999</td><td>Amundi ELTIF 2030</td><td>ELTIF</td><td style="text-align:right;">80</td><td><span class="status-badge" style="background:#ffedd5;color:#9a3412;">Estero</span></td><td><span class="status-badge" style="background:#ede9fe;color:#5b21b6;">Advisory</span></td><td>Verifica fiscale estero</td><td style="text-align:right;">-</td><td style="text-align:right;">-</td></tr>
+                `;
+            } else if (stato === 'ko-96114') {
+                storico.innerHTML = `
+                    <div class="bh-item"><span class="material-icons bh-icon-ok">check_circle</span> <span class="bh-date">20/03/2026 10:00</span> Invio richiesta.</div>
+                    <div class="bh-item"><span class="material-icons bh-icon-err">error</span> <span class="bh-date">21/03/2026 16:00</span> KO Penale a Credito (90614).</div>
+                `;
+                actionArea.style.display = 'block';
+                actionArea.style.background = '#fee2e2';
+                actionArea.style.borderColor = '#fecaca';
+                document.getElementById('det-action-title').innerHTML = '<span class="material-icons" style="color:#991b1b;">error</span> KO Penale a Credito';
+                document.getElementById('det-action-desc').textContent = 'Pratica in scarto. Correggere dati e reinserire.';
+                document.getElementById('det-action-btn').onclick = () => eseguiAzioneDetail('ko-96114');
+                document.getElementById('det-action-btn').innerHTML = '<span class="material-icons">replay</span> Reinserisci Pratica';
+                document.getElementById('det-action-btn').className = 'btn btn-ok';
+                isinTbody.innerHTML = '<tr><td style="font-family:monospace;">US0378331005</td><td>Apple Inc.</td><td>Azione Estera</td><td style="text-align:right;">50</td><td><span class="status-badge" style="background:#ffedd5;color:#9a3412;">Estero (USA)</span></td><td><span class="status-badge" style="background:#fee2e2;color:#991b1b;">Non Trasferibile</span></td><td>Penale a Credito (90614)</td><td style="text-align:right;">-</td><td style="text-align:right;">-</td></tr>';
+            } else if (stato === 'business-error') {
+                storico.innerHTML = `
+                    <div class="bh-item"><span class="material-icons bh-icon-err">error</span> <span class="bh-date">19/03/2026 15:00</span> Business Error: NDG non coerente.</div>
+                `;
+                actionArea.style.display = 'block';
+                actionArea.style.background = '#fee2e2';
+                actionArea.style.borderColor = '#fecaca';
+                document.getElementById('det-action-title').innerHTML = '<span class="material-icons" style="color:#991b1b;">build</span> Business Error';
+                document.getElementById('det-action-desc').textContent = 'NDG non coerente con anagrafica. Correggere e risubmittere.';
+                document.getElementById('det-action-btn').onclick = () => eseguiAzioneDetail('business-error');
+                document.getElementById('det-action-btn').innerHTML = '<span class="material-icons">replay</span> Risubmit';
+                document.getElementById('det-action-btn').className = 'btn btn-ok';
+                isinTbody.innerHTML = '<tr><td style="font-family:monospace;">IT0005218380</td><td>BTP Italia 2028</td><td>Obbligazione (BTP)</td><td style="text-align:right;">15.000</td><td><span class="status-badge" style="background:#dbeafe;color:#1e40af;">Italia</span></td><td><span class="status-badge" style="background:#fee2e2;color:#991b1b;">Errore</span></td><td>NDG non coerente</td><td style="text-align:right;">-</td><td style="text-align:right;">-</td></tr>';
+            } else if (stato === 'completata') {
+                storico.innerHTML = `
+                    <div class="bh-item"><span class="material-icons bh-icon-ok">check_circle</span> <span class="bh-date">15/03/2026 16:00</span> Trasferimento completato.</div>
+                `;
+                actionArea.style.display = 'none';
+                isinTbody.innerHTML = '<tr><td style="font-family:monospace;">IT0005218380</td><td>BTP Italia 2028</td><td>Obbligazione (BTP)</td><td style="text-align:right;">15.000</td><td><span class="status-badge" style="background:#dbeafe;color:#1e40af;">Italia</span></td><td><span class="status-badge" style="background:#dcfce7;color:#166534;">Trasferibile</span></td><td>-</td><td style="text-align:right;">-</td><td style="text-align:right;">-</td></tr>';
+            } else {
+                storico.innerHTML = '<div class="bh-item"><span class="material-icons bh-icon-wait">hourglass_empty</span> <span class="bh-date">-</span> Informazioni non disponibili.</div>';
+                actionArea.style.display = 'none';
+                isinTbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#6c757d;padding:30px;">Nessun ISIN presente.</td></tr>';
+            }
+
+            openModal('modal-dettaglio');
+        }
+
+        function eseguiAzioneDetail() {
+            let msg = 'Pratica inviata in coda.';
+            
+            if (currentAction === 'verifica-modulo') {
+                msg = 'Modulo confermato. Pratica in coda per Inserimento AEA.';
+            } else if (currentAction === 'da-verificare') {
+                msg = 'ISIN verificato. Pratica in coda.';
+            } else if (currentAction === 'ko-96114') {
+                msg = 'Pratica reinserita nel flusso.';
+            } else if (currentAction === 'business-error') {
+                msg = 'Pratica risubmessa in coda.';
+            }
+            
+            setInCoda(currentRow, msg);
+        }
+
+        function setInCoda(rowId, customMessage, icon) {
+            const tdStatus = document.getElementById('td-status-' + rowId);
+            const tdActions = document.getElementById('td-actions-' + rowId);
+            const tr = document.getElementById('row-' + rowId);
+
+            if(!tr) return;
+
+            if(tdStatus) {
+                tdStatus.innerHTML = '<span class="status-badge status-in-coda">In Coda</span>';
+            }
+            
+            if(tdActions) {
+                tdActions.innerHTML = `
+                    <div class="action-group">
+                        <button class="btn-icon" onclick="apriDettaglioRow('${rowId}')" title="Dettaglio"><span class="material-icons">visibility</span></button>
+                    </div>
+                `;
+            }
+            
+            closeModal('modal-dettaglio');
+            showToast(customMessage || 'Pratica inviata in coda.', icon || 'check_circle');
+        }
+
+        function applicaFiltri() {
+            const stato = document.getElementById('filtro-stato').value;
+            const causale = document.getElementById('filtro-causale').value;
+            const controparte = document.getElementById('filtro-controparte').value.toLowerCase();
+            const mostraArchiviate = document.getElementById('filtro-archiviate').checked;
+            
+            const rows = document.querySelectorAll('#table-body tr');
+            let count = 0;
+            
+            rows.forEach(row => {
+                const rowStato = row.dataset.stato;
+                const rowArchiviata = row.dataset.archiviata;
+                const rowText = row.textContent.toLowerCase();
+                
+                let visibile = true;
+                
+                if (stato && rowStato !== stato) visibile = false;
+                if (causale && !rowText.includes(causale)) visibile = false;
+                if (controparte && !rowText.includes(controparte)) visibile = false;
+                if (!mostraArchiviate && rowArchiviata === 'si') visibile = false;
+                
+                row.style.display = visibile ? '' : 'none';
+                if (visibile) count++;
+            });
+            
+            document.getElementById('results-count').textContent = count + ' pratiche';
+        }
+
+        function resetFiltri() {
+            document.getElementById('filtro-stato').value = '';
+            document.getElementById('filtro-causale').value = '';
+            document.getElementById('filtro-controparte').value = '';
+            document.getElementById('filtro-data-da').value = '';
+            document.getElementById('filtro-archiviate').checked = false;
+            applicaFiltri();
+        }
+
+        function apriModuloPDF() {
+            const previewBox = document.getElementById('modulo-preview-box');
+            const pdfFrame = document.getElementById('modulo-pdf-frame');
+            const pdfViewer = document.getElementById('pdf-viewer');
+            
+            previewBox.style.display = 'none';
+            pdfFrame.style.display = 'block';
+            pdfViewer.src = 'about:blank';
+            showToast('Preview documento in fase di sviluppo. Collegamento a Salesforce in integrazione.', 'info');
+        }
+
+        function scaricaModuloPDF() {
+            showToast('Download modulo in fase di sviluppo.', 'info');
+        }
+
+        applicaFiltri();
+
+        const oggi = new Date();
+        const gg = String(oggi.getDate()).padStart(2, '0');
+        const mm = String(oggi.getMonth() + 1).padStart(2, '0');
+        const yyyy = oggi.getFullYear();
+        document.getElementById('footer-date').textContent = 'Ultimo aggiornamento: ' + gg + '/' + mm + '/' + yyyy + ' ore ' + String(oggi.getHours()).padStart(2, '0') + ':' + String(oggi.getMinutes()).padStart(2, '0');
+
+        function formatDate(daysFromNow) {
+            const d = new Date(oggi);
+            d.setDate(d.getDate() + daysFromNow);
+            return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + '/' + d.getFullYear();
+        }
+
+        function updateScadenze() {
+            const scadCells = document.querySelectorAll('[id^="td-scad-"]');
+            const scadenze = ['26/03/2026', '02/04/2026', '29/03/2026', '28/03/2026', '05/04/2026', '30/03/2026', '27/03/2026', ''];
+            scadCells.forEach((cell, i) => {
+                if (scadenze[i]) {
+                    cell.textContent = scadenze[i];
+                    const d = new Date(scadenze[i].split('/').reverse().join('-'));
+                    const diff = Math.ceil((d - oggi) / (1000 * 60 * 60 * 24));
+                    if (diff <= 0) cell.classList.add('date-urgent');
+                }
+            });
+        }
+        updateScadenze();
+
+        let sortDir = [true, true, true, true, true, true, true, true];
+        function sortTable(colIndex, type) {
+            const table = document.getElementById("table-body");
+            const rows = Array.from(table.querySelectorAll("tr"));
+            const ths = document.querySelectorAll("th");
+            const isAsc = sortDir[colIndex];
+
+            ths.forEach(th => { th.classList.remove('asc', 'desc'); });
+            if(ths[colIndex] && ths[colIndex].classList.contains('sortable')) {
+                ths[colIndex].classList.add(isAsc ? 'asc' : 'desc');
+            }
+
+            rows.sort((a, b) => {
+                let cellA = a.cells[colIndex].innerText.trim().toLowerCase();
+                let cellB = b.cells[colIndex].innerText.trim().toLowerCase();
+
+                if(type === 'date') {
+                    cellA = cellA.split('/').reverse().join('');
+                    cellB = cellB.split('/').reverse().join('');
+                }
+
+                if (cellA < cellB) return isAsc ? -1 : 1;
+                if (cellA > cellB) return isAsc ? 1 : -1;
+                return 0;
+            });
+
+            rows.forEach(row => table.appendChild(row));
+            sortDir[colIndex] = !isAsc;
+        }
+    </script>
+</body>
+</html>

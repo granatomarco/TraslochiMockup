@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<script>
+  const BASE_URL = '<?= ScriptApp.getService().getUrl() ?>';
+</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TDT OUT - Dettaglio ISIN</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: #f5f7fa; color: #2c3e50; padding-bottom: 60px; }
+        .material-icons { vertical-align: middle; font-size: 20px; }
+        
+        .navbar { background: #202742; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 30px 0; width: 100%; }
+        .navbar-container { max-width: 1600px; margin: 0 auto; padding: 0 40px; width: 100%; display: flex; align-items: center; justify-content: space-between; }
+        
+        .logo-wrapper { display: flex; align-items: center; }
+        .logo-section { display: flex; align-items: center; gap: 15px; }
+        .brand-logo { height: 60px; width: auto; object-fit: contain; display: block; }
+        .logo-circle { width: 50px; height: 50px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #2c3e50; }
+        .logo-circle .material-icons { font-size: 32px; }
+        .brand-text { color: white; }
+        .brand-name { font-size: 18px; font-weight: 600; letter-spacing: 2px; }
+        .brand-subtitle { font-size: 12px; letter-spacing: 3px; margin-top: 2px; opacity: 0.9; }
+        
+        .nav-menu { display: flex; gap: 20px; }
+        .nav-link { color: white; text-decoration: none; opacity: 0.7; font-size: 14px; font-weight: 500; padding: 8px 16px; border-radius: 4px; transition: all 0.3s; cursor: pointer; display: flex; align-items: center; gap: 6px;}
+        .nav-link:hover, .nav-link.active { opacity: 1; background: rgba(255,255,255,0.1); }
+
+        .container { max-width: 1600px; margin: 0 auto; padding: 30px 40px; }
+        
+        .breadcrumb { margin-bottom: 20px; font-size: 14px; color: #6c757d; }
+        .breadcrumb a { color: #0ea5e0; text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        
+        .page-header { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-start;}
+        h1.page-title { font-size: 26px; font-weight: 400; color: #2c3e50; margin-bottom: 8px; }
+        .header-divider { border-top: 2px solid rgb(32, 39, 66); width: 150px; padding-top: 8px; margin-bottom: 8px; }
+        .header-actions { display: flex; gap: 12px; align-items: center; }
+
+        .pratica-card { background: white; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 24px; margin-bottom: 25px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 20px; }
+        .card-item { padding: 12px 15px; background: #f8f9fa; border-radius: 4px; border-left: 3px solid #f39c12; }
+        .card-label { font-size: 11px; color: #6c757d; font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
+        .card-value { font-size: 15px; color: #2c3e50; font-weight: 600; }
+        .card-value.urgent { color: #dc2626; }
+
+        .results-section { background: white; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; }
+        .results-header { padding: 20px 30px; background: #f8f9fa; border-bottom: 1px solid #e9ecef; display: flex; justify-content: space-between; align-items: center; }
+        h2.results-title { font-size: 16px; font-weight: 600; color: #2c3e50; display: flex; align-items: center; gap: 8px; }
+        .results-count { font-size: 13px; color: #6c757d; font-weight: 500;}
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        thead { background: #f8f9fa; }
+        th { padding: 14px 16px; text-align: left; font-weight: 600; color: #2c3e50; font-size: 13px; border-bottom: 2px solid #e9ecef; white-space: nowrap; }
+        td { padding: 14px 16px; border-bottom: 1px solid #e9ecef; font-size: 14px; color: #2c3e50; vertical-align: middle;}
+        tr:hover { background: #f8f9fa; }
+        tr.elaborato { background: #f8fafc; }
+        tr.elaborato td { color: #94a3b8; }
+
+        .action-group { display: flex; gap: 8px; align-items: center; }
+        .btn-icon { padding: 8px; border-radius: 4px; border: 1px solid #ddd; background: white; color: #6c757d; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; }
+        .btn-icon:hover { background: #f8f9fa; color: #2c3e50; border-color: #2c3e50; }
+        .btn-primary { background: #2c3e50; color: white; }
+        .btn-primary:hover { background: #3d5266; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-light { background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1; }
+        .btn-light:hover { background: #cbd5e1; }
+        .btn-ok { background: #16a34a; color: white; }
+        .btn-ok:hover { background: #15803d; }
+        .btn-ko { background: #dc2626; color: white; }
+        .btn-ko:hover { background: #b91c1c; }
+        .btn-warn { background: #ea580c; color: white; }
+        .btn-warn:hover { background: #c2410c; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; animation: fadeIn 0.3s; }
+        .modal.active { display: flex; align-items: center; justify-content: center; }
+        .modal-content { background: white; border-radius: 4px; max-width: 900px; width: 95%; max-height: 85vh; overflow-y: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.3); animation: slideUp 0.3s; }
+        .modal-header { background: #2c3e50; color: white; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h3 { font-size: 18px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+        .close-btn { background: none; border: none; color: white; cursor: pointer; padding: 0; display: flex; }
+        .modal-body { padding: 30px; }
+        .modal-footer { padding: 20px 30px; background: #f8f9fa; display: flex; gap: 10px; justify-content: flex-end; border-top: 1px solid #e9ecef;}
+
+        .business-history { border: 1px solid #e9ecef; border-radius: 4px; background: white; margin-bottom: 20px; }
+        .bh-item { padding: 12px 15px; border-bottom: 1px solid #e9ecef; display: flex; align-items: flex-start; gap: 12px; font-size: 13px; color: #495057; }
+        .bh-item:last-child { border-bottom: none; background: #f8f9fa; font-weight: 500; color: #2c3e50;}
+        .bh-date { font-weight: 600; color: #6c757d; min-width: 130px; display: inline-block; font-size: 12px;}
+        .bh-icon-ok { color: #16a34a; }
+        .bh-icon-err { color: #dc2626; }
+        .bh-icon-wait { color: #17a2b8; }
+
+        .action-area { padding: 15px; border-radius: 4px; border: 1px solid #eee; margin-bottom: 20px; }
+        .action-area h5 { font-size: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .action-area p { font-size: 13px; margin-bottom: 12px; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .btn { padding: 8px 16px; border: none; border-radius: 4px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none;}
+        .btn-ok { background: #16a34a; color: white; }
+        .btn-ok:hover { background: #15803d; }
+        .btn-ko { background: #dc2626; color: white; }
+        .btn-ko:hover { background: #b91c1c; }
+        .btn-warn { background: #ea580c; color: white; }
+        .btn-warn:hover { background: #c2410c; }
+        .btn-light { background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1; }
+        .btn-light:hover { background: #cbd5e1; }
+
+        .status-badge { padding: 5px 10px; border-radius: 3px; font-size: 12px; font-weight: 600; display: inline-block; letter-spacing: 0.5px;}
+        .status-trasferibile { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0;}
+        .status-non-trasferibile { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca;}
+        .status-da-verificare { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d;}
+        .status-elaborato { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+        
+        .imposta-cell { color: #2c3e50; }
+        .imposta-cell.presente { color: #16a34a; }
+        .imposta-cell.assente { color: #dc2626; }
+        
+        .saldo-cell { font-weight: 600; }
+        .saldo-si { color: #16a34a; }
+        .saldo-no { color: #dc2626; }
+        
+        .pac-cell { color: #ea580c; font-weight: 600; }
+        
+        .footer { max-width: 1600px; margin: 30px auto 0; padding: 20px 40px; border-top: 1px solid #e9ecef; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #6c757d; }
+        .footer a { color: #0ea5e9; text-decoration: none; }
+
+        #toast { visibility: hidden; min-width: 300px; background-color: #202742; color: #fff; text-align: center; border-radius: 4px; padding: 16px 24px; position: fixed; z-index: 2000; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 14px; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.3); opacity: 0; transition: opacity 0.3s, bottom 0.3s; display: flex; align-items: center; gap: 12px; border-left: 4px solid #f39c12;}
+        #toast.show { visibility: visible; opacity: 1; bottom: 80px; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="logo-wrapper">
+                <div class="logo-section">
+                    <div class="logo-circle"><span class="material-icons">account_balance</span></div>
+                    <div class="brand-text">
+                        <div class="brand-name">MEDIOBANCA PREMIER</div>
+                        <div class="brand-subtitle">TRASLOCHI TITOLI</div>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-menu">
+                <span class="nav-link" onclick="window.location.href='pratiche-in.html'"><span class="material-icons">login</span> TDT IN</span>
+                <span class="nav-link active"><span class="material-icons">logout</span> TDT OUT</span>
+                <span class="nav-link" onclick="window.location.href='tdtin.html'"><span class="material-icons">login</span> Traslochi IN</span>
+                <span class="nav-link" onclick="window.location.href='tdtout.html'"><span class="material-icons">logout</span> Traslochi OUT</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="pratiche-out.html">← Lista Pratiche</a> / Pratica SF-20260315-006 / ISIN
+        </div>
+
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">TDT OUT - Dettaglio ISIN</h1>
+                <div class="header-divider"></div>
+                <span style="font-size: 14px; color: #6c757d; display: block; margin-top: 10px;">Gestione traslochi in uscita verso banche controparti.</span>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="openModal('modal-feature')">
+                    <span class="material-icons">military_tech</span> Elenco Feature
+                </button>
+            </div>
+        </div>
+
+        <div class="pratica-card">
+            <div class="card-item">
+                <div class="card-label">Pratica</div>
+                <div class="card-value">SF-20260315-006</div>
+            </div>
+            <div class="card-item">
+                <div class="card-label">Cliente</div>
+                <div class="card-value">Paolo Neri<br><small style="color:#6c757d;">NDG: 45678901</small></div>
+            </div>
+            <div class="card-item">
+                <div class="card-label">Banca</div>
+                <div class="card-value">Banca MPS (01025)</div>
+            </div>
+            <div class="card-item">
+                <div class="card-label">Scadenza</div>
+                <div class="card-value urgent">27/03/2026</div>
+            </div>
+            <div class="card-item">
+                <div class="card-label">Modulo / Firma</div>
+                <div class="card-value"><span class="material-icons" style="font-size:16px; vertical-align:middle;">description</span> Ricevuto / <span class="material-icons" style="font-size:16px; vertical-align:middle; color:#16a34a;">check_circle</span> Verificata</div>
+            </div>
+            <div class="card-item">
+                <div class="card-label">Stato pratica</div>
+                <div class="card-value"><span class="status-badge" style="background:#dcfce7; color:#166534; border:1px solid #bbf7d0; opacity:0.8;">Scarico Prenotato</span></div>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <div class="results-header">
+                <h2 class="results-title"><span class="material-icons">qr_code</span> Portafoglio Titoli in Uscita (ISIN)</h2>
+                <span class="results-count" id="results-count">5 ISIN</span>
+            </div>
+            
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ISIN</th>
+                            <th>Denominazione</th>
+                            <th>Tipologia</th>
+                            <th>Divisa</th>
+                            <th>Quantita</th>
+                            <th>Stato Trasferibilita</th>
+                            <th>Imposta Sostitutiva</th>
+                            <th>Saldo Capiente</th>
+                            <th>PAC Attivo</th>
+                            <th>Nr. Op. GNCS</th>
+                            <th>Azioni</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        
+                        <tr data-stato="trasferibile" data-pac="no" data-saldo="si">
+                            <td><strong>IT0005218380</strong></td>
+                            <td>BTP Italia 2028</td>
+                            <td>Obbligazione</td>
+                            <td>EUR</td>
+                            <td>15.000</td>
+                            <td><span class="status-badge status-trasferibile">Trasferibile</span></td>
+                            <td class="imposta-cell presente">€ 3.900,00</td>
+                            <td><span class="saldo-cell saldo-si"><span class="material-icons" style="font-size:14px; color:#16a34a;">check_circle</span> Si</span></td>
+                            <td>No</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+
+                        <tr data-stato="trasferibile" data-pac="no" data-saldo="si">
+                            <td><strong>IT0005188138</strong></td>
+                            <td>BTP Futura 2029</td>
+                            <td>Obbligazione</td>
+                            <td>EUR</td>
+                            <td>10.000</td>
+                            <td><span class="status-badge status-trasferibile">Trasferibile</span></td>
+                            <td class="imposta-cell presente">€ 2.600,00</td>
+                            <td><span class="saldo-cell saldo-si"><span class="material-icons" style="font-size:14px; color:#16a34a;">check_circle</span> Si</span></td>
+                            <td>No</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+
+                        <tr data-stato="da-verificare" data-pac="si" data-saldo="si">
+                            <td><strong>LU0996182563</strong></td>
+                            <td>Amundi Crescita 2028</td>
+                            <td>Fondo</td>
+                            <td>EUR</td>
+                            <td>150</td>
+                            <td><span class="status-badge status-da-verificare">Da Verificare</span></td>
+                            <td class="imposta-cell">-</td>
+                            <td><span class="saldo-cell saldo-si"><span class="material-icons" style="font-size:14px; color:#16a34a;">check_circle</span> Si</span></td>
+                            <td><span class="pac-cell">Si</span></td>
+                            <td>-</td>
+                            <td class="action-group">
+                                <button class="btn-icon" onclick="apriDettaglioIsin('LU0996182563')"><span class="material-icons">visibility</span></button>
+                                <button class="btn btn-ok" onclick="azioneIsin(this, 'trasferibile')"><span class="material-icons" style="font-size:14px;">check</span> Transfer.</button>
+                                <button class="btn btn-ko" onclick="azioneIsin(this, 'non-trasferibile')"><span class="material-icons" style="font-size:14px;">close</span> Non Transfer.</button>
+                            </td>
+                        </tr>
+
+                        <tr data-stato="da-verificare" data-pac="no" data-saldo="no">
+                            <td><strong>IT0005218128</strong></td>
+                            <td>BTP Valore 2030</td>
+                            <td>Obbligazione</td>
+                            <td>EUR</td>
+                            <td>20.000</td>
+                            <td><span class="status-badge status-da-verificare">Da Verificare</span></td>
+                            <td class="imposta-cell assente">€ 5.200,00</td>
+                            <td><span class="saldo-cell saldo-no"><span class="material-icons" style="font-size:14px; color:#dc2626;">cancel</span> No</span></td>
+                            <td>No</td>
+                            <td>-</td>
+                            <td class="action-group">
+                                <button class="btn-icon" onclick="apriDettaglioIsin('IT0005218128')"><span class="material-icons">visibility</span></button>
+                                <button class="btn btn-ok" onclick="azioneIsin(this, 'trasferibile')"><span class="material-icons" style="font-size:14px;">check</span> Transfer.</button>
+                                <button class="btn btn-ko" onclick="azioneIsin(this, 'non-trasferibile')"><span class="material-icons" style="font-size:14px;">close</span> Non Transfer.</button>
+                            </td>
+                        </tr>
+
+                        <tr data-stato="elaborato" data-pac="no" data-saldo="-">
+                            <td><strong>IT0001234567</strong></td>
+                            <td>Intesa Sanpaolo</td>
+                            <td>Azione</td>
+                            <td>EUR</td>
+                            <td>500</td>
+                            <td><span class="status-badge status-elaborato">Elaborato</span></td>
+                            <td class="imposta-cell">-</td>
+                            <td><span class="saldo-cell">-</span></td>
+                            <td>No</td>
+                            <td>GNCS-2026-045</td>
+                            <td>-</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Ultimo aggiornamento: 26/03/2026 ore 09:30</span>
+        <a href="#"><span class="material-icons" style="font-size:16px; vertical-align:middle;">bar_chart</span> Apri SAS Reports</a>
+    </footer>
+
+    <div id="modal-feature" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3><span class="material-icons">military_tech</span> Elenco Feature TDT OUT - ISIN</h3>
+                <button class="close-btn" onclick="closeModal('modal-feature')"><span class="material-icons">close</span></button>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 4px; border-left: 3px solid #3b82f6;">
+                    <h5 style="font-size: 14px; margin-bottom: 8px;"><span class="material-icons" style="vertical-align: middle;">visibility</span> Dettaglio ISIN</h5>
+                    <p style="font-size: 13px; color: #6c757d;">Visualizza storico e azioni per ogni ISIN.</p>
+                </div>
+                <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 4px; border-left: 3px solid #16a34a;">
+                    <h5 style="font-size: 14px; margin-bottom: 8px;"><span class="material-icons" style="vertical-align: middle;">check_circle</span> Azioni Rapide ISIN</h5>
+                    <p style="font-size: 13px; color: #6c757d;">Segna ISIN come Trasferibile o Non Trasferibile con un click.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-feature')">Chiudi</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-dettaglio-isin" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><span class="material-icons">qr_code</span> Dettaglio ISIN: <span id="det-isin">-</span></h3>
+                <button class="close-btn" onclick="closeModal('modal-dettaglio-isin')"><span class="material-icons">close</span></button>
+            </div>
+            <div class="modal-body">
+                <div id="det-isin-area" style="margin-bottom: 20px;">
+                    <div style="padding: 15px; background: #f8f9fa; border-radius: 4px; margin-bottom: 15px;">
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+                            <div>
+                                <div style="font-size: 11px; color: #6c757d; text-transform: uppercase; font-weight: 600;">Denominazione</div>
+                                <div style="font-size: 14px; font-weight: 600; margin-top: 4px;" id="det-isin-nome">-</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 11px; color: #6c757d; text-transform: uppercase; font-weight: 600;">Quantita</div>
+                                <div style="font-size: 14px; font-weight: 600; margin-top: 4px;" id="det-isin-qta">-</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 11px; color: #6c757d; text-transform: uppercase; font-weight: 600;">Divisa</div>
+                                <div style="font-size: 14px; font-weight: 600; margin-top: 4px;" id="det-isin-divisa">-</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 11px; color: #6c757d; text-transform: uppercase; font-weight: 600;">Stato</div>
+                                <div style="font-size: 14px; font-weight: 600; margin-top: 4px;" id="det-isin-stato">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 10px; color: #2c3e50; display: flex; align-items: center; gap: 8px;">
+                    <span class="material-icons">history</span> Storico Eventi
+                </h4>
+                <div class="business-history" id="det-storico">
+                    <div class="bh-item"><span class="material-icons bh-icon-ok">check_circle</span> <span class="bh-date">15/03/2026 10:00</span> ISIN inserito in pratica.</div>
+                    <div class="bh-item"><span class="material-icons bh-icon-wait">hourglass_empty</span> <span class="bh-date">26/03/2026 09:00</span> In attesa verifica trasferibilita.</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-dettaglio-isin')"><span class="material-icons">close</span> Chiudi</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-imposta-isin" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+        <div style="background:white; border-radius:4px; max-width:500px; width:95%; padding:30px; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="font-size:18px; font-weight:500; display:flex; align-items:center; gap:8px;"><span class="material-icons">receipt_long</span> Verifica Capienza</h3>
+                <button onclick="closeImpostaIsin()" style="background:none; border:none; color:#6c757d; cursor:pointer; padding:4px; display:flex;"><span class="material-icons">close</span></button>
+            </div>
+            <div style="padding:12px; background:#f8f9fa; border-radius:4px; margin-bottom:20px;">
+                <div><span style="font-size:12px; color:#6c757d;">ISIN:</span> <strong>IT0005218128</strong></div>
+                <div><span style="font-size:12px; color:#6c757d;">Quantita:</span> <strong>20.000</strong></div>
+            </div>
+            <div style="margin-bottom:20px;">
+                <div style="padding:12px; background:#f8f9fa; border-radius:4px; margin-bottom:10px;">
+                    <div style="font-size:11px; color:#6c757d; text-transform:uppercase; font-weight:600;">Imposta Sostitutiva (26%)</div>
+                    <div style="font-size:18px; font-weight:600; color:#2c3e50;">€ 5.200,00</div>
+                </div>
+                <div style="padding:12px; background:#fee2e2; border-radius:4px; border:1px solid #fecaca;">
+                    <div style="font-size:11px; color:#991b1b; text-transform:uppercase; font-weight:600;">Saldo c/c disponibile</div>
+                    <div style="font-size:18px; font-weight:600; color:#dc2626;">€ 12.450,00</div>
+                </div>
+            </div>
+            <div style="background:rgba(220,38,38,0.1); border:2px solid #dc2626; border-radius:4px; padding:16px; text-align:center; color:#991b1b; font-weight:600; margin-bottom:20px;">
+                <span class="material-icons" style="vertical-align:middle;">warning</span> SALDO INSUFFICIENTE<br>
+                <small>Causale: Mancanza Provvista Imposta</small>
+            </div>
+            <div style="display:flex; gap:10px; justify-content:flex-end;">
+                <button class="btn btn-primary" onclick="closeImpostaIsin(); showToast('Segnalazione inviata.', 'check');" style="background:#16a34a; color:white; padding:8px 16px; border:none; border-radius:4px; cursor:pointer;"><span class="material-icons" style="font-size:16px;">check</span> Conferma — Segnala al gestore</button>
+                <button onclick="closeImpostaIsin()" style="background:#e2e8f0; color:#334155; padding:8px 16px; border:1px solid #cbd5e1; border-radius:4px; cursor:pointer;"><span class="material-icons" style="font-size:16px;">close</span> Chiudi</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast"><span class="material-icons" id="toast-icon">info</span> <span id="toast-msg"></span></div>
+
+    <script>
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        window.onclick = function(e) { if (e.target.classList.contains('modal')) e.target.classList.remove('active'); }
+
+        function showToast(message, icon = 'info') {
+            const toast = document.getElementById("toast");
+            document.getElementById("toast-msg").innerText = message;
+            document.getElementById("toast-icon").innerText = icon;
+            toast.className = "show";
+            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3500);
+        }
+
+        function apriDettaglioIsin(isin) {
+            const rows = document.querySelectorAll('#table-body tr');
+            let data = null;
+            rows.forEach(r => {
+                const cell = r.querySelector('strong');
+                if (cell && cell.textContent === isin) {
+                    data = {
+                        isin: cell.textContent,
+                        nome: r.cells[1].textContent,
+                        qta: r.cells[4].textContent,
+                        divisa: r.cells[3].textContent,
+                        stato: r.cells[5].textContent
+                    };
+                }
+            });
+
+            if (data) {
+                document.getElementById('det-isin').textContent = data.isin;
+                document.getElementById('det-isin-nome').textContent = data.nome;
+                document.getElementById('det-isin-qta').textContent = data.qta;
+                document.getElementById('det-isin-divisa').textContent = data.divisa;
+                document.getElementById('det-isin-stato').textContent = data.stato;
+                openModal('modal-dettaglio-isin');
+            }
+        }
+        
+        function azioneIsin(btn, azione) {
+            if (!confirm('Confermare l\'azione?')) return;
+            const row = btn.closest('tr');
+            const cellaStato = row.cells[5];
+            const cellaAzioni = row.cells[10];
+            
+            if (azione === 'trasferibile') {
+                cellaStato.innerHTML = '<span class="status-badge status-trasferibile">Trasferibile</span>';
+            } else if (azione === 'non-trasferibile') {
+                cellaStato.innerHTML = '<span class="status-badge status-non-trasferibile">Non Trasferibile</span>';
+            } else if (azione === 'pac-estinto') {
+                row.dataset.pac = 'no';
+                row.cells[8].innerHTML = 'No';
+                showToast('PAC estinto aggiornato.', 'check');
+                return;
+            }
+            
+            cellaAzioni.innerHTML = '-';
+            row.dataset.stato = azione;
+            showToast('Stato ISIN aggiornato.', 'check');
+        }
+        
+        function apriImpostaIsin() {
+            document.getElementById('modal-imposta-isin').style.display = 'flex';
+        }
+        
+        function closeImpostaIsin() {
+            document.getElementById('modal-imposta-isin').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

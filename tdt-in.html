@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TDT IN - Portale Trasferimenti Titoli</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #f5f7fa; color: #2c3e50; padding-bottom: 60px; }
+        .material-icons { vertical-align: middle; font-size: 18px; }
+        
+        /* Navbar */
+        .navbar { background: #202742; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 20px 0; position: sticky; top: 0; z-index: 100;}
+        .navbar-container { max-width: 1600px; margin: 0 auto; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; }
+        .logo-wrapper { display: flex; align-items: center; }
+        .logo-section { display: flex; align-items: center; gap: 15px; }
+        .logo-circle { width: 45px; height: 45px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #202742; }
+        .logo-circle .material-icons { font-size: 28px; }
+        .brand-text { color: white; }
+        .brand-name { font-size: 16px; font-weight: 600; letter-spacing: 1.5px; }
+        .brand-subtitle { font-size: 11px; letter-spacing: 2px; opacity: 0.8; }
+        .nav-menu { display: flex; gap: 10px; align-items: center;}
+        .nav-link { color: white; text-decoration: none; opacity: 0.6; font-size: 14px; font-weight: 500; padding: 8px 16px; border-radius: 4px; transition: all 0.3s; cursor: pointer; display: flex; align-items: center; gap: 6px;}
+        .nav-link:hover, .nav-link.active { opacity: 1; background: rgba(255,255,255,0.1); }
+
+        /* Viste (SPA) */
+        .view-section { display: none; max-width: 1600px; margin: 0 auto; padding: 30px 40px; animation: fadeIn 0.3s; }
+        .view-section.active { display: block; }
+
+        /* Header e Search */
+        .page-header { margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-start;}
+        .page-title { font-size: 24px; font-weight: 400; color: #2c3e50; margin-bottom: 8px; display:flex; align-items:center; gap:10px;}
+        .header-desc { font-size: 14px; color: #6c757d; display: block; margin-top: 5px; max-width: 800px; line-height: 1.5;}
+
+        .search-section { background: white; padding: 25px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .search-grid { display: grid; grid-template-columns: 1.2fr 1.2fr 1.2fr 1fr 1fr 0.5fr; gap: 15px; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { font-size: 11px; font-weight: 600; color: #495057; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;}
+        .form-group input, .form-group select { padding: 9px; border: 1px solid #ced4da; border-radius: 4px; font-size: 13px; transition: border-color 0.2s; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #202742; }
+
+        /* Tabelle */
+        .results-section { background: white; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden; margin-bottom: 20px;}
+        .results-header { padding: 15px 25px; background: #f8f9fa; border-bottom: 1px solid #e9ecef; display: flex; justify-content: space-between; align-items: center; }
+        table { width: 100%; border-collapse: collapse; }
+        th { padding: 14px 15px; text-align: left; font-weight: 600; background: #f8f9fa; color: #495057; font-size: 13px; border-bottom: 2px solid #e9ecef; white-space: nowrap;}
+        td { padding: 14px 15px; border-bottom: 1px solid #e9ecef; font-size: 13px; color: #2c3e50; vertical-align: middle;}
+        tr:hover { background: #f1f5f9; }
+        
+        .link-sf { color: #00a1e0; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
+        .sub-text { font-size: 11px; color: #6c757d; font-weight: 400; display: block; margin-top: 4px; }
+
+        /* Bottoni e Badges */
+        .btn { padding: 8px 16px; border: none; border-radius: 4px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-primary { background: #202742; color: white; }
+        .btn-secondary { background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-success { background: #155724; color: white; }
+        .btn-feature { background: white; border: 1px solid #202742; color: #202742; }
+        .btn-feature:hover { background: #f8f9fa; }
+
+        .action-group { display: flex; gap: 6px; align-items: center; }
+        .btn-icon { width: 32px; height: 32px; border-radius: 4px; border: 1px solid #cbd5e1; background: white; color: #495057; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; padding: 0;}
+        .btn-icon:hover { background: #f1f5f9; color: #00a1e0; border-color: #00a1e0; }
+        
+        .status-badge { padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; display: inline-block; white-space: nowrap;}
+        .st-attesa { background: #fff3cd; color: #856404; border: 1px solid #ffeeba;}
+        .st-lavorazione { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd;}
+        .st-coda { background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1;}
+        .st-completata { background: #d4edda; color: #155724; border: 1px solid #c3e6cb;}
+        .st-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;}
+        
+        .fase-badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; background: #f8f9fa; border: 1px solid #ced4da; color: #495057; display: inline-block; white-space: nowrap;}
+
+        /* Dettaglio Pratica */
+        .detail-card { background: white; border: 1px solid #e9ecef; border-radius: 6px; padding: 25px; margin-bottom: 25px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);}
+        .detail-card h3 { font-size: 16px; color: #202742; margin-bottom: 20px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; display: flex; align-items: center; gap: 8px;}
+        
+        .info-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .info-box { background: #f8f9fa; padding: 15px; border-radius: 4px; border-left: 3px solid #00a1e0;}
+        .info-label { font-size: 11px; color: #6c757d; font-weight: 600; text-transform: uppercase; margin-bottom: 5px;}
+        .info-value { font-size: 14px; color: #2c3e50; font-weight: 600;}
+
+        .history-list { border-left: 2px solid #e9ecef; margin-left: 10px; padding-left: 20px; }
+        .history-item { position: relative; margin-bottom: 15px; font-size: 13px; color: #495057;}
+        .history-item::before { content: ''; position: absolute; left: -26px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: #00a1e0; }
+        .history-date { font-weight: 600; color: #6c757d; display: block; font-size: 11px; margin-bottom: 2px;}
+
+        /* Icone Trasferibilità */
+        .eval-icons { display: flex; gap: 8px; align-items: center; justify-content: center; }
+        .eval-icon { font-size: 24px; cursor: pointer; color: #cbd5e1; transition: all 0.2s; }
+        .eval-icon:hover { transform: scale(1.1); }
+        .eval-icon.active-wait { color: #f39c12; }
+        .eval-icon.active-ok { color: #28a745; }
+        .eval-icon.active-ko { color: #dc3545; }
+
+        /* Modals & Toast */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center;}
+        .modal.active { display: flex; animation: fadeIn 0.2s; }
+        .modal-content { background: white; border-radius: 6px; width: 600px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .modal-header { padding: 20px; background: #202742; color: white; border-radius: 6px 6px 0 0; display: flex; justify-content: space-between;}
+        .modal-body { padding: 25px; max-height: 70vh; overflow-y: auto;}
+        
+        #toast { visibility: hidden; min-width: 300px; background-color: #202742; color: #fff; text-align: center; border-radius: 4px; padding: 16px; position: fixed; z-index: 2000; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 14px; opacity: 0; transition: opacity 0.3s;}
+        #toast.show { visibility: visible; opacity: 1; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="logo-wrapper">
+                <img src="https://drive.google.com/thumbnail?id=1lWb1g7UaEvWgAlRo4EMZ6JSfP04BPilA&sz=s300" id="main-logo" alt="Mediobanca Premier" style="max-height: 80px;" onerror="this.style.display='none'; document.getElementById('fallback-logo').style.display='flex';">
+                <div id="fallback-logo" class="logo-section" style="display: none;">
+                    <div class="logo-circle"><span class="material-icons">account_balance</span></div>
+                    <div class="brand-text">
+                        <div class="brand-name">MEDIOBANCA PREMIER</div>
+                        <div class="brand-subtitle">TRASFERIMENTI TITOLI</div>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-menu">
+                <a href="tdt-in.html" class="nav-link active"><span class="material-icons">login</span> TDT IN</a>
+                <a href="trasferimenti-in.html" class="nav-link"><span class="material-icons">login</span> Trasferimenti IN</a>
+            </div>
+        </div>
+    </nav>
+
+    <div id="view-list" class="view-section active">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title"><span class="material-icons" style="color:#00a1e0; font-size: 28px;">sync_alt</span> Cruscotto TDT IN</h1>
+                <span class="header-desc">Automazione flussi telematici in ingresso. Integrazione automatica con i sistemi di anagrafe (AEA) e CRM (Salesforce).</span>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-feature" onclick="openModal('modal-features')"><span class="material-icons">military_tech</span> Elenco Feature</button>
+            </div>
+        </div>
+
+        <div class="search-section">
+            <div class="search-grid">
+                <div class="form-group">
+                    <label>Ricerca Pratica</label>
+                    <input type="text" id="filter-id" placeholder="Es. IN-2026..." oninput="applyFilters()">
+                </div>
+                <div class="form-group">
+                    <label>Banca Controparte</label>
+                    <input type="text" id="filter-banca" placeholder="Denominazione" oninput="applyFilters()">
+                </div>
+                <div class="form-group">
+                    <label>Cliente (NDG/CF)</label>
+                    <input type="text" id="filter-cliente" placeholder="Inserisci NDG o CF" oninput="applyFilters()">
+                </div>
+                <div class="form-group">
+                    <label>Stato Pratica</label>
+                    <select id="filter-stato-pratica" onchange="applyFilters()">
+                        <option value="">Tutti</option>
+                        <option value="in attesa utente">In attesa utente</option>
+                        <option value="in elaborazione">In elaborazione</option>
+                        <option value="in coda">In coda</option>
+                        <option value="completata">Completata</option>
+                        <option value="errore">Errore</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Fase Corrente</label>
+                    <select id="filter-fase" onchange="applyFilters()">
+                        <option value="">Tutte</option>
+                        <option value="conferma modulo">Conferma Modulo TDT</option>
+                        <option value="inserimento">Inserimento Richiesta</option>
+                        <option value="risposta">Risposta Controparte</option>
+                        <option value="trasferibilità">Verifica Trasferibilità</option>
+                        <option value="carico">Carico Strumenti</option>
+                        <option value="extra tdt">Extra TDT</option>
+                    </select>
+                </div>
+                <div class="form-group" style="justify-content: flex-end;">
+                    <button class="btn btn-secondary" style="height:37px; justify-content:center;" onclick="resetFilters()"><span class="material-icons">refresh</span> Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <div class="results-header">
+                <h2 style="font-size: 16px; color: #2c3e50;"><span class="material-icons">list_alt</span> Coda Pratiche TDT IN</h2>
+                <a href="#" class="btn btn-primary" style="background:#007bc0; text-decoration:none;" onclick="showToast('Reindirizzamento portale SAS...', 'analytics')"><span class="material-icons">analytics</span> Esporta Dati con SAS</a>
+            </div>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Link SF / Pratica</th>
+                            <th>Data Flusso</th>
+                            <th>Banca Controparte</th>
+                            <th>Cliente (NDG / CF)</th>
+                            <th>Dossier Origine</th>
+                            <th style="text-align:center;">Titoli <span class="sub-text">✓ / ✗ / ⚠</span></th>
+                            <th>Stato Pratica</th>
+                            <th>Fase Corrente</th>
+                            <th>Azioni Rapide</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <tr id="row-1">
+                            <td><a href="#" class="link-sf"><span class="material-icons">open_in_new</span> IN-26-001</a></td>
+                            <td>20/03/2026</td>
+                            <td>INTESA SANPAOLO<span class="sub-text">ABI: 03069</span></td>
+                            <td>Mario Rossi<span class="sub-text">NDG: 882910 | RSS...</span></td>
+                            <td><strong>52688508</strong></td>
+                            <td class="col-titoli" style="text-align:center; font-family:monospace;"><span style="color:#16a34a;font-weight:bold;">0</span> / <span style="color:#dc2626;font-weight:bold;">0</span> / <span style="color:#f59e0b;font-weight:bold;">3</span></td>
+                            <td class="col-stato-pratica"><span class="status-badge st-attesa">In attesa utente</span></td>
+                            <td class="col-fase"><span class="fase-badge">Conferma Modulo TDT</span></td>
+                            <td class="col-azioni">
+                                <div class="action-group">
+                                    <button class="btn-icon" title="Dettaglio" onclick="openDetail('IN-26-001', 'conferma')"><span class="material-icons">visibility</span></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr id="row-2">
+                            <td><a href="#" class="link-sf"><span class="material-icons">open_in_new</span> IN-26-002</a></td>
+                            <td>19/03/2026</td>
+                            <td>BPM S.P.A.<span class="sub-text">ABI: 05034</span></td>
+                            <td>Luigi Bianchi<span class="sub-text">NDG: N/A | BNC...</span></td>
+                            <td><strong>11223344</strong></td>
+                            <td class="col-titoli" style="text-align:center; font-family:monospace;"><span style="color:#16a34a;font-weight:bold;">0</span> / <span style="color:#dc2626;font-weight:bold;">0</span> / <span style="color:#f59e0b;font-weight:bold;">3</span></td>
+                            <td class="col-stato-pratica"><span class="status-badge st-error">Errore</span></td>
+                            <td class="col-fase"><span class="fase-badge">Inserimento Richiesta</span></td>
+                            <td class="col-azioni">
+                                <div class="action-group">
+                                    <button class="btn-icon" title="Dettaglio" onclick="openDetail('IN-26-002', 'errore')"><span class="material-icons">visibility</span></button>
+                                    <button class="btn-icon" title="Modifica e Reinserisci" onclick="eseguiAzione('row-2', 'Reinserimento in coda')"><span class="material-icons">replay</span></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr id="row-3">
+                            <td><a href="#" class="link-sf"><span class="material-icons">open_in_new</span> IN-26-003</a></td>
+                            <td>17/03/2026</td>
+                            <td>BANCA SELLA<span class="sub-text">ABI: 03268</span></td>
+                            <td>Carlo Neri<span class="sub-text">NDG: 112233 | NRI...</span></td>
+                            <td><strong>55443322</strong></td>
+                            <td class="col-titoli" style="text-align:center; font-family:monospace;"><span style="color:#16a34a;font-weight:bold;">0</span> / <span style="color:#dc2626;font-weight:bold;">0</span> / <span style="color:#f59e0b;font-weight:bold;">3</span></td>
+                            <td class="col-stato-pratica"><span class="status-badge st-attesa">In attesa utente</span></td>
+                            <td class="col-fase"><span class="fase-badge">Verifica Trasferibilità</span></td>
+                            <td class="col-azioni">
+                                <div class="action-group">
+                                    <button class="btn-icon" title="Dettaglio" onclick="openDetail('IN-26-003', 'trasferibilita')"><span class="material-icons">visibility</span></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr id="row-4">
+                            <td><a href="#" class="link-sf"><span class="material-icons">open_in_new</span> IN-26-004</a></td>
+                            <td>16/03/2026</td>
+                            <td>CREDIT AGRICOLE<span class="sub-text">ABI: 06230</span></td>
+                            <td>Elena Gialli<span class="sub-text">NDG: 998811 | GLL...</span></td>
+                            <td><strong>33221100</strong></td>
+                            <td class="col-titoli" style="text-align:center; font-family:monospace;"><span style="color:#16a34a;font-weight:bold;">2</span> / <span style="color:#dc2626;font-weight:bold;">1</span> / <span style="color:#f59e0b;font-weight:bold;">0</span></td>
+                            <td class="col-stato-pratica"><span class="status-badge st-lavorazione">In elaborazione</span></td>
+                            <td class="col-fase"><span class="fase-badge">Carico Strumenti</span></td>
+                            <td class="col-azioni">
+                                <div class="action-group">
+                                    <button class="btn-icon" title="Dettaglio" onclick="openDetail('IN-26-004', 'sola_lettura')"><span class="material-icons">visibility</span></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr id="row-5">
+                            <td><a href="#" class="link-sf"><span class="material-icons">open_in_new</span> IN-26-005</a></td>
+                            <td>15/03/2026</td>
+                            <td>FINECO BANK<span class="sub-text">ABI: 03015</span></td>
+                            <td>Marco Blu<span class="sub-text">NDG: 554499 | BLU...</span></td>
+                            <td><strong>88776655</strong></td>
+                            <td class="col-titoli" style="text-align:center; font-family:monospace;"><span style="color:#16a34a;font-weight:bold;">3</span> / <span style="color:#dc2626;font-weight:bold;">0</span> / <span style="color:#f59e0b;font-weight:bold;">0</span></td>
+                            <td class="col-stato-pratica"><span class="status-badge st-coda">In coda</span></td>
+                            <td class="col-fase"><span class="fase-badge">Risposta Controparte Ricevuta</span></td>
+                            <td class="col-azioni">
+                                <div class="action-group">
+                                    <button class="btn-icon" title="Dettaglio" onclick="openDetail('IN-26-005', 'sola_lettura')"><span class="material-icons">visibility</span></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-detail" class="view-section">
+        
+        <button class="btn btn-secondary" style="margin-bottom: 20px;" onclick="closeDetail()"><span class="material-icons">arrow_back</span> Torna al Cruscotto</button>
+        
+        <div class="page-header" style="margin-bottom: 15px;">
+            <div>
+                <h1 class="page-title">Dettaglio Pratica: <span id="det-pratica-id" style="color:#00a1e0; font-weight:600;">IN-26-XXX</span></h1>
+                <div style="display:flex; gap:10px; margin-top:5px;">
+                    <span id="det-stato-badge" class="status-badge">Stato</span>
+                    <span id="det-fase-badge" class="fase-badge">Fase</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 25px; align-items: flex-start;">
+            
+            <div class="detail-card" style="flex: 0 0 35%; position: sticky; top: 100px; padding: 20px;">
+                <h3 style="margin-bottom: 15px; font-size: 15px;"><span class="material-icons">picture_as_pdf</span> Modulo Acquisito</h3>
+                <div style="background: #525659; border-radius: 4px; height: 650px; padding: 15px; display: flex; justify-content: center; overflow: hidden;">
+                    <div style="background: white; width: 100%; height: 100%; padding: 20px; position: relative; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
+                        <div style="border-bottom: 2px solid #202742; padding-bottom: 10px; margin-bottom: 15px;">
+                            <strong style="font-size: 13px; color: #202742;">MODULO TRASFERIMENTO TITOLI</strong>
+                        </div>
+                        <p style="font-size: 11px; color: #495057; line-height: 1.6;">
+                            Il sottoscritto intestatario del dossier titoli autorizza l'istituto ricevente a procedere con il trasferimento del portafoglio alle coordinate indicate.<br><br>
+                            <strong>Dati intestatario:</strong> <span id="pdf-mock-nome">Mario Rossi</span><br>
+                            <strong>Dossier Origine:</strong> <span id="pdf-mock-dossier">52688508</span>
+                        </p>
+                        <div style="position: absolute; bottom: 30px; right: 20px; text-align: center;">
+                            <div style="border-bottom: 1px solid #000; width: 150px; padding-bottom: 5px;">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f3/Firma_Luigi_Einaudi.svg" style="height: 35px; opacity: 0.8;" alt="Firma">
+                            </div>
+                            <span style="font-size: 10px; color: #6c757d; margin-top: 4px; display: block;">Firma del Richiedente</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 25px;">
+                
+                <div style="display: flex; gap: 25px;">
+                    <div class="detail-card" style="flex: 2; margin-bottom: 0;">
+                        <h3><span class="material-icons">person</span> Dettaglio Richiesta (Dati di AEA)</h3>
+                        <div class="info-grid">
+                            <div class="info-box"><div class="info-label">Intestatario MBP</div><div class="info-value" id="det-cliente">Nome Cognome</div></div>
+                            <div class="info-box"><div class="info-label">NDG / CF</div><div class="info-value" id="det-ndg-cf">123456 | CF...</div></div>
+                            <div class="info-box"><div class="info-label">Stato Anagrafico</div><div class="info-value" id="det-stato-anag" style="color:#155724;">ATTIVO</div></div>
+                            <div class="info-box"><div class="info-label">Filiale Comp.</div><div class="info-value" id="det-filiale">0401 - Milano</div></div>
+                            
+                            <div class="info-box"><div class="info-label">Banca Controparte</div><div class="info-value" id="det-banca">Banca SPA</div></div>
+                            <div class="info-box"><div class="info-label">Dossier Origine</div><div class="info-value" id="det-dossier">998877</div></div>
+                            <div class="info-box"><div class="info-label">Indirizzo Resid.</div><div class="info-value" id="det-indirizzo" style="font-size:12px;">Via Roma 12, 90100 Palermo</div></div>
+                            <div class="info-box"><div class="info-label">Scadenza Doc.</div><div class="info-value" id="det-documento">14.07.2028 (C.I.)</div></div>
+                        </div>
+                    </div>
+                    <div class="detail-card" style="flex: 1; margin-bottom: 0; background: #f8fafc;">
+                        <h3><span class="material-icons">history</span> Storico Attività</h3>
+                        <div class="history-list" id="det-history">
+                            </div>
+                    </div>
+                </div>
+
+                <div id="task-conferma" class="detail-card" style="display: none; border-left: 4px solid #f39c12; margin-bottom: 0;">
+                    <h3><span class="material-icons">draw</span> Task Operativo: Validazione Firma</h3>
+                    <p style="font-size:13px; margin-bottom: 15px;">Confronta la firma apposta sul modulo (visibile a sinistra) con lo Specimen censito in anagrafe bancaria.</p>
+                    <div style="border:1px solid #ddd; padding:15px; text-align:center; background: white; margin-bottom: 15px; border-radius: 4px;">
+                        <strong style="display:block; margin-bottom:10px; color:#00a1e0; font-size:12px;">Specimen MBP (DocUser)</strong>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f3/Firma_Luigi_Einaudi.svg" style="height:45px;">
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-success" onclick="eseguiTaskValidazione('Modulo approvato. Avanzamento richiesto.')"><span class="material-icons">thumb_up</span> Conferma Congruità</button>
+                        <button class="btn btn-danger" onclick="eseguiTaskValidazione('Scarto per firma errata generato.')"><span class="material-icons">thumb_down</span> Respingi (Firma Errata)</button>
+                    </div>
+                </div>
+
+                <div id="area-isin" class="detail-card" style="margin-bottom: 0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">
+                        <h3 style="border:none; margin:0; padding:0;"><span class="material-icons">account_balance_wallet</span> Portafoglio ISIN</h3>
+                        <button id="btn-avvia-carico" class="btn btn-success" disabled style="display:none;" onclick="eseguiAvanzamentoTrasferibilita()">
+                            <span class="material-icons">publish</span> Avvia Carico Strumenti
+                        </button>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Strumento</th>
+                                    <th>Quantità (Divisa)</th>
+                                    <th>Dati Fiscali</th>
+                                    <th style="text-align:center;">Dettagli</th>
+                                    <th id="th-trasferibilita" style="text-align:center;">Trasferibilità</th>
+                                </tr>
+                            </thead>
+                            <tbody id="isin-table-body">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-isin-detail" class="modal">
+        <div class="modal-content" style="width: 600px;">
+            <div class="modal-header">
+                <h3 style="font-size:16px; margin:0; display:flex; align-items:center; gap:8px;"><span class="material-icons">info</span> Dettaglio Strumento</h3>
+                <button style="background:none; border:none; color:white; cursor:pointer;" onclick="closeModal('modal-isin-detail')"><span class="material-icons">close</span></button>
+            </div>
+            <div class="modal-body" style="padding: 0;">
+                <div style="padding: 25px; background: #f8f9fa; border-bottom: 1px solid #e9ecef;">
+                    <strong style="display:block; font-size:16px; color:#202742; margin-bottom: 4px;" id="det-isin-code">IT000...</strong>
+                    <span style="color:#6c757d; font-size:14px;" id="det-isin-desc">Descrizione Titolo</span>
+                </div>
+                <div style="padding: 25px;">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom: 20px;">
+                        <div class="info-box" style="padding:15px; border-left-color:#202742;">
+                            <span class="info-label" style="display:block; margin-bottom:4px;">Tipologia Fiscale</span>
+                            <span class="info-value" id="det-isin-regime">142 - Amministrato</span>
+                        </div>
+                        <div class="info-box" style="padding:15px; border-left-color:#202742;">
+                            <span class="info-label" style="display:block; margin-bottom:4px;">Quantità</span>
+                            <span class="info-value" id="det-isin-qta">15.000,00</span>
+                        </div>
+                        <div class="info-box" style="padding:15px; border-left-color:#202742;">
+                            <span class="info-label" style="display:block; margin-bottom:4px;">Divisa Strumento</span>
+                            <span class="info-value" id="det-isin-div">EUR</span>
+                        </div>
+                        <div class="info-box" style="padding:15px; border-left-color:#202742;">
+                            <span class="info-label" style="display:block; margin-bottom:4px;">Prezzo Medio Fiscale (PMC)</span>
+                            <span class="info-value" id="det-isin-pmf">101,00000</span>
+                        </div>
+                        <div class="info-box" style="padding:15px; border-left-color:#202742;">
+                            <span class="info-label" style="display:block; margin-bottom:4px;">Controvalore Fiscale</span>
+                            <span class="info-value" id="det-isin-cv">15.150,00</span>
+                        </div>
+                        <div class="info-box" style="padding:15px; border-left-color:#202742;">
+                            <span class="info-label" style="display:block; margin-bottom:4px;">Cambio Fiscale</span>
+                            <span class="info-value" id="det-isin-cambio">1,00000</span>
+                        </div>
+                    </div>
+                    <div style="background: #eef2f5; padding: 15px; border-radius: 4px; border-left: 3px solid #00a1e0;">
+                        <span style="font-size:11px; color:#6c757d; text-transform:uppercase; font-weight:600; display:block; margin-bottom:4px;">Esito Controllo e Note</span>
+                        <span style="font-size:13px; font-weight:500; color:#2c3e50;" id="det-isin-note">OK - Strumento non bloccato</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-isin-detail')">Chiudi Dettaglio</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-features" class="modal">
+        <div class="modal-content" style="width: 700px;">
+            <div class="modal-header">
+                <h3 style="font-size:16px; margin:0; display:flex; align-items:center; gap:8px;"><span class="material-icons">verified</span> Elenco Funzionalità Portale Trasferimenti</h3>
+                <button style="background:none; border:none; color:white; cursor:pointer;" onclick="closeModal('modal-features')"><span class="material-icons">close</span></button>
+            </div>
+            <div class="modal-body">
+                <ul style="padding-left: 20px; font-size: 14px; color: #495057; line-height: 1.8;">
+                    <li><strong>Layout Integrato e Modulo Visibile:</strong> L'interfaccia a schermo diviso (split-view) garantisce che il modulo PDF sia sempre consultabile durante qualsiasi fase della lavorazione, eliminando l'uso di fastidiosi popup o finestre di navigazione secondarie.</li>
+                    <li><strong>Filtri Dinamici:</strong> Motore di ricerca sulle anagrafiche e stati della pratica con applicazione e re-rendering in tempo reale durante la digitazione. Nessun caricamento di pagina richiesto.</li>
+                    <li><strong>Task Asincroni:</strong> Le azioni dell'operatore aggiornano lo stato della pratica in 'In Coda' in background, simulando il comportamento asincrono del backend.</li>
+                    <li><strong>Valutazione Trasferibilità:</strong> Interfaccia grafica a icone (Da Verificare, Trasferibile, Non Trasferibile) con blocco permanente e aggiornamento real-time dei contatori in tabella al momento del salvataggio.</li>
+                    <li><strong>Dettaglio ISIN Dedicato:</strong> Espansione dei dati fiscali (Controvalore, PMC, Divisa, Regime) tramite modale dedicato per una lettura più pulita della griglia.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast"><span class="material-icons" id="toast-icon">info</span> <span id="toast-msg"></span></div>
+
+    <script>
+        // FILTRI LIVE
+        function applyFilters() {
+            let id = document.getElementById('filter-id').value.toLowerCase();
+            let banca = document.getElementById('filter-banca').value.toLowerCase();
+            let cliente = document.getElementById('filter-cliente').value.toLowerCase();
+            let statoPratica = document.getElementById('filter-stato-pratica').value.toLowerCase();
+            let fase = document.getElementById('filter-fase').value.toLowerCase();
+
+            document.querySelectorAll('#table-body tr').forEach(row => {
+                let textId = row.cells[0].innerText.toLowerCase();
+                let textBanca = row.cells[2].innerText.toLowerCase();
+                let textCliente = row.cells[3].innerText.toLowerCase();
+                let textStatoPratica = row.cells[6].innerText.toLowerCase(); // Indice colonna Stato Pratica
+                let textFase = row.cells[7].innerText.toLowerCase();         // Indice colonna Fase
+
+                let match = (textId.includes(id) && textBanca.includes(banca) && textCliente.includes(cliente) && textStatoPratica.includes(statoPratica) && textFase.includes(fase));
+                row.style.display = match ? '' : 'none';
+            });
+        }
+
+        function resetFilters() {
+            document.getElementById('filter-id').value = '';
+            document.getElementById('filter-banca').value = '';
+            document.getElementById('filter-cliente').value = '';
+            document.getElementById('filter-stato-pratica').value = '';
+            document.getElementById('filter-fase').value = '';
+            applyFilters();
+        }
+
+        // AZIONI E TOAST
+        let activeRowId = '';
+        let currentIsinStatuses = ['wait', 'wait', 'wait']; // 0:BTP, 1:PICTET, 2:APPLE
+
+        function eseguiAzione(rowId, message) {
+            showToast(message, 'check_circle');
+            let row = document.getElementById(rowId);
+            if(row) {
+                row.querySelector('.col-stato-pratica').innerHTML = '<span class="status-badge st-coda">In coda</span>';
+                row.querySelector('.col-azioni').innerHTML = `<div class="action-group"><button class="btn-icon" title="Dettaglio" onclick="openDetail('`+row.cells[0].innerText+`', 'sola_lettura')"><span class="material-icons">visibility</span></button></div>`;
+            }
+        }
+
+        function eseguiTaskValidazione(message) {
+            showToast(message, 'check_circle');
+            closeDetail();
+            document.querySelectorAll('#table-body tr').forEach(row => {
+                if(row.cells[0].innerText.includes(activeRowId)) {
+                    row.querySelector('.col-stato-pratica').innerHTML = '<span class="status-badge st-coda">In coda</span>';
+                    row.querySelector('.col-fase').innerHTML = '<span class="fase-badge">Inserimento Richiesta</span>';
+                    row.querySelector('.col-azioni').innerHTML = `<div class="action-group"><button class="btn-icon" title="Dettaglio" onclick="openDetail('`+activeRowId+`', 'sola_lettura')"><span class="material-icons">visibility</span></button></div>`;
+                }
+            });
+        }
+
+        function eseguiAvanzamentoTrasferibilita() {
+            // Salva gli stati selezionati
+            let containers = document.querySelectorAll('.eval-icons');
+            let ok = 0, ko = 0, wait = 0;
+            containers.forEach(c => {
+                let idx = c.getAttribute('data-index');
+                let status = c.dataset.status;
+                currentIsinStatuses[idx] = status;
+                if(status === 'ok') ok++;
+                else if(status === 'ko') ko++;
+                else wait++;
+            });
+
+            showToast('Modifica eseguita. Pratica in carico al sistema.', 'check_circle');
+
+            // Aggiorna interfaccia dettaglio (diventa sola lettura)
+            document.getElementById('det-stato-badge').className = "status-badge st-lavorazione";
+            document.getElementById('det-stato-badge').innerText = "In elaborazione";
+            document.getElementById('det-fase-badge').innerText = "Carico Strumenti";
+            document.getElementById('btn-avvia-carico').style.display = 'none';
+
+            let history = document.getElementById('det-history');
+            let now = new Date();
+            let dateStr = String(now.getDate()).padStart(2, '0') + "/" + String(now.getMonth()+1).padStart(2, '0') + "/" + now.getFullYear() + " " + String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
+            history.innerHTML += `<div class="history-item"><span class="history-date">${dateStr}</span> Valutazione trasferibilità confermata. Carico strumenti avviato.</div>`;
+
+            // Ridisegna tabella ISIN in stato locked
+            document.getElementById('isin-table-body').innerHTML = generaPortafoglio('post_trasferibilita');
+
+            // Aggiorna la riga in tabella principale
+            document.querySelectorAll('#table-body tr').forEach(tr => {
+                if(tr.cells[0].innerText.includes(activeRowId)) {
+                    tr.querySelector('.col-titoli').innerHTML = `<span style="color:#16a34a;font-weight:bold;">${ok}</span> / <span style="color:#dc2626;font-weight:bold;">${ko}</span> / <span style="color:#f59e0b;font-weight:bold;">${wait}</span>`;
+                    tr.querySelector('.col-stato-pratica').innerHTML = '<span class="status-badge st-lavorazione">In elaborazione</span>';
+                    tr.querySelector('.col-fase').innerHTML = '<span class="fase-badge">Carico Strumenti</span>';
+                    tr.querySelector('.col-azioni').innerHTML = `<div class="action-group"><button class="btn-icon" title="Dettaglio" onclick="openDetail('`+activeRowId+`', 'post_trasferibilita')"><span class="material-icons">visibility</span></button></div>`;
+                }
+            });
+        }
+
+        // APERTURA MODALE DETTAGLIO ISIN
+        function openIsinDetail(isin, desc, qta, valuta, pmf, cv, cambio, regime, note) {
+            document.getElementById('det-isin-code').innerText = isin;
+            document.getElementById('det-isin-desc').innerText = desc;
+            document.getElementById('det-isin-qta').innerText = qta;
+            document.getElementById('det-isin-div').innerText = valuta;
+            document.getElementById('det-isin-pmf').innerText = pmf;
+            document.getElementById('det-isin-cv').innerText = cv;
+            document.getElementById('det-isin-cambio').innerText = cambio;
+            document.getElementById('det-isin-regime').innerText = regime;
+            document.getElementById('det-isin-note').innerText = note;
+            openModal('modal-isin-detail');
+        }
+
+        // GENERAZIONE PORTAFOGLIO
+        function generaPortafoglio(tipoFase) {
+            let html = '';
+            const titoli = [
+                { isin: 'IT0005218380', desc: 'BTP ITALIA 2028', qta: '15.000,00', divisa: 'EUR', pmf: '101,00000', cv: '15.150,00', cambio:'1,00000', regime: '142 - Amministrato', note: 'OK - Strumento non bloccato' },
+                { isin: 'LU0996177134', desc: 'PICTET WATER P EUR', qta: '50,00', divisa: 'EUR', pmf: '420,10000', cv: '21.005,00', cambio:'1,00000', regime: 'Dichiarativo', note: 'OK - Strumento non bloccato' },
+                { isin: 'US0378331005', desc: 'APPLE INC.', qta: '150,00', divisa: 'USD', pmf: '150,20000', cv: '22.530,00', cambio:'1,09500', regime: '142 - Amministrato', note: 'Attenzione - Strumento estero sospeso in anagrafica' }
+            ];
+
+            titoli.forEach((t, index) => {
+                let colTrasf = '';
+                
+                if (tipoFase === 'conferma' || tipoFase === 'errore') {
+                    colTrasf = `<td style="text-align:center; vertical-align:middle; color:#6c757d; font-weight:bold; font-size:18px;">-</td>`;
+                } 
+                else if (tipoFase === 'trasferibilita') {
+                    colTrasf = `
+                        <td style="text-align:center; vertical-align:middle;">
+                            <div class="eval-icons" data-index="${index}" data-status="wait">
+                                <span class="material-icons eval-icon active-wait" onclick="setEval(this, 'wait')" title="Da Verificare">help_outline</span>
+                                <span class="material-icons eval-icon" onclick="setEval(this, 'ok')" title="Trasferibile">check_circle</span>
+                                <span class="material-icons eval-icon" onclick="setEval(this, 'ko')" title="Non Trasferibile">cancel</span>
+                            </div>
+                        </td>`;
+                } 
+                else {
+                    // post_trasferibilita o sola lettura avanzata. Se status in array è wait, usa la logica fissa.
+                    let status = currentIsinStatuses[index];
+                    if (status === 'wait') {
+                        status = t.note.includes('OK') ? 'ok' : 'ko';
+                    }
+
+                    let iconHtml = '';
+                    if (status === 'ok') iconHtml = `<span class="material-icons" style="color:#28a745; font-size:24px;" title="Trasferibile">check_circle</span>`;
+                    else iconHtml = `<span class="material-icons" style="color:#dc3545; font-size:24px;" title="Non Trasferibile">cancel</span>`;
+
+                    colTrasf = `<td style="text-align:center; vertical-align:middle;">${iconHtml}</td>`;
+                }
+
+                html += `
+                    <tr>
+                        <td><strong>${t.isin}</strong><br><span class="sub-text">${t.desc}</span></td>
+                        <td>${t.qta}<br><span class="sub-text">${t.divisa}</span></td>
+                        <td>${t.regime}<br><span class="sub-text">P.M.F.: ${t.pmf}</span></td>
+                        <td style="text-align:center;"><button class="btn-icon" style="margin:0 auto;" onclick="openIsinDetail('${t.isin}', '${t.desc}', '${t.qta}', '${t.divisa}', '${t.pmf}', '${t.cv}', '${t.cambio}', '${t.regime}', '${t.note}')"><span class="material-icons" style="font-size:16px;">info_outline</span></button></td>
+                        ${colTrasf}
+                    </tr>
+                `;
+            });
+            return html;
+        }
+
+        // DETTAGLIO PRATICA
+        function openDetail(id, tipoFase) {
+            activeRowId = id;
+            document.getElementById('view-list').classList.remove('active');
+            document.getElementById('det-pratica-id').innerText = id;
+            
+            let areaTaskConf = document.getElementById('task-conferma');
+            let btnCarico = document.getElementById('btn-avvia-carico');
+            let thTrasf = document.getElementById('th-trasferibilita');
+            let tbody = document.getElementById('isin-table-body');
+            let badgeStato = document.getElementById('det-stato-badge');
+            let badgeFase = document.getElementById('det-fase-badge');
+            let history = document.getElementById('det-history');
+            
+            areaTaskConf.style.display = 'none';
+            btnCarico.style.display = 'none';
+            thTrasf.style.display = 'none';
+            
+            history.innerHTML = `
+                <div class="history-item"><span class="history-date">26/03/2026 08:30:12</span> Ricezione flusso telematico.</div>
+                <div class="history-item"><span class="history-date">26/03/2026 08:35:45</span> Creazione pratica su applicativo SF.</div>
+            `;
+
+            if (tipoFase === 'conferma') {
+                badgeStato.className = "status-badge st-attesa"; badgeStato.innerText = "In attesa utente";
+                badgeFase.innerText = "Conferma Modulo TDT";
+                
+                document.getElementById('det-cliente').innerText = "Mario Rossi";
+                document.getElementById('pdf-mock-nome').innerText = "Mario Rossi";
+                document.getElementById('det-ndg-cf').innerText = "882910 | RSSMRA80A...";
+                document.getElementById('det-banca').innerText = "INTESA SANPAOLO";
+                document.getElementById('det-dossier').innerText = "52688508";
+                document.getElementById('pdf-mock-dossier').innerText = "52688508";
+                document.getElementById('det-filiale').innerText = "0401 - Milano";
+                document.getElementById('det-stato-anag').innerText = "ATTIVO";
+                document.getElementById('det-stato-anag').style.color = "#155724";
+                document.getElementById('det-indirizzo').innerText = "Via Roma 12, 90100 Palermo";
+                document.getElementById('det-documento').innerText = "14.07.2028 (C.I.)";
+                
+                areaTaskConf.style.display = 'block';
+                history.innerHTML += `<div class="history-item"><span class="history-date">26/03/2026 08:40:00</span> Attesa validazione operatore per congruità firma.</div>`;
+                
+                thTrasf.style.display = 'table-cell';
+                tbody.innerHTML = generaPortafoglio('conferma');
+
+            } 
+            else if (tipoFase === 'trasferibilita') {
+                badgeStato.className = "status-badge st-attesa"; badgeStato.innerText = "In attesa utente";
+                badgeFase.innerText = "Verifica Trasferibilità";
+                
+                document.getElementById('det-cliente').innerText = "Carlo Neri";
+                document.getElementById('pdf-mock-nome').innerText = "Carlo Neri";
+                document.getElementById('det-ndg-cf').innerText = "112233 | NRICRL...";
+                document.getElementById('det-banca').innerText = "BANCA SELLA";
+                document.getElementById('det-dossier').innerText = "55443322";
+                document.getElementById('pdf-mock-dossier').innerText = "55443322";
+                document.getElementById('det-filiale').innerText = "0500 - Torino";
+                document.getElementById('det-stato-anag').innerText = "INATTIVO";
+                document.getElementById('det-stato-anag').style.color = "#dc3545";
+                document.getElementById('det-indirizzo').innerText = "Via Garibaldi 5, 10100 Torino";
+                document.getElementById('det-documento').innerText = "01.01.2030 (Passaporto)";
+                
+                btnCarico.style.display = 'flex';
+                btnCarico.disabled = true;
+                thTrasf.style.display = 'table-cell';
+                
+                history.innerHTML += `<div class="history-item"><span class="history-date">27/03/2026 09:15:22</span> Analisi ISIN da anagrafe generale completata.</div>`;
+                tbody.innerHTML = generaPortafoglio('trasferibilita');
+
+            } 
+            else if (tipoFase === 'errore') {
+                badgeStato.className = "status-badge st-error"; badgeStato.innerText = "Errore";
+                badgeFase.innerText = "Inserimento Richiesta";
+                
+                document.getElementById('det-cliente').innerText = "Luigi Bianchi";
+                document.getElementById('pdf-mock-nome').innerText = "Luigi Bianchi";
+                document.getElementById('det-ndg-cf').innerText = "N/A | BNCLGI...";
+                document.getElementById('det-banca').innerText = "BPM S.P.A.";
+                document.getElementById('det-dossier').innerText = "11223344";
+                document.getElementById('pdf-mock-dossier').innerText = "11223344";
+                document.getElementById('det-filiale').innerText = "0102 - Roma";
+                document.getElementById('det-stato-anag').innerText = "ATTIVO";
+                document.getElementById('det-stato-anag').style.color = "#155724";
+                document.getElementById('det-indirizzo').innerText = "Piazza Navona 1, 00100 Roma";
+                document.getElementById('det-documento').innerText = "15.08.2025 (Patente)";
+                
+                history.innerHTML += `<div class="history-item"><span class="history-date">27/03/2026 10:05:10</span> Errore di mapping NDG rilevato a sistema.</div>`;
+                
+                thTrasf.style.display = 'table-cell';
+                tbody.innerHTML = generaPortafoglio('errore');
+            }
+            else {
+                // In elaborazione / post trasferibilita (es. riga 4 e 5)
+                badgeStato.className = "status-badge st-lavorazione"; badgeStato.innerText = "In elaborazione / In coda";
+                badgeFase.innerText = "Carico Strumenti / Controparte";
+                
+                document.getElementById('det-cliente').innerText = "Elena Gialli";
+                document.getElementById('pdf-mock-nome').innerText = "Elena Gialli";
+                document.getElementById('det-ndg-cf').innerText = "998811 | GLLLNE...";
+                document.getElementById('det-banca').innerText = "CREDIT AGRICOLE";
+                document.getElementById('det-dossier').innerText = "33221100";
+                document.getElementById('pdf-mock-dossier').innerText = "33221100";
+                document.getElementById('det-filiale').innerText = "0401 - Milano";
+                document.getElementById('det-stato-anag').innerText = "ATTIVO";
+                document.getElementById('det-stato-anag').style.color = "#155724";
+                document.getElementById('det-indirizzo').innerText = "Via Verdi 8, 20100 Milano";
+                document.getElementById('det-documento').innerText = "12.12.2029 (C.I.)";
+
+                history.innerHTML += `<div class="history-item"><span class="history-date">27/03/2026 11:20:05</span> Operazione in corso sul sistema Mainframe...</div>`;
+                
+                // Set the default internal statuses for the mock based on IN-26-004 logic (2 OK, 1 KO)
+                currentIsinStatuses = ['ok', 'ok', 'ko'];
+
+                thTrasf.style.display = 'table-cell';
+                tbody.innerHTML = generaPortafoglio('post_trasferibilita');
+            }
+
+            document.getElementById('view-detail').classList.add('active');
+        }
+
+        function closeDetail() {
+            document.getElementById('view-detail').classList.remove('active');
+            document.getElementById('view-list').classList.add('active');
+        }
+
+        // Gestione Icone Trasferibilità
+        function setEval(iconElement, status) {
+            let container = iconElement.parentElement;
+            container.dataset.status = status;
+            
+            let icons = container.querySelectorAll('.eval-icon');
+            icons.forEach(i => { i.className = 'material-icons eval-icon'; });
+
+            if(status === 'wait') icons[0].classList.add('active-wait');
+            if(status === 'ok') icons[1].classList.add('active-ok');
+            if(status === 'ko') icons[2].classList.add('active-ko');
+
+            let allContainers = document.querySelectorAll('.eval-icons');
+            let allResolved = true;
+            allContainers.forEach(c => {
+                if(c.dataset.status === 'wait') allResolved = false;
+            });
+
+            document.getElementById('btn-avvia-carico').disabled = !allResolved;
+        }
+
+        // Modali e Toast
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        function showToast(message, icon = 'info') {
+            const toast = document.getElementById("toast");
+            document.getElementById("toast-msg").innerText = message;
+            document.getElementById("toast-icon").innerText = icon;
+            toast.className = "show";
+            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3500);
+        }
+    </script>
+</body>
+</html>
